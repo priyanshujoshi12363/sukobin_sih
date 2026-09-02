@@ -166,6 +166,22 @@ interface SukobinApi {
     @GET("api/merchant/getme")
     suspend fun merchantMe(): Response<JsonObject>
 
+
+    @GET("api/merchant/verify")
+    suspend fun merchantVerify(): Response<JsonObject>
+
+    @GET("api/merchant/stats")
+    suspend fun merchantStats(): Response<JsonObject>
+
+    @GET("api/merchant/orders")
+    suspend fun merchantOrders(): Response<JsonObject>
+
+    @PATCH("api/merchant/orders/{id}/status")
+    suspend fun merchantUpdateOrderStatus(
+        @Path("id") id: String,
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
     @GET("api/shop/get")
     suspend fun myShops(): Response<JsonObject>
 

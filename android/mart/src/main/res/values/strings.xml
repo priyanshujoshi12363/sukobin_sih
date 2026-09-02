@@ -1,8 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sukobin Merchant</string>
+
     <string name="splash_tagline">Run your shop, reach the hills</string>
     <string name="splash_status_start">Starting up</string>
     <string name="splash_status_verify">Verifying your session</string>
     <string name="splash_status_offline">No connection - working offline</string>
+
+    <string name="welcome_kicker">For shopkeepers across the North East</string>
+    <string name="welcome_line1">Sell beyond</string>
+    <string name="welcome_headline">your valley</string>
+    <string name="welcome_sub">List your shop once. Orders reach customers in remote districts by riding along journeys that are already being made.</string>
+
+    <string name="welcome_f1_t">List your products</string>
+    <string name="welcome_f1_d">Photos, price, stock</string>
+    <string name="welcome_f2_t">Receive orders</string>
+    <string name="welcome_f2_d">Packed and pooled for pickup</string>
+    <string name="welcome_f3_t">Track your earnings</string>
+    <string name="welcome_f3_d">Daily revenue and top sellers</string>
+
+    <string name="welcome_register">Register your shop</string>
+    <string name="welcome_login">I already have an account</string>
+
+    <string name="login_title">Welcome back</string>
+    <string name="login_sub">Log in with your registered mobile number</string>
+    <string name="login_phone_label">Mobile Number</string>
+    <string name="login_phone_hint">Enter mobile number</string>
+    <string name="login_cta">Continue</string>
+    <string name="login_no_account">New merchant?</string>
+    <string name="login_register_link">Register</string>
+    <string name="login_error_phone">Please enter a valid 10-digit phone number</string>
+
+    <string name="reg_title">Register your shop</string>
+    <string name="reg_sub">Basic details now, KYC can follow later</string>
+    <string name="reg_name">Your name</string>
+    <string name="reg_business">Business / shop name</string>
+    <string name="reg_email">Email (optional)</string>
+    <string name="reg_phone">Mobile number</string>
+    <string name="reg_gst">GST number (optional)</string>
+    <string name="reg_cta">Create account</string>
+    <string name="reg_error">Enter your name, shop name and a valid 10-digit number</string>
+    <string name="reg_have_account">Already registered?</string>
+
+    <string name="otp_title">Verify your number</string>
+    <string name="otp_sub">Enter the 6 digit code sent to %1$s</string>
+    <string name="otp_cta">Verify</string>
+    <string name="otp_resend">Resend code</string>
+    <string name="otp_resend_in">Resend in %1$d s</string>
+    <string name="otp_error_incomplete">Please enter all 6 digits</string>
+    <string name="otp_error_wrong">Incorrect OTP, please try again</string>
+    <string name="otp_dev_hint">Development build: use 123456</string>
+
+    <string name="home_greeting">Hi %1$s</string>
+    <string name="home_today">Today</string>
+    <string name="home_revenue">Revenue</string>
+    <string name="home_orders">Orders</string>
+    <string name="home_total_revenue">Total revenue</string>
+    <string name="home_total_orders">Total orders</string>
+    <string name="home_items_sold">Items sold</string>
+    <string name="home_new_orders">New orders</string>
+    <string name="home_recent_orders">Recent orders</string>
+    <string name="home_no_orders">No orders yet</string>
+    <string name="home_top_products">Top products</string>
+    <string name="home_my_products">My products</string>
+    <string name="home_no_products">No products listed yet</string>
+    <string name="home_stock">Stock %1$d</string>
+    <string name="home_qty_sold">%1$d sold</string>
+
+    <string name="common_retry">Retry</string>
+    <string name="common_error">Something went wrong</string>
+    <string name="common_signout">Sign out</string>
 </resources>
