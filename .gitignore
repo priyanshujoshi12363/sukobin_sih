@@ -33,6 +33,9 @@ local.properties
 .DS_Store
 Thumbs.db
 
+# ── v1 Expo apps: kept locally as UI reference, not part of the repo ──
+_legacy_expo/
+
 # ── logs / scratch ──
 *.log
 srv.out.log
