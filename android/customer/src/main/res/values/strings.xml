@@ -87,4 +87,14 @@
     <string name="common_add">Add</string>
     <string name="common_out_of_stock">Out of stock</string>
     <string name="home_no_products">No products available yet</string>
+    <string name="profile_verified">Verified account</string>
+    <string name="profile_saved_address">Saved address</string>
+    <string name="profile_my_orders">My orders</string>
+    <string name="profile_my_parcels">My parcels</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_sign_out_confirm">Sign out of Sukobin?</string>
+    <string name="profile_no_address">Add a delivery address</string>
+    <string name="orders_empty">No orders yet</string>
+    <string name="parcels_empty">No parcels sent yet</string>
+    <string name="history_empty">Nothing in your history yet</string>
 </resources>

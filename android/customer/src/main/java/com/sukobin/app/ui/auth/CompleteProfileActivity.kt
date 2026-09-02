@@ -141,6 +141,7 @@ class CompleteProfileActivity : AppCompatActivity() {
                         Session.name = user.name
                         Session.userId = user.id
                         Session.phone = user.phone
+                        Session.address = user.address?.display()?.ifBlank { null } ?: fullAddress
                     }
                     startActivity(
                         Intent(this@CompleteProfileActivity, MainActivity::class.java)

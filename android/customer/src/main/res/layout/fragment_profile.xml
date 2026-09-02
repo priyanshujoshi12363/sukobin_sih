@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cream">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#1A3B32"
+            android:fitsSystemWindows="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="26dp">
+
+            <TextView
+                android:id="@+id/avatar"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:background="@drawable/bg_circle_mint"
+                android:gravity="center"
+                android:textColor="#1A3B32"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/profileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/profilePhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/mint_300"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:id="@+id/verifiedRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:contentDescription="@string/profile_verified"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/mint_300" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/profile_verified"
+                        android:textColor="@color/mint_300"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/profileLoading"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:indeterminateTint="@color/mint_300"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingVertical="4dp">
+
+            <LinearLayout
+                android:id="@+id/rowAddress"
+                style="@style/ProfileRow">
+
+                <ImageView
+                    style="@style/ProfileRowIcon"
+                    android:contentDescription="@string/profile_saved_address"
+                    android:src="@drawable/ic_location" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/ProfileRowLabel"
+                        android:text="@string/profile_saved_address" />
+
+                    <TextView
+                        android:id="@+id/addressLine"
+                        style="@style/ProfileRowSub" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/ProfileDivider" />
+
+            <LinearLayout
+                android:id="@+id/rowOrders"
+                style="@style/ProfileRow">
+
+                <ImageView
+                    style="@style/ProfileRowIcon"
+                    android:contentDescription="@string/tab_orders"
+                    android:src="@drawable/ic_receipt" />
+
+                <TextView
+                    style="@style/ProfileRowLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:text="@string/profile_my_orders" />
+            </LinearLayout>
+
+            <View style="@style/ProfileDivider" />
+
+            <LinearLayout
+                android:id="@+id/rowParcels"
+                style="@style/ProfileRow">
+
+                <ImageView
+                    style="@style/ProfileRowIcon"
+                    android:contentDescription="@string/tab_parcel"
+                    android:src="@drawable/ic_package" />
+
+                <TextView
+                    style="@style/ProfileRowLabel"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:text="@string/profile_my_parcels" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowSignOut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/profile_sign_out"
+                android:src="@drawable/ic_logout"
+                app:tint="@color/accent_red" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:text="@string/profile_sign_out"
+                android:textColor="@color/accent_red"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

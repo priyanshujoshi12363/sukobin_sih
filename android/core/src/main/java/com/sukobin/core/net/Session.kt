@@ -12,6 +12,7 @@ object Session {
     private const val KEY_PHONE = "phone"
     private const val KEY_ID = "id"
     private const val KEY_LANG = "lang"
+    private const val KEY_ADDRESS = "address"
 
     private lateinit var prefs: SharedPreferences
 
@@ -40,6 +41,10 @@ object Session {
     var userId: String?
         get() = prefs.getString(KEY_ID, null)
         set(value) = prefs.edit().putString(KEY_ID, value).apply()
+
+    var address: String?
+        get() = prefs.getString(KEY_ADDRESS, null)
+        set(value) = prefs.edit().putString(KEY_ADDRESS, value).apply()
 
     var language: String
         get() = prefs.getString(KEY_LANG, "en") ?: "en"

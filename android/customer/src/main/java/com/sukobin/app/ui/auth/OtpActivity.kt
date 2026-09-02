@@ -158,6 +158,7 @@ class OtpActivity : AppCompatActivity() {
                         phone = user?.phone ?: phone,
                         role = "user"
                     )
+                    Session.address = user?.address?.display()?.ifBlank { null }
 
                     pushPermission.request()
                     Push.register(this@OtpActivity) { userSavePushToken(it) }
