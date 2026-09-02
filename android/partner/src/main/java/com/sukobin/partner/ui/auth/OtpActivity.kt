@@ -43,7 +43,10 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var boxes: List<EditText>
     private var busy = false
     private var timer: CountDownTimer? = null
-    private val pushPermission by lazy { PushPermission(this) }
+    // Registered eagerly at construction: registerForActivityResult must be called
+    // before the activity reaches STARTED, and a lazy first-touch inside the verify
+    // coroutine throws IllegalStateException.
+    private val pushPermission = PushPermission(this)
 
     private val phone by lazy { intent.getStringExtra(EXTRA_PHONE).orEmpty() }
     private val mode by lazy { intent.getStringExtra(EXTRA_MODE) ?: MODE_LOGIN }

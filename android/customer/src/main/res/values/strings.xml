@@ -86,4 +86,5 @@
     <string name="common_error">Something went wrong</string>
     <string name="common_add">Add</string>
     <string name="common_out_of_stock">Out of stock</string>
+    <string name="home_no_products">No products available yet</string>
 </resources>
