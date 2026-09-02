@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8FCF9"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/profile_title"
+            android:textColor="#1A3B32"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/profile_sub"
+            android:textColor="@color/gray_500"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_xl"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <EditText
+                android:id="@+id/inputName"
+                style="@style/FormField"
+                android:hint="@string/profile_name_hint"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/inputHouse"
+                style="@style/FormField"
+                android:hint="@string/profile_house"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputLandmark"
+                style="@style/FormField"
+                android:hint="@string/profile_landmark"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputVillage"
+                style="@style/FormField"
+                android:hint="@string/profile_village"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputTown"
+                style="@style/FormField"
+                android:hint="@string/profile_town"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputDistrict"
+                style="@style/FormField"
+                android:hint="@string/profile_district"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputState"
+                style="@style/FormField"
+                android:hint="@string/profile_state"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/inputPincode"
+                style="@style/FormField"
+                android:hint="@string/profile_pincode"
+                android:inputType="number"
+                android:maxLength="6" />
+
+            <LinearLayout
+                android:id="@+id/btnUseLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_mint_soft"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/profile_use_location"
+                    android:src="@drawable/ic_location"
+                    app:tint="#1A3B32" />
+
+                <TextView
+                    android:id="@+id/locationLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/profile_use_location"
+                    android:textColor="#1A3B32"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/locationSpinner"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:indeterminateTint="#1A3B32"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_button_dark_lg"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ProgressBar
+                android:id="@+id/saveSpinner"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/profile_save"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/profile_save"
+                android:src="@drawable/ic_arrow_forward"
+                app:tint="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

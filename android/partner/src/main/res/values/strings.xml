@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sukobin Partner</string>
+
+    <string name="splash_tagline">Earn on the route you already drive</string>
+    <string name="splash_status_start">Starting up</string>
+    <string name="splash_status_verify">Verifying your session</string>
+    <string name="splash_status_offline">No connection - working offline</string>
+
+    <string name="welcome_kicker">Turn your journey into income</string>
+    <string name="welcome_line1">Already going that way?</string>
+    <string name="welcome_headline">Get paid for it</string>
+    <string name="welcome_sub">Tourist or local, daily commuter or one-off trip. Enter your route, carry parcels heading the same way, and earn on a drive you were making anyway.</string>
+
+    <string name="welcome_step1_t">Enter your route</string>
+    <string name="welcome_step1_d">Where you are going today</string>
+    <string name="welcome_step2_t">See parcels on the way</string>
+    <string name="welcome_step2_d">Only deliveries along your road</string>
+    <string name="welcome_step3_t">Deliver and get paid</string>
+    <string name="welcome_step3_d">Up to your vehicle capacity</string>
+
+    <string name="welcome_benefit_fuel">Same fuel</string>
+    <string name="welcome_benefit_co2">Lower CO2</string>
+    <string name="welcome_benefit_fast">Faster reach</string>
+
+    <string name="welcome_register">Register with vehicle number</string>
+    <string name="welcome_login">I already have an account</string>
+
+    <string name="login_title">Welcome back</string>
+    <string name="login_sub">Log in with your registered mobile number</string>
+    <string name="login_phone_label">Mobile Number</string>
+    <string name="login_phone_hint">Enter mobile number</string>
+    <string name="login_cta">Send OTP</string>
+    <string name="login_no_account">New driver?</string>
+    <string name="login_register_link">Register</string>
+    <string name="login_error_phone">Please enter a valid 10-digit phone number</string>
+
+    <string name="reg_title">Register your vehicle</string>
+    <string name="reg_sub">We verify your number plate, then send an OTP</string>
+    <string name="reg_vehicle_label">Vehicle Number</string>
+    <string name="reg_vehicle_hint">e.g. AS01AB1234</string>
+    <string name="reg_verify_cta">Verify vehicle</string>
+    <string name="reg_verifying">Checking registration</string>
+    <string name="reg_name_label">Your Name</string>
+    <string name="reg_name_hint">Full name</string>
+    <string name="reg_phone_label">Mobile Number</string>
+    <string name="reg_continue">Send OTP</string>
+    <string name="reg_error_vehicle">Enter your vehicle number</string>
+    <string name="reg_error_fields">Enter your name and a valid 10-digit number</string>
+    <string name="reg_vehicle_verified">Vehicle verified</string>
+    <string name="reg_capacity">Capacity: %1$d parcels</string>
+
+    <string name="otp_title">Verify your number</string>
+    <string name="otp_sub">Enter the 6 digit code sent to %1$s</string>
+    <string name="otp_cta">Verify</string>
+    <string name="otp_resend">Resend code</string>
+    <string name="otp_resend_in">Resend in %1$d s</string>
+    <string name="otp_error_incomplete">Please enter all 6 digits</string>
+    <string name="otp_dev_hint">Dev OTP auto-filled: %1$s</string>
+
+    <string name="home_greeting">Hi %1$s</string>
+    <string name="home_offline">You are offline</string>
+    <string name="home_online">You are online</string>
+    <string name="home_offline_sub">Go online to see parcels on your route</string>
+    <string name="home_online_sub">Enter your route to see matching deliveries</string>
+
+    <string name="route_title">Your journey</string>
+    <string name="route_from">From</string>
+    <string name="route_to">To</string>
+    <string name="route_from_hint">Starting town</string>
+    <string name="route_to_hint">Destination town</string>
+    <string name="route_find">Find parcels on my route</string>
+    <string name="route_searching">Matching your road</string>
+    <string name="route_error_pick">Pick both a start and a destination</string>
+    <string name="route_blocked">This route is currently blocked</string>
+
+    <string name="jobs_title">On your route</string>
+    <string name="jobs_none">No parcels on this route right now</string>
+    <string name="jobs_none_sub">Try a different route, or check back shortly</string>
+    <string name="jobs_selected">%1$d of %2$d selected</string>
+    <string name="jobs_capacity_full">Vehicle full</string>
+    <string name="jobs_start_trip">Start trip</string>
+    <string name="jobs_earn">You earn</string>
+
+    <string name="job_detour">%1$s km off route</string>
+    <string name="job_eta">~%1$d min</string>
+
+    <string name="trip_title">Active trip</string>
+    <string name="trip_pickup">Pick up</string>
+    <string name="trip_deliver">Deliver</string>
+    <string name="trip_none">No active trip</string>
+
+    <string name="common_retry">Retry</string>
+    <string name="common_error">Something went wrong</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="register_have_account">Already registered?</string>
+</resources>

@@ -1,0 +1,63 @@
+import { Expo } from 'expo-server-sdk';
+
+const expo = new Expo();
+
+export async function sendPush(token, { title, body, data } = {}) {
+  if (!token || !Expo.isExpoPushToken(token)) {
+    return { skipped: true };
+  }
+
+  const messages = [{
+    to: token,
+    // iOS uses this filename (bundled via the expo-notifications plugin "sounds");
+    // Android plays the sound from the 'default' channel configured in the apps.
+    sound: 'notification.wav',
+    title,
+    body,
+    data: data || {},
+    priority: 'high',
+    channelId: 'sukobin_alerts',
+  }];
+
+  const chunks = expo.chunkPushNotifications(messages);
+  const tickets = [];
+  for (const chunk of chunks) {
+    try {
+      const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      tickets.push(...ticketChunk);
+    } catch (error) {
+      console.error('Push send error:', error.message);
+    }
+  }
+  return { tickets };
+}
+
+export async function sendHelloNotification(expoPushToken) {
+
+  if (!Expo.isExpoPushToken(expoPushToken)) {
+    throw new Error('Invalid Expo push token');
+  }
+
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Hello Sukobin! 👋',
+    body: 'This is a test notification from Sukobin.',
+    data: { screen: 'home' },
+  };
+
+  const chunks = expo.chunkPushNotifications([message]);
+  const tickets = [];
+
+  for (const chunk of chunks) {
+    try {
+      const ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      tickets.push(...ticketChunk);
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      throw error;
+    }
+  }
+
+  return tickets;
+}

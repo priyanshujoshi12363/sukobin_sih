@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 18.11.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "{{ secrets.GOOGLE_SERVICES_JSON }}"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "{{ secrets.GOOGLE_SERVICES_JSON }}"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "GOOGLE_SERVICES_JSON": "{{ secrets.GOOGLE_SERVICES_JSON }}"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

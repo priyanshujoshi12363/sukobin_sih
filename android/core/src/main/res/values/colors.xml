@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_forest">#1A3D2B</color>
+    <color name="brand_forest_deep">#1A3B32</color>
+    <color name="brand_forest_mid">#2D6A4F</color>
+    <color name="brand_green">#40916C</color>
+    <color name="brand_green_soft">#4A8B6E</color>
+    <color name="brand_green_muted">#4A7560</color>
+    <color name="brand_sage">#7DAA90</color>
+
+    <color name="accent_green">#0C831F</color>
+    <color name="accent_green_dark">#15661A</color>
+    <color name="accent_orange">#F4A261</color>
+    <color name="accent_purple">#6D28D9</color>
+    <color name="accent_red">#E63946</color>
+
+    <color name="mint_100">#DDFBE6</color>
+    <color name="mint_200">#D8F3DC</color>
+    <color name="mint_300">#B7E4C7</color>
+    <color name="mint_50">#F0FAF3</color>
+
+    <color name="cream">#F9F8F4</color>
+    <color name="cream_dim">#EFEDE6</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="gray_50">#F9FAFB</color>
+    <color name="gray_100">#F3F4F6</color>
+    <color name="gray_200">#E5E7EB</color>
+    <color name="gray_300">#D1D5DB</color>
+    <color name="gray_400">#9CA3AF</color>
+    <color name="gray_500">#6B7280</color>
+    <color name="gray_600">#4B5563</color>
+    <color name="gray_700">#374151</color>
+    <color name="gray_800">#1F2937</color>
+
+    <color name="red_100">#FEE2E2</color>
+    <color name="red_200">#FECACA</color>
+    <color name="red_500">#EF4444</color>
+    <color name="red_600">#DC2626</color>
+    <color name="red_700">#B91C1C</color>
+    <color name="green_100">#DCFCE7</color>
+    <color name="green_700">#15803D</color>
+    <color name="yellow_100">#FEF9C3</color>
+    <color name="yellow_700">#A16207</color>
+
+    <color name="status_open">#16A34A</color>
+    <color name="status_slow">#EAB308</color>
+    <color name="status_restricted">#F97316</color>
+    <color name="status_blocked">#DC2626</color>
+    <color name="status_unknown">#9CA3AF</color>
+
+    <color name="risk_low">#16A34A</color>
+    <color name="risk_moderate">#EAB308</color>
+    <color name="risk_high">#F97316</color>
+    <color name="risk_severe">#DC2626</color>
+</resources>

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "894121030293",
+    "firebase_url": "https://sukobin-37444-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "sukobin-37444",
+    "storage_bucket": "sukobin-37444.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894121030293:android:48a6f7d11970489f5fe19c",
+        "android_client_info": {
+          "package_name": "com.sukobin.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSTg4N4sMjeHuioF64uk4TfxYtZK1CoEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894121030293:android:5b73cd7a23ce54d65fe19c",
+        "android_client_info": {
+          "package_name": "com.sukobin.merchant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSTg4N4sMjeHuioF64uk4TfxYtZK1CoEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894121030293:android:5f845884a5011a895fe19c",
+        "android_client_info": {
+          "package_name": "com.sukobin.partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSTg4N4sMjeHuioF64uk4TfxYtZK1CoEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

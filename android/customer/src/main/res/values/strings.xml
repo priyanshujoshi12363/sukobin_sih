@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sukobin</string>
+
+    <string name="splash_tagline">Hills delivery, on the way</string>
+    <string name="splash_status_start">Starting up</string>
+    <string name="splash_status_verify">Verifying your session</string>
+    <string name="splash_status_offline">No connection - working offline</string>
+
+    <string name="welcome_kicker">Your Smart Mobility Partner</string>
+    <string name="welcome_line1">Move Smarter with</string>
+    <string name="welcome_sub">The eco-friendly way to ride and share parcels across your city</string>
+    <string name="welcome_feature_parcel">Send Parcels</string>
+    <string name="welcome_feature_track">Live Tracking</string>
+    <string name="welcome_feature_eco">Eco-Friendly</string>
+    <string name="welcome_create_account">Create Account</string>
+    <string name="welcome_login">Login</string>
+    <string name="welcome_terms_prefix">By continuing, you agree to our</string>
+    <string name="welcome_terms_link">Terms of Service &amp; Privacy Policy</string>
+
+    <string name="login_title">Welcome Back</string>
+    <string name="login_sub">Login to continue using Sukobin</string>
+    <string name="login_phone_label">Mobile Number</string>
+    <string name="login_phone_hint">Enter mobile number</string>
+    <string name="login_cta">Login</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_register_link">Register</string>
+    <string name="login_terms">By continuing, you agree to Sukobin\'s Terms of Service and Privacy Policy</string>
+    <string name="login_error_phone">Please enter a valid 10-digit phone number</string>
+    <string name="login_error_terms">Please accept the Terms of Service</string>
+
+    <string name="register_title">Create Account</string>
+    <string name="register_sub">Join Sukobin in a minute</string>
+    <string name="register_cta">Continue</string>
+    <string name="register_have_account">Already have an account?</string>
+    <string name="register_login_link">Login</string>
+
+    <string name="otp_title">Verify your number</string>
+    <string name="otp_sub">Enter the 6 digit code sent to %1$s</string>
+    <string name="otp_cta">Verify</string>
+    <string name="otp_resend">Resend code</string>
+    <string name="otp_resend_in">Resend in %1$d s</string>
+    <string name="otp_error_incomplete">Please enter all 6 digits</string>
+    <string name="otp_error_wrong">Incorrect OTP, please try again</string>
+    <string name="otp_dev_hint">Development build: use 123456</string>
+
+    <string name="profile_title">Complete your profile</string>
+    <string name="profile_sub">We need a few details to deliver to you</string>
+    <string name="profile_name">Full name</string>
+    <string name="profile_name_hint">Your name</string>
+    <string name="profile_house">House / flat number</string>
+    <string name="profile_landmark">Landmark</string>
+    <string name="profile_village">Village / locality</string>
+    <string name="profile_town">Town</string>
+    <string name="profile_district">District</string>
+    <string name="profile_state">State</string>
+    <string name="profile_pincode">Pincode</string>
+    <string name="profile_use_location">Use my current location</string>
+    <string name="profile_location_set">Location captured</string>
+    <string name="profile_location_missing">Please set your location</string>
+    <string name="profile_save">Save and continue</string>
+    <string name="profile_error_required">Please fill all required fields</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_orders">Orders</string>
+    <string name="tab_parcel">Parcel</string>
+    <string name="tab_history">History</string>
+    <string name="tab_profile">Profile</string>
+
+    <string name="home_search_hint">Search for products</string>
+    <string name="home_categories">Categories</string>
+    <string name="home_all_products">All Products</string>
+    <string name="home_deliver_to">Deliver to</string>
+    <string name="home_set_location">Set your location</string>
+
+    <string name="cart_title">Your Cart</string>
+    <string name="cart_empty">Your cart is empty</string>
+    <string name="cart_empty_sub">Add items to get started</string>
+    <string name="cart_checkout">Proceed to Checkout</string>
+    <string name="cart_subtotal">Subtotal</string>
+    <string name="cart_delivery_fee">Delivery Fee</string>
+    <string name="cart_total">Total</string>
+
+    <string name="common_retry">Retry</string>
+    <string name="common_loading">Loading</string>
+    <string name="common_error">Something went wrong</string>
+    <string name="common_add">Add</string>
+    <string name="common_out_of_stock">Out of stock</string>
+</resources>

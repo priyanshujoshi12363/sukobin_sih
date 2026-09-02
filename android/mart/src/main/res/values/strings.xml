@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sukobin Merchant</string>
+    <string name="splash_tagline">Run your shop, reach the hills</string>
+    <string name="splash_status_start">Starting up</string>
+    <string name="splash_status_verify">Verifying your session</string>
+    <string name="splash_status_offline">No connection - working offline</string>
+</resources>

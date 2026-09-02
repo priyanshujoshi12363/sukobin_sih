@@ -1,0 +1,40 @@
+# ── secrets: never commit ──
+.env
+.env.*
+!.env.example
+*.env
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+sukobin-*.json
+*.keystore
+*.jks
+*.p12
+*.pem
+
+# ── dependencies / build output ──
+node_modules/
+dist/
+build/
+.gradle/
+*.apk
+*.aab
+*.iml
+local.properties
+
+# ── expo / rn leftovers ──
+.expo/
+.expo-shared/
+*.tsbuildinfo
+
+# ── editor / os ──
+.claude/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ── logs / scratch ──
+*.log
+srv.out.log
+srv.err.log
+.devdb/
