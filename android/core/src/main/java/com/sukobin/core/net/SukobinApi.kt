@@ -32,13 +32,20 @@ interface SukobinApi {
     suspend fun categories(): Response<JsonObject>
 
     @GET("api/user/product/all")
-    suspend fun allProducts(): Response<JsonObject>
+    suspend fun allProducts(
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+    ): Response<JsonObject>
 
     @GET("api/user/product/search")
     suspend fun searchProducts(@Query("q") query: String): Response<JsonObject>
 
     @GET("api/user/product/category/{category}")
-    suspend fun productsByCategory(@Path("category") category: String): Response<JsonObject>
+    suspend fun productsByCategory(
+        @Path("category") category: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+    ): Response<JsonObject>
 
     @GET("api/user/product/shop/{shopId}")
     suspend fun productsByShop(@Path("shopId") shopId: String): Response<JsonObject>

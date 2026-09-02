@@ -97,4 +97,13 @@
     <string name="orders_empty">No orders yet</string>
     <string name="parcels_empty">No parcels sent yet</string>
     <string name="history_empty">Nothing in your history yet</string>
+    <string name="home_banner_title">Explore the Hills</string>
+    <string name="home_banner_sub">Book rides and send parcels to hill stations</string>
+    <string name="home_available_products">Available Products</string>
+    <string name="home_view_all">View All</string>
+    <string name="home_load_more">Load more</string>
+    <string name="home_try_again">Try Again</string>
+    <string name="home_loading_products">Loading products</string>
+    <string name="home_cart_items">%1$d item | Rs %2$d</string>
+    <string name="home_cart_items_plural">%1$d items | Rs %2$d</string>
 </resources>
