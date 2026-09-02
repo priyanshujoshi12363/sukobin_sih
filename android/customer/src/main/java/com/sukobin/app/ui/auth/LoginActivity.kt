@@ -14,7 +14,7 @@ import com.sukobin.app.databinding.ActivityLoginBinding
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var b: ActivityLoginBinding
-    private var termsAccepted = false
+    private var termsAccepted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +29,11 @@ class LoginActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) = refreshButton()
         })
 
+        applyCheckbox()
+
         b.checkboxTerms.setOnClickListener {
             termsAccepted = !termsAccepted
-            b.checkboxBox.background = ContextCompat.getDrawable(
-                this,
-                if (termsAccepted) com.sukobin.core.R.drawable.bg_checkbox_on
-                else com.sukobin.core.R.drawable.bg_checkbox_off
-            )
-            b.checkboxTick.visibility = if (termsAccepted) View.VISIBLE else View.GONE
+            applyCheckbox()
             refreshButton()
         }
 
@@ -48,6 +45,15 @@ class LoginActivity : AppCompatActivity() {
         }
 
         refreshButton()
+    }
+
+    private fun applyCheckbox() {
+        b.checkboxBox.background = ContextCompat.getDrawable(
+            this,
+            if (termsAccepted) com.sukobin.core.R.drawable.bg_checkbox_on
+            else com.sukobin.core.R.drawable.bg_checkbox_off
+        )
+        b.checkboxTick.visibility = if (termsAccepted) View.VISIBLE else View.GONE
     }
 
     private val phone: String get() = b.inputPhone.text.toString().trim()

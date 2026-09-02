@@ -198,7 +198,12 @@ class OtpActivity : AppCompatActivity() {
         b.btnVerify.isClickable = !value
     }
 
-    private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    private fun toast(msg: String) {
+        b.otpHint.visibility = View.VISIBLE
+        b.otpHint.text = msg
+        b.otpHint.setTextColor(getColor(com.sukobin.core.R.color.accent_red))
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
 
     override fun onDestroy() {
         timer?.cancel()
