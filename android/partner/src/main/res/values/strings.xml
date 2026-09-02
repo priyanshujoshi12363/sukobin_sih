@@ -94,4 +94,25 @@
     <string name="common_error">Something went wrong</string>
     <string name="common_cancel">Cancel</string>
     <string name="register_have_account">Already registered?</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_stats">Stats</string>
+    <string name="tab_profile">Profile</string>
+    <string name="stats_title">Your earnings</string>
+    <string name="stats_today_deliveries">%1$d delivered today</string>
+    <string name="stats_active">%1$d active</string>
+    <string name="stats_online">Online</string>
+    <string name="stats_offline">Offline</string>
+    <string name="stats_total_earned">Total earned</string>
+    <string name="stats_total_trips">Total trips</string>
+    <string name="stats_deliveries">Deliveries</string>
+    <string name="stats_rating">Rating</string>
+    <string name="stats_wallet">Wallet balance</string>
+    <string name="stats_week">This week</string>
+    <string name="profile_vehicle">Vehicle</string>
+    <string name="profile_capacity">Capacity</string>
+    <string name="profile_history">Delivery history</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_sign_out_confirm">Sign out of Sukobin Partner?</string>
+    <string name="history_title">Delivery history</string>
+    <string name="history_empty">No deliveries yet</string>
 </resources>
