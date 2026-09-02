@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    const val PROD_BASE = "https://sukobin-v2.onrender.com/"
+    const val PROD_BASE = "https://sukobin-sih.onrender.com/"
     const val EMULATOR_BASE = "http://10.0.2.2:8000/"
 
     @Volatile

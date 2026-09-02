@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: process.env.SUKOBIN_API || "http://localhost:8021",
+        target: process.env.SUKOBIN_API || "https://sukobin-sih.onrender.com",
         changeOrigin: true,
       },
     },
