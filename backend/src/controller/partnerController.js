@@ -25,6 +25,12 @@ const OTP_TTL_MS = 5 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const isProd = process.env.NODE_ENV === "production";
 
+// Returning the OTP in the API response is a deliberate weakness, kept behind an
+// explicit opt-in so it is never on by accident. It exists because no SMS
+// provider is wired yet: without it nobody can sign in to a deployed build.
+// Set ALLOW_DEV_OTP=true only for demo environments; leave it unset in real use.
+const allowDevOtp = process.env.ALLOW_DEV_OTP === "true" || !isProd;
+
 const hashCode = (code) => crypto.createHash("sha256").update(String(code)).digest("hex");
 const normPhone = (p) => String(p || "").replace(/[^0-9]/g, "").slice(-10);
 
@@ -67,7 +73,7 @@ export const sendOtp = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "OTP sent",
-      ...(isProd ? {} : { devOtp: code }), // returned only in non-production for testing
+      ...(allowDevOtp ? { devOtp: code, devOtpNotice: "demo mode - disable ALLOW_DEV_OTP in production" } : {}),
     });
   } catch (error) {
     console.error("sendOtp error:", error);
