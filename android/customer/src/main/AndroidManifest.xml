@@ -67,6 +67,14 @@
             android:name=".ui.cart.CartActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.cart.CheckoutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.cart.OrderSuccessActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

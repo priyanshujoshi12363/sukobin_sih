@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F8F4"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="28dp">
+
+    <FrameLayout
+        android:id="@+id/successBadge"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:background="@drawable/bg_circle_mint">
+
+        <ImageView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/success_title"
+            android:src="@drawable/ic_check_circle"
+            app:tint="#0C831F" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/successTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="@string/success_title"
+        android:textColor="#1A3B32"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:lineSpacingExtra="3dp"
+        android:text="@string/success_sub"
+        android:textColor="@color/gray_500"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/orderRef"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_pill_mint"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="8dp"
+        android:textColor="#1A3B32"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/orderAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="#0C831F"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/btnViewOrders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:background="@drawable/bg_button_dark_lg"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:text="@string/success_view_orders"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/btnHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:text="@string/success_home"
+        android:textColor="#1A3B32"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

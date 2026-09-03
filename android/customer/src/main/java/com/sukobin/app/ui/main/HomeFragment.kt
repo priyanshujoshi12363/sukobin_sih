@@ -65,7 +65,7 @@ class HomeFragment : Fragment() {
         b.btnLoadMore.setOnClickListener { loadMore() }
         b.viewAll.setOnClickListener { selectCategory(null) }
 
-        b.floatingCart.setOnClickListener { toast(getString(R.string.cart_title)) }
+        b.floatingCart.setOnClickListener { openCart() }
 
         b.inputSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -242,6 +242,10 @@ class HomeFragment : Fragment() {
     private fun setLoading(value: Boolean) {
         b.loading.visibility = if (value) View.VISIBLE else View.GONE
         if (value) b.emptyState.visibility = View.GONE
+    }
+
+    private fun openCart() {
+        startActivity(android.content.Intent(requireContext(), com.sukobin.app.ui.cart.CartActivity::class.java))
     }
 
     private fun toast(msg: String) =

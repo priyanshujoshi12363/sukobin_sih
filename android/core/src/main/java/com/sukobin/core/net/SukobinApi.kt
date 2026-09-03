@@ -75,7 +75,7 @@ interface SukobinApi {
     suspend fun cartSummary(): Response<JsonObject>
 
     @POST("api/order/check-out")
-    suspend fun checkout(@Body body: JsonObject): Response<JsonObject>
+    suspend fun checkoutSummary(@Body body: JsonObject): Response<JsonObject>
 
     @POST("api/order/create")
     suspend fun createOrder(@Body body: JsonObject): Response<JsonObject>

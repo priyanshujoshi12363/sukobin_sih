@@ -339,7 +339,20 @@ export const createPaymentOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("createPaymentOrder error:", error);
-    res.status(500).json({ success: false, message: "Could not start payment" });
+
+    // A rejected key pair is the most common cause here and it is invisible in a
+    // generic 500, so surface it: the client can then tell the user that payment
+    // is misconfigured rather than that their order failed.
+    const rzpError = error?.error?.description || error?.description;
+    const isAuth = error?.statusCode === 401;
+
+    res.status(isAuth ? 503 : 500).json({
+      success: false,
+      message: isAuth
+        ? "Payment gateway is not configured correctly. Check the Razorpay key pair."
+        : rzpError || "Could not start payment",
+      ...(process.env.NODE_ENV === "production" ? {} : { detail: rzpError }),
+    });
   }
 };
 
