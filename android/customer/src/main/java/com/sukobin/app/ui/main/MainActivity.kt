@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun create(itemId: Int): Fragment = when (itemId) {
-        R.id.tab_parcel -> ListFragment.of(ListFragment.KIND_PARCELS)
+        R.id.tab_parcel -> com.sukobin.app.ui.parcel.ParcelFragment()
         R.id.tab_orders -> ListFragment.of(ListFragment.KIND_ORDERS)
         R.id.tab_history -> ListFragment.of(ListFragment.KIND_HISTORY)
         R.id.tab_profile -> ProfileFragment()

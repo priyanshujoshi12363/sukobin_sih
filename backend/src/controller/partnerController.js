@@ -9,7 +9,7 @@ import User from "../models/user.model.js";
 import "../models/shop.model.js"; // register Shop model so Order.populate("shop") works
 import { lookupVehicle } from "../utils/vahan.js";
 import { sendPush } from "../utils/notification.js";
-import { bboxPolygon, haversineKm, routeLengthKm } from "../utils/geo.js";
+import { bboxPolygon, haversineKm, routeLengthKm, distToRouteKm } from "../utils/geo.js";
 import { jobFromParcel, jobFromOrder } from "../utils/jobs.js";
 import { scoreAndRank } from "../utils/matching.js";
 import { etaMinutes } from "../utils/routing.js";
@@ -23,6 +23,8 @@ const SHOP_FIELDS = "location address shopName phoneNumber";
 
 const OTP_TTL_MS = 5 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
+const DRIVER_FIX_MAX_AGE_MIN = Number(process.env.DRIVER_FIX_MAX_AGE_MIN) || 120;
+const DRIVER_FIX_MAX_OFFSET_KM = Number(process.env.DRIVER_FIX_MAX_OFFSET_KM) || 25;
 const isProd = process.env.NODE_ENV === "production";
 
 // Returning the OTP in the API response is a deliberate weakness, kept behind an
@@ -400,7 +402,22 @@ export const matchRoute = async (req, res) => {
     ].filter(Boolean);
 
     // STAGE 2 — exact corridor + city-endpoint + direction + score
-    const driverLoc = req.partner.currentLocation?.coordinates || origin.coordinates;
+    // The direction rule rejects anything behind the driver, so a stale or
+    // off-route last-known position silently empties the list: a fix left in
+    // another state still projects somewhere onto this polyline, usually just
+    // past the origin. Only trust it when it is recent and actually near the
+    // declared route; otherwise the route's start is the honest assumption.
+    const lastFix = req.partner.currentLocation?.coordinates;
+    const fixAgeMin = req.partner.lastActive
+      ? (Date.now() - new Date(req.partner.lastActive).getTime()) / 60000
+      : Infinity;
+    const fixUsable =
+      Array.isArray(lastFix) &&
+      lastFix.length === 2 &&
+      fixAgeMin <= DRIVER_FIX_MAX_AGE_MIN &&
+      distToRouteKm(lastFix, polyline) <= DRIVER_FIX_MAX_OFFSET_KM;
+
+    const driverLoc = fixUsable ? lastFix : origin.coordinates;
     const ranked = scoreAndRank({
       jobs,
       polyline,

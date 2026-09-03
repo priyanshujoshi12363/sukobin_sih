@@ -17,6 +17,10 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Sukobin">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCXYldbG068HGdSGQurc-en6v8pWNkJzIE" />
+
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true"
@@ -61,6 +65,14 @@
 
         <activity
             android:name=".ui.shop.ShopDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.parcel.MyParcelsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.parcel.PickLocationActivity"
             android:exported="false" />
 
         <activity

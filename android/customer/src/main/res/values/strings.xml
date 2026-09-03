@@ -142,4 +142,44 @@
     <string name="product_added">%1$s added to cart</string>
     <string name="product_not_found">Product not found</string>
     <string name="product_go_back">Go Back</string>
+    <string name="parcel_title">Send a Parcel</string>
+    <string name="parcel_subtitle">Rides along a journey someone is already making</string>
+    <string name="parcel_my_parcels">My parcels</string>
+    <string name="parcel_pickup_label">Initial - Pickup</string>
+    <string name="parcel_drop_label">Final - Drop</string>
+    <string name="parcel_set_on_map">Set on map</string>
+    <string name="parcel_set">Set</string>
+    <string name="parcel_change">Change</string>
+    <string name="parcel_map_hint">Tap to open the map and drop the pin on the exact spot.</string>
+    <string name="parcel_receiver">Receiver</string>
+    <string name="parcel_receiver_name">Receiver name</string>
+    <string name="parcel_receiver_phone">Receiver phone</string>
+    <string name="parcel_type">Parcel type</string>
+    <string name="parcel_weight_notes">Weight and notes</string>
+    <string name="parcel_weight">Weight</string>
+    <string name="parcel_kg">kg</string>
+    <string name="parcel_g">g</string>
+    <string name="parcel_weight_hint">Enter any weight - for example 250 g or 1.5 kg.</string>
+    <string name="parcel_description">What is inside? (optional)</string>
+    <string name="parcel_fare_estimate">Fare estimate</string>
+    <string name="parcel_delivery_charge">Delivery charge</string>
+    <string name="parcel_cod_note">Pay cash on pickup. Fare updates with weight and type.</string>
+    <string name="parcel_request_pickup">Request Pickup</string>
+    <string name="parcel_request_pickup_amount">Request Pickup  %1$s</string>
+    <string name="parcel_need_pickup">Set the pickup location on the map.</string>
+    <string name="parcel_need_drop">Set the drop location on the map.</string>
+    <string name="parcel_need_receiver">Add the receiver name and phone.</string>
+    <string name="parcel_created">Parcel requested</string>
+    <string name="parcel_created_body">%1$s
+Total %2$s, pay on pickup.
+
+We will match a partner travelling your route.</string>
+    <string name="parcel_done">Done</string>
+    <string name="pick_title">Pick location</string>
+    <string name="pick_my_location">My location</string>
+    <string name="pick_move_map">Move the map to place the pin</string>
+    <string name="pick_confirm">Confirm location</string>
+    <string name="pick_pickup">Pickup location</string>
+    <string name="pick_drop">Drop location</string>
+    <string name="pick_resolving">Finding address</string>
 </resources>
