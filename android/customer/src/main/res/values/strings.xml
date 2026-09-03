@@ -182,4 +182,10 @@ We will match a partner travelling your route.</string>
     <string name="pick_pickup">Pickup location</string>
     <string name="pick_drop">Drop location</string>
     <string name="pick_resolving">Finding address</string>
+    <string name="demo_pay_title">Pay with UPI</string>
+    <string name="demo_pay_badge">DEMO</string>
+    <string name="demo_pay_choose">Choose a method</string>
+    <string name="demo_pay_confirm">Confirm payment</string>
+    <string name="demo_pay_notice">Demo mode - no money is transferred</string>
+    <string name="demo_pay_select_method">Pick a payment method</string>
 </resources>

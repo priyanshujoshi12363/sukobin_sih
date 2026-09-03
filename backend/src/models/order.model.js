@@ -96,9 +96,12 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["RAZORPAY", "UPI", "COD"],
+      enum: ["RAZORPAY", "UPI", "COD", "DEMO"],
       default: "RAZORPAY",
     },
+
+    demoReference: { type: String },
+    paidAt: { type: Date },
 
     paymentStatus: {
       type: String,

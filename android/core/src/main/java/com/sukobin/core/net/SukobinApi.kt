@@ -80,6 +80,9 @@ interface SukobinApi {
     @POST("api/order/create")
     suspend fun createOrder(@Body body: JsonObject): Response<JsonObject>
 
+    @POST("api/order/demo-pay")
+    suspend fun settleDemoPayment(@Body body: JsonObject): Response<JsonObject>
+
     @POST("api/order/verify")
     suspend fun verifyOrderPayment(@Body body: JsonObject): Response<JsonObject>
 

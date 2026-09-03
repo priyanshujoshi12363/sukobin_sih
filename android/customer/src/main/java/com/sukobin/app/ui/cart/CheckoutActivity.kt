@@ -25,6 +25,7 @@ import com.sukobin.core.net.Address
 import com.sukobin.core.net.ApiResult
 import com.sukobin.core.net.CartItem
 import com.sukobin.core.net.apiCall
+import com.sukobin.core.net.arr
 import com.sukobin.core.net.decode
 import com.sukobin.core.net.decodeList
 import com.sukobin.core.net.jsonOf
@@ -158,13 +159,64 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultWithDataListener {
 
         lifecycleScope.launch {
             when (val r = apiCall { createOrder(jsonOf()) }) {
-                is ApiResult.Ok -> openRazorpay(r.value)
+                is ApiResult.Ok -> {
+                    if (r.value.str("mode") == "demo") openDemoSheet(r.value)
+                    else openRazorpay(r.value)
+                }
                 is ApiResult.Err -> {
                     setPaying(false)
                     toast(r.message)
                 }
             }
         }
+    }
+
+    private fun openDemoSheet(data: JsonObject) {
+        val total = data.obj("summary")?.num("totalAmount") ?: (data.num("amount") / 100.0)
+        val methods = data.arr("methods")?.map { it.asString }
+            ?: listOf("Google Pay", "PhonePe", "Paytm", "UPI ID", "Card")
+
+        pendingOrderId = data.str("orderId")
+        pendingAmount = total
+
+        setPaying(false)
+
+        DemoPaySheet.of(total, methods).also { sheet ->
+            sheet.onConfirm = { method -> settleDemo(method) }
+            sheet.show(supportFragmentManager, "demoPay")
+        }
+    }
+
+    private fun settleDemo(method: String) {
+        setPaying(true)
+
+        lifecycleScope.launch {
+            val r = apiCall { settleDemoPayment(jsonOf("method" to method)) }
+            setPaying(false)
+
+            when (r) {
+                is ApiResult.Ok -> {
+                    CartStore.clear()
+                    val order = r.value.obj("order")
+                    goToSuccess(
+                        order?.str("orderId") ?: pendingOrderId,
+                        order?.num("totalAmount") ?: pendingAmount
+                    )
+                }
+
+                is ApiResult.Err -> toast(r.message)
+            }
+        }
+    }
+
+    private fun goToSuccess(orderId: String?, amount: Double) {
+        startActivity(
+            Intent(this, OrderSuccessActivity::class.java)
+                .putExtra(OrderSuccessActivity.EXTRA_ORDER_ID, orderId)
+                .putExtra(OrderSuccessActivity.EXTRA_AMOUNT, amount)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        )
+        finish()
     }
 
     private fun openRazorpay(data: JsonObject) {

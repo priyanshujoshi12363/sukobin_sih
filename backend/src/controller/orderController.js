@@ -1,4 +1,10 @@
 import crypto from "crypto";
+import {
+  demoPaymentEnabled,
+  demoOrderPayload,
+  demoReference,
+  DEMO_NOTICE,
+} from "../utils/demoPayment.js";
 import mongoose from "mongoose";
 import Cart from "../models/cart.models.js";
 import Shop from "../models/shop.model.js";
@@ -281,6 +287,49 @@ export const createPaymentOrder = async (req, res) => {
       createdAt: { $lt: new Date(Date.now() - 30 * 60 * 1000) },
     });
 
+    // Demo mode settles without a gateway. Checked before the gateway call so an
+    // exhibition build never depends on Razorpay being reachable.
+    if (demoPaymentEnabled()) {
+      const demoOrder = await Order.create({
+        orderId,
+        user: userId,
+        shop: shop._id,
+        merchant: shop.owner,
+        items,
+        subtotal,
+        deliveryFee,
+        platformFee,
+        totalAmount,
+        paymentMethod: "DEMO",
+        paymentStatus: "PENDING",
+        orderStatus: "PENDING",
+        deliveryAddress: {
+          houseNumber: a.houseNumber,
+          landmark: a.landmark,
+          village: a.village,
+          town: a.town,
+          district: a.district,
+          state: a.state,
+          pincode: a.pincode,
+          fullAddress: a.fullAddress,
+        },
+        location: { type: "Point", coordinates: user.location.coordinates },
+        customerPhone: user.phone,
+        notes: req.body?.notes,
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Demo payment order created",
+        data: demoOrderPayload({
+          order: demoOrder,
+          amountPaise,
+          summary: { subtotal, deliveryFee, platformFee, totalAmount, distance: distance.toFixed(2) },
+          prefill: { name: user.name, contact: user.phone },
+        }),
+      });
+    }
+
     const rzpOrder = await getRazorpay().orders.create({
       amount: amountPaise,
       currency: "INR",
@@ -321,6 +370,7 @@ export const createPaymentOrder = async (req, res) => {
       success: true,
       message: "Payment order created",
       data: {
+        mode: "razorpay",
         key: process.env.RAZORPAY_KEY_ID,
         razorpayOrderId: rzpOrder.id,
         amount: amountPaise,
@@ -353,6 +403,55 @@ export const createPaymentOrder = async (req, res) => {
         : rzpError || "Could not start payment",
       ...(process.env.NODE_ENV === "production" ? {} : { detail: rzpError }),
     });
+  }
+};
+
+
+// Settles a demo order. Only reachable while DEMO_PAYMENT=true, and only for a
+// pending DEMO order belonging to the caller - it cannot settle a real gateway
+// order, and it cannot settle someone else's.
+export const settleDemoPayment = async (req, res) => {
+  try {
+    if (!demoPaymentEnabled()) {
+      return res.status(403).json({
+        success: false,
+        message: "Demo payment is disabled on this server",
+      });
+    }
+
+    const order = await Order.findOne({
+      user: req.user._id,
+      paymentMethod: "DEMO",
+      paymentStatus: "PENDING",
+    }).sort({ createdAt: -1 });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "No pending demo order found",
+      });
+    }
+
+    order.paymentStatus = "PAID";
+    order.orderStatus = "PLACED";
+    order.demoReference = req.body?.demoReference || demoReference();
+    order.paidAt = new Date();
+    await order.save();
+
+    await Cart.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { items: [], shop: null, totalItems: 0, subtotal: 0 } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Demo payment recorded",
+      notice: DEMO_NOTICE,
+      data: { order },
+    });
+  } catch (error) {
+    console.error("settleDemoPayment error:", error);
+    res.status(500).json({ success: false, message: "Could not record demo payment" });
   }
 };
 
