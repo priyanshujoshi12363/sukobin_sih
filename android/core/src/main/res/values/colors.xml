@@ -55,4 +55,6 @@
     <color name="risk_moderate">#EAB308</color>
     <color name="risk_high">#F97316</color>
     <color name="risk_severe">#DC2626</color>
+    <color name="stock_ok">#0C831F</color>
+    <color name="stock_out">#E63946</color>
 </resources>

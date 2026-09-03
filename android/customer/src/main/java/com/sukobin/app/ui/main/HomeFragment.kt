@@ -16,6 +16,7 @@ import com.sukobin.app.R
 import com.sukobin.app.data.CartStore
 import com.sukobin.app.databinding.FragmentHomeBinding
 import com.sukobin.core.net.ApiResult
+import com.sukobin.core.ui.Motion
 import com.sukobin.core.net.Product
 import com.sukobin.core.net.Session
 import com.sukobin.core.net.apiCall
@@ -51,13 +52,14 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = ProductAdapter(
             quantityOf = { CartStore.quantityOf(it.id) },
-            onOpen = { toast(it.productName) },
+            onOpen = { openProduct(it) },
             onAdd = { product -> changeQuantity(product, 1) },
             onChangeQuantity = { product, qty -> changeQuantity(product, qty) }
         )
 
         b.productGrid.layoutManager = GridLayoutManager(requireContext(), 2)
         b.productGrid.adapter = adapter
+        Motion.riseIn(b.productGrid)
         b.productGrid.itemAnimator = null
 
         b.refresh.setOnRefreshListener { reload() }
@@ -242,6 +244,13 @@ class HomeFragment : Fragment() {
     private fun setLoading(value: Boolean) {
         b.loading.visibility = if (value) View.VISIBLE else View.GONE
         if (value) b.emptyState.visibility = View.GONE
+    }
+
+    private fun openProduct(product: Product) {
+        startActivity(
+            android.content.Intent(requireContext(), com.sukobin.app.ui.product.ProductDetailActivity::class.java)
+                .putExtra(com.sukobin.app.ui.product.ProductDetailActivity.EXTRA_PRODUCT_ID, product.id)
+        )
     }
 
     private fun openCart() {

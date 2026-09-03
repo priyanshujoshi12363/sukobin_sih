@@ -309,7 +309,7 @@ class HomeFragment : Fragment() {
         b.selectedCount.text = getString(R.string.jobs_selected, selected.size, capacity)
 
         val total = jobs.filter { selected.contains(key(it)) }.sumOf { it.fee }
-        b.selectedEarnings.text = "Rs ${total.toInt()}"
+        b.selectedEarnings.text = "₹${total.toInt()}"
     }
 
     private fun startTrip() {

@@ -514,7 +514,7 @@ export const getAllProducts = async (req, res) => {
       {
         $unwind: {
           path: "$shop",
-          preserveNullAndEmptyArrays: true
+          preserveNullAndEmptyArrays: false
         }
       },
       {

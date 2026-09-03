@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.sukobin.core.ui.Motion
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,6 +78,8 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultWithDataListener {
         super.onCreate(savedInstanceState)
         b = ActivityCheckoutBinding.inflate(layoutInflater)
         setContentView(b.root)
+
+        Motion.applyEnter(this)
 
         Checkout.preload(applicationContext)
 
@@ -268,4 +271,9 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultWithDataListener {
     }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+
+    override fun finish() {
+        super.finish()
+        Motion.overrideClose(this)
+    }
 }

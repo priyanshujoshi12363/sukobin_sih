@@ -79,11 +79,11 @@ class MainActivity : AppCompatActivity() {
                     val today = d.obj("today")
                     val totals = d.obj("totals")
 
-                    b.todayRevenue.text = "Rs " + (today?.num("revenue") ?: 0.0).toInt()
+                    b.todayRevenue.text = "₹" + (today?.num("revenue") ?: 0.0).toInt()
                     b.todayOrders.text = (today?.int("orders") ?: 0).toString() + " orders today"
                     b.newOrders.text = d.int("newOrders", 0).toString()
 
-                    b.totalRevenue.text = "Rs " + (totals?.num("revenue") ?: 0.0).toInt()
+                    b.totalRevenue.text = "₹" + (totals?.num("revenue") ?: 0.0).toInt()
                     b.totalOrders.text = (totals?.int("orders") ?: 0).toString()
                     b.itemsSold.text = (totals?.int("itemsSold") ?: 0).toString()
                 }

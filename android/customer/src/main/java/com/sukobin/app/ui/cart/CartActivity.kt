@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.sukobin.core.ui.Motion
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,9 +70,12 @@ class CartActivity : AppCompatActivity() {
         b = ActivityCartBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        Motion.applyEnter(this)
+
         adapter = CartAdapter { item, qty -> change(item, qty) }
         b.cartList.layoutManager = LinearLayoutManager(this)
         b.cartList.adapter = adapter
+        Motion.riseIn(b.cartList)
 
         b.btnBack.setOnClickListener { finish() }
         b.btnBrowse.setOnClickListener { finish() }
@@ -172,4 +176,9 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    override fun finish() {
+        super.finish()
+        Motion.overrideClose(this)
+    }
 }

@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.sukobin.core.ui.Motion
 import androidx.core.content.ContextCompat
 import com.sukobin.app.R
 import com.sukobin.app.databinding.ActivityRegisterBinding
@@ -20,6 +21,8 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         b = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(b.root)
+
+        Motion.applyEnter(this)
 
         b.btnBack.setOnClickListener { finish() }
 
@@ -81,4 +84,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    override fun finish() {
+        super.finish()
+        Motion.overrideClose(this)
+    }
 }

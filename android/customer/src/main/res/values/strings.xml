@@ -131,4 +131,15 @@
     <string name="success_amount">Paid Rs %1$s</string>
     <string name="success_view_orders">View my orders</string>
     <string name="success_home">Back to home</string>
+    <string name="product_title">Product</string>
+    <string name="product_shop">Shop</string>
+    <string name="product_visit">Visit</string>
+    <string name="product_per_unit">/ unit</string>
+    <string name="product_about">About this product</string>
+    <string name="product_no_description">No description provided.</string>
+    <string name="product_in_stock">%1$d in stock</string>
+    <string name="product_add_to_cart">Add to Cart</string>
+    <string name="product_added">%1$s added to cart</string>
+    <string name="product_not_found">Product not found</string>
+    <string name="product_go_back">Go Back</string>
 </resources>

@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.sukobin.core.ui.Motion
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
@@ -41,6 +42,8 @@ class CompleteProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         b = ActivityCompleteProfileBinding.inflate(layoutInflater)
         setContentView(b.root)
+
+        Motion.applyEnter(this)
 
         Session.name?.let { b.inputName.setText(it) }
 
@@ -162,4 +165,9 @@ class CompleteProfileActivity : AppCompatActivity() {
     }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    override fun finish() {
+        super.finish()
+        Motion.overrideClose(this)
+    }
 }

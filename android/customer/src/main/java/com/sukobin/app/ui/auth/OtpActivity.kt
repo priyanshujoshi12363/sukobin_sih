@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.sukobin.core.ui.Motion
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.sukobin.app.R
@@ -53,6 +54,8 @@ class OtpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         b = ActivityOtpBinding.inflate(layoutInflater)
         setContentView(b.root)
+
+        Motion.applyEnter(this)
 
         boxes = listOf(b.otp1, b.otp2, b.otp3, b.otp4, b.otp5, b.otp6)
 
@@ -209,5 +212,10 @@ class OtpActivity : AppCompatActivity() {
     override fun onDestroy() {
         timer?.cancel()
         super.onDestroy()
+    }
+
+    override fun finish() {
+        super.finish()
+        Motion.overrideClose(this)
     }
 }

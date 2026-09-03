@@ -35,7 +35,7 @@ class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
             o.deliveryAddress?.town ?: o.deliveryAddress?.district,
             o.paymentMethod
         ).joinToString("   ")
-        b.orderAmount.text = "Rs " + o.totalAmount.toInt()
+        b.orderAmount.text = "₹" + o.totalAmount.toInt()
         b.orderStatus.text = o.status.replace("_", " ")
     }
 }
@@ -64,7 +64,7 @@ class MyProductAdapter : ListAdapter<Product, MyProductAdapter.VH>(DIFF) {
             p.category,
             ctx.getString(R.string.home_stock, p.stock)
         ).joinToString("   ")
-        b.productPrice.text = "Rs " + p.price.toInt()
+        b.productPrice.text = "₹" + p.price.toInt()
         b.productImage.load(p.thumbnail) { crossfade(true) }
     }
 }

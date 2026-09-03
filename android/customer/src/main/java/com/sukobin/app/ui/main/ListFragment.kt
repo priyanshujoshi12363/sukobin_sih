@@ -14,6 +14,7 @@ import com.sukobin.app.R
 import com.sukobin.app.databinding.FragmentListBinding
 import com.sukobin.app.databinding.ItemRecordBinding
 import com.sukobin.core.net.ApiResult
+import com.sukobin.core.ui.Motion
 import com.sukobin.core.net.Order
 import com.sukobin.core.net.Parcel
 import com.sukobin.core.net.apiCall
@@ -83,6 +84,7 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         b.list.layoutManager = LinearLayoutManager(requireContext())
         b.list.adapter = adapter
+        Motion.riseIn(b.list)
 
         b.listTitle.setText(
             when (kind) {
@@ -125,7 +127,7 @@ class ListFragment : Fragment() {
                                     it.pickup?.address?.town,
                                     it.drop?.address?.town
                                 ).joinToString(" to ").ifBlank { it.pkg?.type ?: "Parcel" },
-                                amount = "Rs " + it.totalAmount.toInt(),
+                                amount = "₹" + it.totalAmount.toInt(),
                                 status = it.status.replace("_", " ")
                             )
                         }
@@ -137,7 +139,7 @@ class ListFragment : Fragment() {
                                     it.shop?.shopName,
                                     it.deliveryAddress?.town
                                 ).joinToString("  "),
-                                amount = "Rs " + it.totalAmount.toInt(),
+                                amount = "₹" + it.totalAmount.toInt(),
                                 status = it.status.replace("_", " ")
                             )
                         }
