@@ -163,7 +163,9 @@ data class DeliveryJob(
     val offRouteKm: Double = 0.0,
     val etaMin: Int = 0,
     val pickupOrder: Int = 0,
-    val routePolyline: List<List<Double>>? = null
+    val routePolyline: List<List<Double>>? = null,
+    // Set by /trip/active: false means collect it next, true means hand it over.
+    val picked: Boolean = false
 )
 
 data class JobPoint(

@@ -33,6 +33,7 @@ import android.content.Intent
 import com.sukobin.partner.R
 import com.sukobin.partner.data.LocationReporter
 import com.sukobin.partner.ui.report.ReportHazardActivity
+import com.sukobin.partner.ui.trip.TripActivity
 import com.sukobin.partner.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -101,11 +102,37 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), ReportHazardActivity::class.java))
         }
 
+        b.btnOpenTrip.setOnClickListener {
+            startActivity(Intent(requireContext(), TripActivity::class.java))
+        }
+
         // The server tells us which road each fix matched, so the driver can
         // see the sensing is real rather than being asked to trust it.
         LocationReporter.onRoadUpdate = { name, status -> showRoad(name, status) }
 
         loadProfile()
+        checkActiveTrip()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkActiveTrip()
+    }
+
+    private fun checkActiveTrip() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            when (val r = apiCall { partnerActiveTrip() }) {
+                is ApiResult.Ok -> {
+                    if (_b == null) return@launch
+                    val n = r.value.arr("jobs")?.size() ?: 0
+                    b.btnOpenTrip.visibility = if (n > 0) View.VISIBLE else View.GONE
+                    b.openTripLabel.text = resources.getQuantityString(
+                        R.plurals.home_stops_left, n, n
+                    )
+                }
+                is ApiResult.Err -> Unit
+            }
+        }
     }
 
     private fun key(j: DeliveryJob) = "${j.kind}:${j.refId}"
@@ -408,9 +435,11 @@ class HomeFragment : Fragment() {
             when (result) {
                 is ApiResult.Ok -> {
                     val claimed = result.value.arr("claimed")?.size() ?: picked.size
-                    toast("Trip started with $claimed parcel(s)")
+                    toast(getString(R.string.home_trip_started, claimed))
                     selected.clear()
-                    findJobs()
+                    // Claiming used to leave the driver on the search screen
+                    // with no way to work the trip. Take them to it.
+                    startActivity(Intent(requireContext(), TripActivity::class.java))
                 }
 
                 is ApiResult.Err -> toast(result.message)

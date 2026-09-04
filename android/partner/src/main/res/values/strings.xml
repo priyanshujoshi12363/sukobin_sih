@@ -85,11 +85,6 @@
     <string name="job_detour">%1$s km off route</string>
     <string name="job_eta">~%1$d min</string>
 
-    <string name="trip_title">Active trip</string>
-    <string name="trip_pickup">Pick up</string>
-    <string name="trip_deliver">Deliver</string>
-    <string name="trip_none">No active trip</string>
-
     <string name="common_retry">Retry</string>
     <string name="common_error">Something went wrong</string>
     <string name="common_cancel">Cancel</string>
@@ -149,4 +144,37 @@
     <string name="voice_read_aloud">Read aloud</string>
     <string name="voice_stop_reading">Stop</string>
     <string name="voice_no_tts">This phone cannot read %1$s aloud</string>
+
+    <string name="trip_title">Your trip</string>
+    <string name="trip_back">Back</string>
+    <string name="trip_progress">%1$d of %2$d delivered</string>
+    <string name="trip_earned">EARNED</string>
+    <string name="trip_delivered_label">DELIVERED</string>
+    <string name="trip_none">No deliveries on this trip</string>
+    <string name="trip_find_work">Find deliveries</string>
+    <string name="trip_all_done">All delivered</string>
+    <string name="trip_done">Done</string>
+    <string name="trip_pick_up">Collect</string>
+    <string name="trip_hand_over">Hand over</string>
+    <string name="trip_navigate">Directions</string>
+    <string name="trip_call">Call</string>
+    <string name="trip_picked_up">Collected %1$s</string>
+    <string name="trip_delivered">Delivered %1$s</string>
+    <string name="trip_code_title">Delivery code</string>
+    <string name="trip_code_body">Ask the person at %1$s for their 4-digit code.</string>
+    <string name="trip_code_hint">4-digit code</string>
+    <string name="trip_code_short">Enter the full 4-digit code</string>
+    <string name="trip_confirm">Confirm delivery</string>
+    <string name="trip_cancel">Cancel</string>
+    <string name="trip_no_location">No location saved for this stop</string>
+    <string name="trip_no_maps">No maps app found</string>
+    <string name="trip_no_phone">No phone number for this stop</string>
+    <string name="home_open_trip">Your active trip</string>
+
+    <string name="home_trip_started">Trip started with %1$d delivery</string>
+
+    <plurals name="home_stops_left">
+        <item quantity="one">%1$d stop left</item>
+        <item quantity="other">%1$d stops left</item>
+    </plurals>
 </resources>
