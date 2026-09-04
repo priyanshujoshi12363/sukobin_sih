@@ -2,6 +2,7 @@ import RoadSegment from "../models/roadSegment.model.js";
 import { matchToSegment } from "../utils/probes.js";
 import { activeAlerts } from "../utils/alertEngine.js";
 import { haversineKm, distToRouteKm } from "../utils/geo.js";
+import { driverLine, voiceFallback, LANGUAGE_NAMES } from "../utils/i18n.js";
 
 const NEARBY_KM = Number(process.env.DRIVER_NEARBY_KM) || 40;
 
@@ -81,36 +82,41 @@ export const roadConditions = async (req, res) => {
       .sort((a, b) => severity(b) - severity(a) || (a.distanceKm ?? 99) - (b.distanceKm ?? 99))
       .slice(0, 6);
 
-    // Only things worth interrupting a driver for.
+    // Only things worth interrupting a driver for, in the driver's own
+    // language, phrased so they survive being heard once while moving.
+    const lang = req.query.lang || req.partner.preferredLanguage || "en";
+    const voice = voiceFallback(lang);
+
     const warnings = [];
     for (const s of [onRoad, ...ahead].filter(Boolean)) {
+      let level = null;
+      let reason = "";
+
       if (s.status === "BLOCKED") {
-        warnings.push({
-          level: "STOP",
-          segmentId: s.segmentId,
-          title: `${s.name} is blocked`,
-          detail: s.statusNote || "Find another route.",
-        });
+        level = "STOP";
       } else if (s.status === "RESTRICTED" || s.status === "SLOW") {
-        warnings.push({
-          level: "CAUTION",
-          segmentId: s.segmentId,
-          title: `${s.name} is slow going`,
-          detail: s.statusNote || "Traffic is moving below normal speed.",
-        });
+        level = "CAUTION";
       } else if ((s.forecastH24 ?? 0) >= 0.5) {
-        warnings.push({
-          level: "WATCH",
-          segmentId: s.segmentId,
-          title: `${s.name} may close today`,
-          detail: s.forecastDrivers.length
-            ? s.forecastDrivers.join(", ")
-            : "Heavy rain expected.",
-        });
+        level = "WATCH";
+        reason = s.forecastDrivers.join(", ");
       }
+
+      if (!level) continue;
+
+      warnings.push({
+        level,
+        segmentId: s.segmentId,
+        road: s.name,
+        // What the app shows.
+        text: driverLine(level, lang, { road: s.name, reason }),
+        // What the app speaks. Identical unless the language has no voice, in
+        // which case it is the fallback language the device can actually say.
+        speak: driverLine(level, voice.lang, { road: s.name, reason }),
+        note: s.statusNote || "",
+      });
     }
 
-    const alerts = await activeAlerts({ limit: 6, lang: req.query.lang || "en" });
+    const alerts = await activeAlerts({ limit: 6, lang });
 
     res.json({
       success: true,
@@ -119,6 +125,17 @@ export const roadConditions = async (req, res) => {
         onRoad,
         ahead,
         warnings: warnings.slice(0, 5),
+        lang,
+        voice: {
+          // The app checks the device too, but this tells it what to expect.
+          speakLang: voice.lang,
+          localeCode: voice.code,
+          exact: voice.exact,
+          note: voice.exact
+            ? null
+            : `No voice available for ${LANGUAGE_NAMES[lang] || lang}. Reading in ${LANGUAGE_NAMES[voice.lang]}.`,
+        },
+        allClear: warnings.length === 0 ? driverLine("CLEAR", lang) : null,
         alerts: alerts
           .filter((a) => a.severity !== "INFO")
           .slice(0, 4)

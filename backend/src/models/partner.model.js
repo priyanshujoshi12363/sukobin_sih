@@ -41,6 +41,13 @@ const partnerSchema = new mongoose.Schema(
 
     role: { type: String, default: "partner" },
 
+    // Drivers read and hear road warnings in this. Same code set as officers.
+    preferredLanguage: {
+      type: String,
+      enum: ["en", "hi", "as", "bn", "mni", "kha", "lus", "nag", "ne", "kok"],
+      default: "en",
+    },
+
     expoPushToken: { type: String },
     fcmToken: { type: String },
     pushPlatform: { type: String, enum: ["expo", "android", "ios"] },

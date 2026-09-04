@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">सुकोबिन पार्टनर</string>
+    <string name="hazard_title">खतराको जानकारी दिनुहोस्</string>
+    <string name="hazard_where">तपाईं कहाँ हुनुहुन्छ</string>
+    <string name="hazard_what">तपाईंले के भेट्नुभयो?</string>
+    <string name="hazard_blocks">केही पनि जान सक्दैन</string>
+    <string name="hazard_note">अरू केही भन्नु छ? (वैकल्पिक)</string>
+    <string name="hazard_note_helper">नेपाली, अङ्ग्रेजी वा मिसाएर। हतारमा हुनुहुन्छ भने खाली छोड्नुहोस्।</string>
+    <string name="hazard_send">जानकारी पठाउनुहोस्</string>
+    <string name="hazard_sent">पठाइयो। धन्यवाद - अरू चालकहरूले चेतावनी पाउनेछन्।</string>
+    <string name="hazard_footnote">तपाईंको जानकारीले यो बाटोका हरेक चालकलाई सचेत गराउँछ, र पुष्टिका लागि जिल्ला अधिकारीकहाँ जान्छ।</string>
+    <string name="home_report_hazard">बाटोमा खतराको जानकारी दिनुहोस्</string>
+    <string name="home_sensing_on">तपाईंको स्थान साझा हुँदैछ - यसैले बाटोको अवस्था ताजा रहन्छ</string>
+    <string name="voice_speak_report">टाइप नगरी बोल्नुहोस्</string>
+    <string name="voice_prompt">जे देखिन्छ भन्नुहोस्</string>
+    <string name="voice_nothing_heard">केही सुनिएन। फेरि प्रयास गर्नुहोस्।</string>
+</resources>

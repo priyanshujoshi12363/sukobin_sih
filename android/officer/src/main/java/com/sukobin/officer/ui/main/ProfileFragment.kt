@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -200,11 +202,27 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
 
                 lifecycleScope.launch {
                     apiCall { officerUpdateProfile(jsonOf("preferredLanguage" to code)) }
-                    (activity as? MainActivity)?.let { }
                 }
+
+                // Alerts already arrive in this language. Switch the app's own
+                // chrome too, for the four languages we ship a UI for; the rest
+                // keep English chrome and translated alerts.
+                AppCompatDelegate.setApplicationLocales(
+                    LocaleListCompat.forLanguageTags(uiLocaleFor(code))
+                )
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    // Only these four have a checked UI translation. Anything else keeps
+    // English chrome rather than showing a half-translated screen.
+    private fun uiLocaleFor(code: String) = when (code) {
+        "hi" -> "hi"
+        "bn" -> "bn"
+        "as" -> "as"
+        "ne" -> "ne"
+        else -> "en"
     }
 
     private fun syncNow() {

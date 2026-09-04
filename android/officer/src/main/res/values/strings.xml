@@ -92,4 +92,14 @@
         <item quantity="one">%1$d unread</item>
         <item quantity="other">%1$d unread</item>
     </plurals>
+
+    <string name="voice_speak_report">Speak the report instead of typing</string>
+    <string name="voice_speak_hint">Speak in %1$s. Tap and describe what you see.</string>
+    <string name="voice_speak_fallback">No voice for %1$s on this phone. It will listen in %2$s.</string>
+    <string name="voice_unavailable">Voice input is not available on this phone</string>
+    <string name="voice_prompt">Describe what you can see</string>
+    <string name="voice_nothing_heard">Nothing was heard. Try again.</string>
+    <string name="voice_read_aloud">Read aloud</string>
+    <string name="voice_stop_reading">Stop</string>
+    <string name="voice_no_tts">This phone cannot read %1$s aloud</string>
 </resources>

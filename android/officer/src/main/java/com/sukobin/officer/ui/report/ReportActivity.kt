@@ -18,6 +18,7 @@ import com.sukobin.core.net.ApiResult
 import com.sukobin.core.net.apiCall
 import com.sukobin.core.net.arr
 import com.sukobin.core.ui.Motion
+import com.sukobin.core.voice.Voice
 import com.sukobin.officer.R
 import com.sukobin.officer.data.OfficerSession
 import com.sukobin.officer.data.QueuedReport
@@ -39,6 +40,19 @@ class ReportActivity : AppCompatActivity() {
     }
 
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
+
+    private val dictate = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val heard = Voice.firstResult(result.data)
+        if (heard.isNullOrBlank()) {
+            Toast.makeText(this, getString(R.string.voice_nothing_heard), Toast.LENGTH_SHORT).show()
+        } else {
+            val existing = b.descriptionInput.text?.toString().orEmpty()
+            b.descriptionInput.setText(if (existing.isBlank()) heard else "$existing $heard")
+            b.descriptionInput.setSelection(b.descriptionInput.text?.length ?: 0)
+        }
+    }
 
     private var lng: Double? = null
     private var lat: Double? = null
@@ -70,12 +84,50 @@ class ReportActivity : AppCompatActivity() {
 
         setupTypeDropdown()
         setupSeverityChips()
+        setupVoice()
 
         b.blocksSwitch.setOnCheckedChangeListener { _, checked ->
             b.clearanceGroup.visibility = if (checked) View.VISIBLE else View.GONE
         }
 
         requestLocation()
+    }
+
+    private fun setupVoice() {
+        val lang = OfficerSession.language
+        val support = Voice.resolve(lang)
+
+        if (!Voice.sttAvailable(this)) {
+            b.btnSpeak.visibility = View.GONE
+            return
+        }
+
+        b.speakHint.text = if (support.exact) {
+            getString(R.string.voice_speak_hint, languageName(lang))
+        } else {
+            getString(R.string.voice_speak_fallback, languageName(lang), languageName(support.usingCode))
+        }
+
+        b.btnSpeak.setOnClickListener {
+            try {
+                dictate.launch(Voice.dictationIntent(lang, getString(R.string.voice_prompt)))
+            } catch (e: Exception) {
+                Toast.makeText(this, getString(R.string.voice_unavailable), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun languageName(code: String) = when (code) {
+        "hi" -> "हिन्दी"
+        "bn" -> "বাংলা"
+        "as" -> "অসমীয়া"
+        "ne" -> "नेपाली"
+        "mni" -> "Meiteilon"
+        "kha" -> "Khasi"
+        "lus" -> "Mizo"
+        "nag" -> "Nagamese"
+        "kok" -> "Kokborok"
+        else -> "English"
     }
 
     // ── location and road ────────────────────────────────────────────────────

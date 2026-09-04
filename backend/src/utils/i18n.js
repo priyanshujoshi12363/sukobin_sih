@@ -145,3 +145,93 @@ export function tAll(kind, vars = {}) {
   for (const lang of LANGUAGES) out[lang] = t(kind, lang, vars);
   return out;
 }
+
+// ── what a driver is told on the road ───────────────────────────────────────
+// Short on purpose. These are read aloud by the app while the vehicle is
+// moving, so they have to survive being heard once.
+
+const DRIVER = {
+  STOP: {
+    en: "{road} is blocked. Do not continue. Find another route.",
+    hi: "{road} बंद है। आगे मत जाइए। दूसरा रास्ता लीजिए।",
+    as: "{road} বন্ধ। আগবাঢ়িব নালাগে। আন পথ ল'ব।",
+    bn: "{road} বন্ধ। এগোবেন না। অন্য রাস্তা নিন।",
+    mni: "{road} thingjinkhre. Chatlu nattabani. Atoppa lambi thiyu.",
+    kha: "Ka {road} ka la khang. Wat leit shaphrang. Wad kawei pat ka surok.",
+    lus: "{road} a khar a ni. Kal zel suh. Kawng dang zawng rawh.",
+    nag: "{road} bondh ase. Age najabi. Dusra rasta lobi.",
+    ne: "{road} बन्द छ। अगाडि नजानुहोस्। अर्को बाटो लिनुहोस्।",
+    kok: "{road} bondo tong. Thangya. Gwdang lamma lai.",
+  },
+  CAUTION: {
+    en: "{road} is slow. Traffic is moving below normal speed.",
+    hi: "{road} पर आवागमन धीमा है। सामान्य से कम रफ्तार।",
+    as: "{road}ত যাতায়াত লেহেমীয়া। সাধাৰণতকৈ কম গতি।",
+    bn: "{road} এ চলাচল ধীর। স্বাভাবিকের চেয়ে কম গতি।",
+    mni: "{road} tapna chatli. Mapung phana chatpa ngamde.",
+    kha: "Ka {road} ka jia sngur. Ki carr ki leit sngur.",
+    lus: "{road} a khaw har. Motor te an kal thin lo.",
+    nag: "{road} te gari asth-asth jai ase. Normal pora komti.",
+    ne: "{road} मा हिँडाइ ढिलो छ। सामान्यभन्दा कम गति।",
+    kok: "{road} no thangnai lwbwi. Sadharon nwngno kom.",
+  },
+  WATCH: {
+    en: "{road} may close today. {reason}",
+    hi: "{road} आज बंद हो सकती है। {reason}",
+    as: "{road} আজি বন্ধ হ'ব পাৰে। {reason}",
+    bn: "{road} আজ বন্ধ হতে পারে। {reason}",
+    mni: "{road} ngasi thingjinba yai. {reason}",
+    kha: "Ka {road} kan khang mynta. {reason}",
+    lus: "{road} vawiin a khar thei. {reason}",
+    nag: "{road} aji bondh hobo pare. {reason}",
+    ne: "{road} आज बन्द हुन सक्छ। {reason}",
+    kok: "{road} tini bondo jakhi. {reason}",
+  },
+  CLEAR: {
+    en: "The road ahead is clear.",
+    hi: "आगे का रास्ता साफ है।",
+    as: "আগৰ পথ মুকলি।",
+    bn: "সামনের রাস্তা পরিষ্কার।",
+    mni: "Mamangda lambi hangbani.",
+    kha: "Ka surok shaphrang ka bha.",
+    lus: "Hmalam kawng a tha.",
+    nag: "Age laga rasta thik ase.",
+    ne: "अगाडिको बाटो सफा छ।",
+    kok: "Sikhangno lamma bhalo.",
+  },
+};
+
+export function driverLine(level, lang = "en", vars = {}) {
+  const entry = DRIVER[level] || DRIVER.CAUTION;
+  const template = entry[lang] || entry.en;
+  return template
+    .replace(/\{(\w+)\}/g, (_, k) => (vars[k] === undefined ? "" : String(vars[k])))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Android speech recognition and text-to-speech only ship a subset of these.
+// The app checks at runtime too, but knowing here lets the API say what it
+// can and cannot voice rather than failing silently on the device.
+export const VOICE_SUPPORT = {
+  en: { code: "en-IN", stt: true, tts: true },
+  hi: { code: "hi-IN", stt: true, tts: true },
+  bn: { code: "bn-IN", stt: true, tts: true },
+  as: { code: "as-IN", stt: true, tts: false },
+  ne: { code: "ne-NP", stt: true, tts: false },
+  mni: { code: "mni-IN", stt: false, tts: false },
+  kha: { code: "en-IN", stt: false, tts: false },
+  lus: { code: "en-IN", stt: false, tts: false },
+  nag: { code: "hi-IN", stt: false, tts: false },
+  kok: { code: "bn-IN", stt: false, tts: false },
+};
+
+// What to actually speak in when the chosen language has no voice.
+export function voiceFallback(lang) {
+  const v = VOICE_SUPPORT[lang];
+  if (v?.tts) return { lang, code: v.code, exact: true };
+  if (lang === "nag") return { lang: "hi", code: "hi-IN", exact: false };
+  if (lang === "kok") return { lang: "bn", code: "bn-IN", exact: false };
+  if (lang === "as" || lang === "ne") return { lang: "hi", code: "hi-IN", exact: false };
+  return { lang: "en", code: "en-IN", exact: false };
+}

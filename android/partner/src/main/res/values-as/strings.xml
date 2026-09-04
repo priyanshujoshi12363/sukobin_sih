@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">চুকোবিন পাৰ্টনাৰ</string>
+    <string name="hazard_title">বিপদৰ খবৰ দিয়ক</string>
+    <string name="hazard_where">আপুনি ক\'ত আছে</string>
+    <string name="hazard_what">আপুনি কি দেখিলে?</string>
+    <string name="hazard_blocks">একোৱেই যাব নোৱাৰে</string>
+    <string name="hazard_note">আৰু কিবা ক\'বলগীয়া আছে? (বৈকল্পিক)</string>
+    <string name="hazard_note_helper">অসমীয়া, ইংৰাজী বা মিহলাই। খৰধৰ হ\'লে খালী এৰক।</string>
+    <string name="hazard_send">খবৰ পঠাওক</string>
+    <string name="hazard_sent">পঠোৱা হ\'ল। ধন্যবাদ - আন চালকসকলে সতৰ্কতা পাব।</string>
+    <string name="hazard_footnote">আপোনাৰ খবৰে এই পথৰ প্ৰতিজন চালকক সতৰ্ক কৰে, আৰু নিশ্চিতিৰ বাবে জিলা বিষয়াৰ ওচৰলৈ যায়।</string>
+    <string name="home_report_hazard">পথত বিপদৰ খবৰ দিয়ক</string>
+    <string name="home_sensing_on">আপোনাৰ অৱস্থান ভাগ কৰা হৈছে - ইয়াৰ পৰাই পথৰ অৱস্থা সতেজ থাকে</string>
+    <string name="voice_speak_report">টাইপ নকৰি ক\'ব পাৰে</string>
+    <string name="voice_prompt">যি দেখিছে কওক</string>
+    <string name="voice_nothing_heard">একো শুনা নগ\'ল। পুনৰ চেষ্টা কৰক।</string>
+</resources>

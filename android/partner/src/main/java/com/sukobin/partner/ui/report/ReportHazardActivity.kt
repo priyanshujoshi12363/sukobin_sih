@@ -19,7 +19,9 @@ import com.sukobin.core.net.jsonArrayOf
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
+import com.sukobin.core.net.Session
 import com.sukobin.core.ui.Motion
+import com.sukobin.core.voice.Voice
 import com.sukobin.partner.R
 import com.sukobin.partner.databinding.ActivityReportHazardBinding
 import kotlinx.coroutines.launch
@@ -44,6 +46,21 @@ class ReportHazardActivity : AppCompatActivity() {
     }
 
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
+
+    // Typing on a hill road with the engine running is the reason most hazards
+    // never get reported. Dictation removes it.
+    private val dictate = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val heard = Voice.firstResult(result.data)
+        if (heard.isNullOrBlank()) {
+            Toast.makeText(this, getString(R.string.voice_nothing_heard), Toast.LENGTH_SHORT).show()
+        } else {
+            val existing = b.noteInput.text?.toString().orEmpty()
+            b.noteInput.setText(if (existing.isBlank()) heard else "$existing $heard")
+            b.noteInput.setSelection(b.noteInput.text?.length ?: 0)
+        }
+    }
 
     private var lng: Double? = null
     private var lat: Double? = null
@@ -74,6 +91,7 @@ class ReportHazardActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener { finish() }
         b.btnRetryLocation.setOnClickListener { requestLocation() }
         b.btnSend.setOnClickListener { send() }
+        setupVoice()
 
         b.hazardGroup.setOnCheckedStateChangeListener { group, ids ->
             val id = ids.firstOrNull() ?: return@setOnCheckedStateChangeListener
@@ -88,6 +106,45 @@ class ReportHazardActivity : AppCompatActivity() {
         b.chipLandslide.isChecked = true
 
         requestLocation()
+    }
+
+    private fun setupVoice() {
+        val lang = Session.language
+        val support = Voice.resolve(lang)
+
+        if (!Voice.sttAvailable(this)) {
+            b.btnSpeak.visibility = View.GONE
+            return
+        }
+
+        // Say plainly which language it will actually listen in. A mic button
+        // that quietly listens in the wrong language is worse than none.
+        b.speakHint.text = if (support.exact) {
+            getString(R.string.voice_speak_hint, languageName(lang))
+        } else {
+            getString(R.string.voice_speak_fallback, languageName(lang), languageName(support.usingCode))
+        }
+
+        b.btnSpeak.setOnClickListener {
+            try {
+                dictate.launch(Voice.dictationIntent(lang, getString(R.string.voice_prompt)))
+            } catch (e: Exception) {
+                Toast.makeText(this, getString(R.string.voice_unavailable), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun languageName(code: String) = when (code) {
+        "hi" -> "हिन्दी"
+        "bn" -> "বাংলা"
+        "as" -> "অসমীয়া"
+        "ne" -> "नेपाली"
+        "mni" -> "Meiteilon"
+        "kha" -> "Khasi"
+        "lus" -> "Mizo"
+        "nag" -> "Nagamese"
+        "kok" -> "Kokborok"
+        else -> "English"
     }
 
     private fun requestLocation() {
