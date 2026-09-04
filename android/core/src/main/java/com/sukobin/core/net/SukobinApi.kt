@@ -9,7 +9,11 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Query
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 interface SukobinApi {
 
@@ -215,6 +219,77 @@ interface SukobinApi {
 
     @PATCH("api/product/toggle/{id}")
     suspend fun toggleProduct(@Path("id") id: String): Response<JsonObject>
+
+    @GET("api/merchant/orders")
+    suspend fun merchantOrdersFiltered(
+        @Query("status") status: String? = null,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 20
+    ): Response<JsonObject>
+
+    @GET("api/merchant/orders/{id}")
+    suspend fun merchantOrderDetail(@Path("id") id: String): Response<JsonObject>
+
+    @GET("api/product/search")
+    suspend fun searchMyProducts(@Query("q") query: String): Response<JsonObject>
+
+    @GET("api/product/{id}")
+    suspend fun productDetail(@Path("id") id: String): Response<JsonObject>
+
+    @DELETE("api/product/delete/{id}")
+    suspend fun deleteProduct(@Path("id") id: String): Response<JsonObject>
+
+    @PATCH("api/product/toggle-bulk")
+    suspend fun bulkToggleProducts(@Body body: JsonObject): Response<JsonObject>
+
+    // Products and shops carry images, so these go up as multipart rather than
+    // JSON. The server reads the files under productImages / shopLogo.
+    @Multipart
+    @POST("api/product/")
+    suspend fun createProduct(
+        @Part("productName") productName: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("category") category: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("stock") stock: RequestBody,
+        @Part images: List<MultipartBody.Part>
+    ): Response<JsonObject>
+
+    @Multipart
+    @PUT("api/product/edit/{id}")
+    suspend fun editProduct(
+        @Path("id") id: String,
+        @Part("productName") productName: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("category") category: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("stock") stock: RequestBody,
+        @Part images: List<MultipartBody.Part>
+    ): Response<JsonObject>
+
+    @Multipart
+    @POST("api/shop/create")
+    suspend fun createShop(
+        @Part("shopName") shopName: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("category") category: RequestBody,
+        @Part("phoneNumber") phoneNumber: RequestBody,
+        @Part("address") address: RequestBody,
+        @Part("coordinates") coordinates: RequestBody,
+        @Part logo: MultipartBody.Part?
+    ): Response<JsonObject>
+
+    @Multipart
+    @PUT("api/shop/edit/{id}")
+    suspend fun editShop(
+        @Path("id") id: String,
+        @Part("shopName") shopName: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("category") category: RequestBody,
+        @Part("phoneNumber") phoneNumber: RequestBody,
+        @Part("address") address: RequestBody,
+        @Part logo: MultipartBody.Part?
+    ): Response<JsonObject>
 
     // ── field officer ────────────────────────────────────────────────────────
 

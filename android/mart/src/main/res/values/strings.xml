@@ -52,15 +52,11 @@
     <string name="otp_dev_hint">Development build: use 123456</string>
 
     <string name="home_greeting">Hi %1$s</string>
-    <string name="home_today">Today</string>
     <string name="home_revenue">Revenue</string>
     <string name="home_orders">Orders</string>
     <string name="home_total_revenue">Total revenue</string>
     <string name="home_total_orders">Total orders</string>
     <string name="home_items_sold">Items sold</string>
-    <string name="home_new_orders">New orders</string>
-    <string name="home_recent_orders">Recent orders</string>
-    <string name="home_no_orders">No orders yet</string>
     <string name="home_top_products">Top products</string>
     <string name="home_my_products">My products</string>
     <string name="home_no_products">No products listed yet</string>
@@ -70,4 +66,126 @@
     <string name="common_retry">Retry</string>
     <string name="common_error">Something went wrong</string>
     <string name="common_signout">Sign out</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_orders">Orders</string>
+    <string name="tab_products">Products</string>
+    <string name="tab_analytics">Sales</string>
+    <string name="tab_profile">Shop</string>
+
+    <string name="home_today">TODAY</string>
+    <string name="home_orders_today">%1$d orders today</string>
+    <string name="home_new_orders">waiting for you to accept</string>
+    <string name="home_see_orders">See</string>
+    <string name="home_recent_orders">Recent orders</string>
+    <string name="home_no_orders">No orders yet.</string>
+    <string name="home_add_product">Add product</string>
+    <string name="home_manage_shop">Your shop</string>
+
+    <string name="orders_empty">Nothing here.</string>
+    <plurals name="orders_count">
+        <item quantity="one">%1$d order</item>
+        <item quantity="other">%1$d orders</item>
+    </plurals>
+    <plurals name="order_items">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+
+    <string name="products_search">Search your products</string>
+    <string name="products_out_of_stock">Out of stock only</string>
+    <string name="products_out">OUT OF STOCK</string>
+    <string name="products_empty">No products match.</string>
+    <string name="products_add">Add</string>
+    <string name="products_count">%1$d of %2$d</string>
+
+    <string name="product_add">Add a product</string>
+    <string name="product_edit">Edit product</string>
+    <string name="product_name">Product name</string>
+    <string name="product_category">Category</string>
+    <string name="product_price">Price (₹)</string>
+    <string name="product_stock">Stock</string>
+    <string name="product_description">Description (optional)</string>
+    <string name="product_images">Photos</string>
+    <string name="product_images_none">No photos chosen</string>
+    <string name="product_images_existing">Using the photos already on this product</string>
+    <plurals name="product_images_picked">
+        <item quantity="one">%1$d photo chosen</item>
+        <item quantity="other">%1$d photos chosen</item>
+    </plurals>
+    <string name="product_choose">Choose</string>
+    <string name="product_need_name">Enter a product name</string>
+    <string name="product_need_price">Enter a valid price</string>
+    <string name="product_added">Product added</string>
+    <string name="product_updated">Product updated</string>
+    <string name="product_in_stock">%1$d in stock</string>
+    <string name="product_listed">LISTED</string>
+    <string name="product_hidden">HIDDEN</string>
+    <string name="product_hide">Hide</string>
+    <string name="product_show">List</string>
+    <string name="product_rating">%1$.1f from %2$d reviews</string>
+    <string name="product_delete">Delete product</string>
+    <string name="product_delete_title">Delete this product?</string>
+    <string name="product_delete_body">%1$s will be removed from your shop. This cannot be undone.</string>
+    <string name="product_deleted">Product deleted</string>
+
+    <string name="order_title">Order</string>
+    <string name="order_deliver_to">DELIVER TO</string>
+    <string name="order_call">Call customer</string>
+    <string name="order_items_label">ITEMS</string>
+    <string name="order_subtotal">Items</string>
+    <string name="order_delivery">Delivery</string>
+    <string name="order_platform">Platform fee</string>
+    <string name="order_total">Total</string>
+    <string name="order_accept">Accept order</string>
+    <string name="order_start_packing">Start packing</string>
+    <string name="order_ready">Ready for pickup</string>
+    <string name="order_cancel">Cancel</string>
+    <string name="order_no_action">This order is %1$s. Nothing for you to do.</string>
+    <string name="order_confirm_cancel">The customer will be told, and any payment refunded.</string>
+    <string name="order_confirm_ready">A driver heading this way will be offered the pickup.</string>
+    <string name="order_confirm_generic">Move this order to %1$s?</string>
+    <string name="order_updated">Order is now %1$s</string>
+    <string name="order_no_phone">No phone number on this order</string>
+
+    <string name="analytics_week">LAST 7 DAYS</string>
+    <string name="analytics_by_status">ORDERS BY STATUS</string>
+    <string name="analytics_top">BEST SELLERS</string>
+    <string name="analytics_sold">%1$d sold</string>
+    <string name="analytics_no_sales">No sales in the last week.</string>
+    <string name="analytics_no_orders">No orders yet.</string>
+    <string name="analytics_no_top">Nothing sold yet.</string>
+
+    <string name="profile_your_shop">YOUR SHOP</string>
+    <string name="profile_account">ACCOUNT</string>
+    <string name="profile_shop">Shop</string>
+    <string name="profile_edit_shop">Shop details</string>
+    <string name="profile_edit">Edit</string>
+    <string name="profile_wallet">Wallet</string>
+    <string name="profile_no_shop">Not set up yet</string>
+    <string name="profile_shop_open">Open for orders</string>
+    <string name="profile_shop_closed">Closed</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_sign_out_body">You will need your phone number and an OTP to sign back in.</string>
+
+    <string name="shop_create">Set up your shop</string>
+    <string name="shop_manage">Your shop</string>
+    <string name="shop_create_intro">Customers see this. Add it once and you can start listing products.</string>
+    <string name="shop_manage_intro">Changes show to customers straight away.</string>
+    <string name="shop_name">Shop name</string>
+    <string name="shop_category">What do you sell?</string>
+    <string name="shop_phone">Shop phone number</string>
+    <string name="shop_address">Address</string>
+    <string name="shop_description">About the shop (optional)</string>
+    <string name="shop_logo">Shop photo</string>
+    <string name="shop_logo_none">No photo chosen</string>
+    <string name="shop_logo_picked">New photo chosen</string>
+    <string name="shop_logo_existing">Using your current photo</string>
+    <string name="shop_need_name">Enter your shop name</string>
+    <string name="shop_created">Shop created</string>
+    <string name="shop_updated">Shop updated</string>
+
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_back">Back</string>
 </resources>

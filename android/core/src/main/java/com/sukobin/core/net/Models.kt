@@ -99,6 +99,7 @@ data class Order(
     val deliveryAddress: Address? = null,
     val location: GeoPoint? = null,
     val deliveryOtp: String? = null,
+    val customerPhone: String? = null,
     val createdAt: String? = null
 )
 

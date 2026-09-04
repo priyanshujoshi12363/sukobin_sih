@@ -1,7 +1,9 @@
 package com.sukobin.merchant.ui.main
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +13,11 @@ import com.sukobin.core.net.Product
 import com.sukobin.merchant.R
 import com.sukobin.merchant.databinding.ItemMyProductBinding
 import com.sukobin.merchant.databinding.ItemOrderBinding
+import kotlin.math.roundToInt
 
-class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
+class OrderAdapter(
+    private val onClick: (Order) -> Unit = {}
+) : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Order>() {
@@ -29,18 +34,34 @@ class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
     override fun onBindViewHolder(holder: VH, position: Int) {
         val o = getItem(position)
         val b = holder.b
+        val ctx = b.root.context
 
         b.orderRef.text = o.orderId ?: o.id.takeLast(8)
         b.orderMeta.text = listOfNotNull(
             o.deliveryAddress?.town ?: o.deliveryAddress?.district,
-            o.paymentMethod
-        ).joinToString("   ")
-        b.orderAmount.text = "₹" + o.totalAmount.toInt()
+            o.paymentMethod,
+            ctx.resources.getQuantityString(R.plurals.order_items, o.items.size, o.items.size)
+        ).joinToString("  ·  ")
+
+        b.orderAmount.text = "₹" + o.totalAmount.roundToInt()
         b.orderStatus.text = o.status.replace("_", " ")
+        b.orderStatus.setBackgroundResource(
+            when (o.status) {
+                "PLACED" -> R.drawable.bg_pill_new
+                "CANCELLED" -> R.drawable.bg_pill_hidden
+                "DELIVERED" -> R.drawable.bg_pill_live
+                else -> R.drawable.bg_pill_working
+            }
+        )
+
+        b.root.setOnClickListener { onClick(o) }
     }
 }
 
-class MyProductAdapter : ListAdapter<Product, MyProductAdapter.VH>(DIFF) {
+class MyProductAdapter(
+    private val onClick: (Product) -> Unit = {},
+    private val onToggle: (Product) -> Unit = {}
+) : ListAdapter<Product, MyProductAdapter.VH>(DIFF) {
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Product>() {
@@ -63,8 +84,26 @@ class MyProductAdapter : ListAdapter<Product, MyProductAdapter.VH>(DIFF) {
         b.productMeta.text = listOfNotNull(
             p.category,
             ctx.getString(R.string.home_stock, p.stock)
-        ).joinToString("   ")
-        b.productPrice.text = "₹" + p.price.toInt()
+        ).joinToString("  ·  ")
+        b.productPrice.text = "₹" + p.price.roundToInt()
         b.productImage.load(p.thumbnail) { crossfade(true) }
+
+        // A hidden or out-of-stock line is the shopkeeper's problem to spot at
+        // a glance, so it is dimmed and flagged rather than looking normal.
+        val live = p.isAvailable && p.isActive
+        b.stockWarning.visibility = if (p.stock <= 0) View.VISIBLE else View.GONE
+        b.root.alpha = if (live) 1f else 0.55f
+
+        b.btnToggle.text = ctx.getString(
+            if (live) R.string.product_hide else R.string.product_show
+        )
+        b.btnToggle.setTextColor(
+            ContextCompat.getColor(
+                ctx,
+                if (live) com.sukobin.core.R.color.gray_600 else com.sukobin.core.R.color.accent_green
+            )
+        )
+        b.btnToggle.setOnClickListener { onToggle(p) }
+        b.root.setOnClickListener { onClick(p) }
     }
 }
