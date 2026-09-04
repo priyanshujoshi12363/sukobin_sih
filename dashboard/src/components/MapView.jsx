@@ -11,20 +11,28 @@ const NER_BOUNDS = [
 const BASE_STYLE = {
   version: 8,
   sources: {
-    carto: {
+    // CARTO now watermarks every tile with API KEY REQUIRED. Esri Dark Gray
+    // Canvas is keyless and matches the dark theme; labels ride on top.
+    basemap: {
       type: "raster",
       tiles: [
-        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
       ],
       tileSize: 256,
-      attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+      attribution: "Esri, HERE, Garmin, &copy; OpenStreetMap contributors",
+    },
+    labels: {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
     },
   },
   layers: [
     { id: "bg", type: "background", paint: { "background-color": "#0d1512" } },
-    { id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": 0.72 } },
+    { id: "basemap", type: "raster", source: "basemap", paint: { "raster-opacity": 0.85 } },
+    { id: "labels", type: "raster", source: "labels", paint: { "raster-opacity": 0.6 } },
   ],
 };
 

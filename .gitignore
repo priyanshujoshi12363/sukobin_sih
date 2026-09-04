@@ -39,6 +39,7 @@ Thumbs.db
 _legacy_expo/
 
 # ── logs / scratch ──
+render-check.png
 *.log
 srv.out.log
 srv.err.log
