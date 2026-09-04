@@ -1,566 +1,456 @@
 """
 Builds the SIH 2026 idea-submission deck for Sukobin.
 
-Follows the official six-slide structure: title, idea/solution, technical
-approach, feasibility and viability, impact and benefits, research and
-references.
+Uses PowerPoint's default (Office) theme: the built-in slide layouts, theme
+fonts and theme colours. Nothing is restyled or recoloured. The only shapes
+added by hand are the small flow diagram on the technical slide and a few
+tables, and those take their colours from the theme as well.
 
-Two rules this file follows:
-  * Every claim is restricted to what is actually built and verified. The
-    honest-status section of SUKOBIN_ALGORITHM.md is the source of truth.
-  * Cards size themselves from their wrapped text. PowerPoint will not
-    auto-grow a fixed rectangle, so text is wrapped here and the box height
-    is derived from the resulting line count. Hard-coding heights is what
-    made the first draft spill text past its borders.
+Six slides, in the order the SIH idea-submission format asks for:
+    1  Title
+    2  Proposed solution
+    3  Technical approach
+    4  Feasibility and viability
+    5  Impact and benefits
+    6  Research and references
+
+The wording is deliberately plain. Every number in the deck is one that has
+been checked against live data.
 """
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 import os
-import textwrap
 
-# ── brand ────────────────────────────────────────────────────────────────────
-FOREST = RGBColor(0x1A, 0x3D, 0x2B)
-FOREST_DEEP = RGBColor(0x10, 0x26, 0x1B)
-GREEN = RGBColor(0x0C, 0x83, 0x1F)
-GREEN_MID = RGBColor(0x2D, 0x6A, 0x4F)
-MINT = RGBColor(0xD8, 0xF3, 0xDC)
-MINT_DIM = RGBColor(0x9E, 0xC9, 0xAB)
-SAGE = RGBColor(0x7D, 0xAA, 0x90)
-CREAM = RGBColor(0xF9, 0xF8, 0xF4)
-WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-INK = RGBColor(0x1F, 0x29, 0x37)
-GREY = RGBColor(0x6B, 0x72, 0x80)
-GREY_LIGHT = RGBColor(0xE5, 0xE7, 0xEB)
-AMBER = RGBColor(0xF4, 0xA2, 0x61)
-RED = RGBColor(0xE6, 0x39, 0x46)
-
-W = Inches(13.333)
-H = Inches(7.5)
-FONT = "Segoe UI"
+# The default template is laid out for a 10 inch wide slide. We present in
+# 16:9, so placeholders are widened by this factor to fill the slide.
+SCALE = 13.333 / 10.0
+SLIDE_W = Inches(13.333)
+SLIDE_H = Inches(7.5)
 
 
 def new_deck():
-    prs = Presentation()
-    prs.slide_width = W
-    prs.slide_height = H
+    prs = Presentation()          # default Office theme
+    prs.slide_width = SLIDE_W
+    prs.slide_height = SLIDE_H
     return prs
 
 
-def blank(prs):
-    return prs.slides.add_slide(prs.slide_layouts[6])
+def add(prs, layout_index):
+    slide = prs.slides.add_slide(prs.slide_layouts[layout_index])
+
+    # A placeholder that still inherits its position has no xfrm of its own.
+    # Writing only left/width would create one with y = 0 and knock the shape
+    # to the top of the slide, so read all four values first and write all four.
+    for ph in slide.placeholders:
+        left, top, width, height = ph.left, ph.top, ph.width, ph.height
+        ph.left, ph.top = int(left * SCALE), top
+        ph.width, ph.height = int(width * SCALE), height
+
+    return slide
 
 
-def rect(slide, x, y, w, h, fill=None, line=None, line_w=1.0):
-    s = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
-    if fill is None:
-        s.fill.background()
-    else:
-        s.fill.solid()
-        s.fill.fore_color.rgb = fill
-    if line is None:
-        s.line.fill.background()
-    else:
-        s.line.color.rgb = line
-        s.line.width = Pt(line_w)
-    s.shadow.inherit = False
-    return s
+def set_title(slide, text, size=30):
+    t = slide.shapes.title
+    t.text = text
+    t.left, t.top = Inches(0.85), Inches(0.25)
+    t.width, t.height = Inches(11.6), Inches(0.8)
+    for p in t.text_frame.paragraphs:
+        p.alignment = PP_ALIGN.LEFT
+        for run in p.runs:
+            run.font.size = Pt(size)
+    return t
 
 
-def text(slide, x, y, w, h, runs, align=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP,
-         line_spacing=1.15):
-    """runs: (string, size_pt, bold, color) with an optional 5th space_after."""
+def bullets(placeholder, items, size=15, space_after=6):
+    """items: string, or (string, level), or (string, level, bold)."""
+    tf = placeholder.text_frame
+    tf.word_wrap = True
+    tf.clear()
+
+    for i, item in enumerate(items):
+        if isinstance(item, str):
+            content, level, bold = item, 0, False
+        elif len(item) == 2:
+            content, level, bold = item[0], item[1], False
+        else:
+            content, level, bold = item
+
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.level = level
+        p.space_after = Pt(space_after)
+        run = p.add_run()
+        run.text = content
+        run.font.size = Pt(size - level)
+        run.font.bold = bold
+    return tf
+
+
+def textbox(slide, x, y, w, h, lines, size=12, bold=False,
+            align=PP_ALIGN.LEFT, space_after=6):
     box = slide.shapes.add_textbox(x, y, w, h)
     tf = box.text_frame
     tf.word_wrap = True
-    tf.vertical_anchor = anchor
-    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
-
-    for i, r in enumerate(runs):
-        content, size, bold, color = r[0], r[1], r[2], r[3]
-        after = r[4] if len(r) > 4 else 0
+    for i, line in enumerate(lines):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.alignment = align
-        p.line_spacing = line_spacing
-        p.space_after = Pt(after)
+        p.space_after = Pt(space_after)
         run = p.add_run()
-        run.text = content
+        run.text = line
         run.font.size = Pt(size)
         run.font.bold = bold
-        run.font.color.rgb = color
-        run.font.name = FONT
     return box
 
 
-# ── text metrics ─────────────────────────────────────────────────────────────
-# Segoe UI averages ~0.48 em per character at these sizes. Wrapping here rather
-# than letting PowerPoint do it means the line count is known before the box is
-# drawn, so the box can be sized to fit.
-
-def fit(lines, width_in, size, pad_in=0.44):
-    # 0.54 em is deliberately pessimistic. If the estimate is even slightly
-    # optimistic PowerPoint re-wraps the line and the card overflows.
-    usable_pt = (width_in - pad_in) * 72.0
-    chars = max(14, int(usable_pt / (0.54 * size)))
-    out = []
-    for ln in lines:
-        if not ln.strip():
-            out.append("")
-            continue
-        hanging = ln.startswith("   ")
-        wrapped = textwrap.wrap(ln.strip(), width=chars if not hanging else chars - 3)
-        if not wrapped:
-            out.append("")
-            continue
-        out.append(("   " if hanging else "") + wrapped[0])
-        out.extend("   " + w for w in wrapped[1:])
-    return out
+def heading(slide, x, y, w, label, size=13):
+    return textbox(slide, x, y, w, Inches(0.3), [label], size=size, bold=True)
 
 
-def line_h(size):
-    # A rendered line is font_size * intrinsic_leading(1.2) * line_spacing,
-    # plus the paragraph space_after. Omitting the 1.2 was why cards still
-    # ran a line short.
-    return (size * 1.2 * 1.24 + 3.0) / 72.0
+def table(slide, x, y, w, h, rows, col_widths=None, font=11, header=True):
+    shape = slide.shapes.add_table(len(rows), len(rows[0]), x, y, w, h)
+    tbl = shape.table
+    tbl.first_row = header
 
+    if col_widths:
+        for i, cw in enumerate(col_widths):
+            tbl.columns[i].width = Inches(cw)
 
-def card_h(lines, width_in, size, title_size=13):
-    n = len(fit(lines, width_in, size))
-    return Inches(0.15 + title_size / 72.0 + 0.17 + n * line_h(size) + 0.16)
-
-
-def card(slide, x, y, w, title, lines, accent=GREEN, title_size=13,
-         body_size=10.5, fill=WHITE, h=None):
-    width_in = w / 914400
-    shown = fit(lines, width_in, body_size)
-    if h is None:
-        h = card_h(lines, width_in, body_size, title_size)
-
-    rect(slide, x, y, w, h, fill=fill, line=GREY_LIGHT, line_w=0.75)
-    rect(slide, x, y, Pt(4), h, fill=accent)
-
-    text(slide, x + Inches(0.22), y + Inches(0.15), w - Inches(0.42), Inches(0.3),
-         [(title, title_size, True, FOREST)])
-
-    body_y = y + Inches(0.15 + title_size / 72.0 + 0.17)
-    runs = [(ln, body_size, False, GREY, 3.0) for ln in shown]
-    text(slide, x + Inches(0.22), body_y, w - Inches(0.42),
-         Inches(len(shown) * line_h(body_size) + 0.2), runs, line_spacing=1.24)
-    return h
-
-
-def header(slide, number, title, subtitle=None):
-    rect(slide, 0, 0, W, Inches(1.05), fill=FOREST)
-    rect(slide, 0, Inches(1.05), W, Pt(3), fill=GREEN)
-    text(slide, Inches(0.55), Inches(0.2), Inches(0.6), Inches(0.6),
-         [(number, 26, True, SAGE)])
-    text(slide, Inches(1.2), Inches(0.17), Inches(9.3), Inches(0.42),
-         [(title, 25, True, WHITE)])
-    if subtitle:
-        text(slide, Inches(1.23), Inches(0.63), Inches(9.6), Inches(0.3),
-             [(subtitle, 11, False, MINT_DIM)])
-    text(slide, Inches(11.0), Inches(0.36), Inches(1.85), Inches(0.35),
-         [("SUKOBIN", 12, True, MINT)], align=PP_ALIGN.RIGHT)
+    for r, row in enumerate(rows):
+        for c, value in enumerate(row):
+            cell = tbl.cell(r, c)
+            cell.text = value
+            cell.margin_left = Inches(0.08)
+            cell.margin_right = Inches(0.08)
+            cell.margin_top = Inches(0.02)
+            cell.margin_bottom = Inches(0.02)
+            for p in cell.text_frame.paragraphs:
+                p.space_after = Pt(0)
+                for run in p.runs:
+                    run.font.size = Pt(font)
+    return tbl
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1 — Title
+# 1  Title
 # ─────────────────────────────────────────────────────────────────────────────
 def slide_title(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=FOREST)
-    rect(s, Inches(8.75), 0, Inches(4.6), H, fill=FOREST_DEEP)
+    s = add(prs, 0)                       # built-in Title Slide layout
+    s.shapes.title.text = "Sukobin"
+    s.shapes.title.top = Inches(1.0)
 
-    text(s, Inches(0.85), Inches(0.85), Inches(7.5), Inches(0.4),
-         [("SMART INDIA HACKATHON 2026", 13, True, SAGE)])
+    sub = s.placeholders[1]
+    sub.top = Inches(2.15)
+    sub.height = Inches(1.4)
 
-    text(s, Inches(0.85), Inches(1.45), Inches(7.6), Inches(1.1),
-         [("SUKOBIN", 62, True, WHITE)], line_spacing=1.0)
+    tf = sub.text_frame
+    tf.word_wrap = True
+    tf.clear()
 
-    text(s, Inches(0.85), Inches(2.72), Inches(7.5), Inches(1.0),
-         [("AI-Enabled Logistics Accessibility Intelligence", 23, True, MINT),
-          ("Platform for the North Eastern Region", 23, True, MINT)],
-         line_spacing=1.2)
-
-    rect(s, Inches(0.85), Inches(4.05), Inches(0.7), Pt(3), fill=AMBER)
-
-    text(s, Inches(0.85), Inches(4.4), Inches(7.3), Inches(1.5),
-         [("The vehicles already making the journey carry the cargo —", 14, False, MINT_DIM),
-          ("and because they never stop moving, they are also the", 14, False, MINT_DIM),
-          ("sensor network that measures whether the road is passable.", 14, True, WHITE)],
-         line_spacing=1.45)
-
-    # proof strip fills what was dead space
-    rect(s, Inches(0.85), Inches(6.25), Inches(7.3), Pt(1), fill=GREEN_MID)
-    proof = [("42", "segments"), ("3,567 km", "network"),
-             ("82", "districts"), ("4 + 1", "apps + dashboard")]
-    for i, (v, l) in enumerate(proof):
-        x = Inches(0.85) + i * Inches(1.85)
-        text(s, x, Inches(6.5), Inches(1.7), Inches(0.35),
-             [(v, 19, True, MINT)])
-        text(s, x, Inches(6.83), Inches(1.7), Inches(0.28),
-             [(l, 9.5, False, SAGE)])
-
-    meta = [
-        ("PROBLEM STATEMENT", ["SIH2026 — MDoNER"]),
-        ("ORGANISATION", ["Ministry of Development of the", "North Eastern Region"]),
-        ("THEME", ["Transportation & Logistics"]),
-        ("CATEGORY", ["Software"]),
-        ("TEAM NAME", ["< your team name >"]),
-        ("TEAM ID", ["< your team id >"]),
+    lines = [
+        ("A logistics and road-access platform for the North East", 18, True),
+        ("Parcels travel with people who are already making the journey.", 14, False),
+        ("Those same vehicles tell us which roads are open.", 14, False),
     ]
-    y = Inches(1.35)
-    for label, values in meta:
-        text(s, Inches(9.3), y, Inches(3.6), Inches(0.22),
-             [(label, 8.5, True, SAGE)])
-        y += Inches(0.26)
-        for v in values:
-            text(s, Inches(9.3), y, Inches(3.6), Inches(0.3),
-                 [(v, 11.5, True, WHITE)])
-            y += Inches(0.27)
-        y += Inches(0.26)
+    for i, (t, size, bold) in enumerate(lines):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.alignment = PP_ALIGN.CENTER
+        p.space_after = Pt(6)
+        run = p.add_run()
+        run.text = t
+        run.font.size = Pt(size)
+        run.font.bold = bold
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 2 — Proposed solution
-# ─────────────────────────────────────────────────────────────────────────────
-def slide_idea(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=CREAM)
-    header(s, "01", "Proposed Solution",
-           "One platform that moves essential goods and measures the roads at the same time")
-
-    top = Inches(1.38)
-
-    h1 = card(s, Inches(0.5), top, Inches(3.95), "The problem, precisely",
-              [
-                  "NER districts lose road access to landslides, floods and snow.",
-                  "Medicines and food are delayed, and nobody has a live picture of which roads are open.",
-                  "A dedicated courier fleet is uneconomical here, so one was never built.",
-              ], accent=RED, body_size=10)
-
-    h2 = card(s, Inches(4.67), top, Inches(3.95), "The idea",
-              [
-                  "There is no fleet. Use the vehicles already travelling.",
-                  "A tourist, commuter or taxi driver enters their number plate and route.",
-                  "The app shows only the parcels riding that exact road, forward-facing, within capacity.",
-              ], accent=GREEN, body_size=10)
-
-    h3 = card(s, Inches(8.84), top, Inches(4.0), "The insight that answers the PS",
-              [
-                  "Those carriers stream GPS, so they do not only move cargo. They measure the road.",
-                  "When vehicles that normally clear a ghat at 30 km/h all drop to 4, the system knows it is failing.",
-              ], accent=AMBER, body_size=10)
-
-    # the differentiator
-    band_y = top + max(h1, h2, h3) + Inches(0.18)
-    rect(s, Inches(0.5), band_y, Inches(12.34), Inches(1.18), fill=FOREST)
-    text(s, Inches(0.8), band_y + Inches(0.15), Inches(11.7), Inches(0.26),
-         [("WHAT IS NEW HERE", 9.5, True, SAGE)])
-    text(s, Inches(0.8), band_y + Inches(0.45), Inches(11.7), Inches(0.65),
-         [("Every other platform learns a road is blocked when somebody reports it.", 13, False, WHITE),
-          ("Ours notices when six vehicles slow to a crawl — and it notices because those same vehicles are already carrying the medicines.", 13, True, MINT)],
-         line_spacing=1.3)
-
-    # clause coverage
-    text(s, Inches(0.5), band_y + Inches(1.4), Inches(12), Inches(0.28),
-         [("HOW IT ADDRESSES THE PROBLEM STATEMENT", 9.5, True, GREY)])
-
-    pairs = [
-        ("a  Accessibility monitoring", "Segment-level live status from carrier GPS and officer reports"),
-        ("b  Disruption prediction", "Risk per segment from rainfall, terrain and past incidents"),
-        ("c  Alternate routes and delay", "Alternates evaluated, blocked corridors refused, delay per segment"),
-        ("d  GPS tracking of essentials", "Every consignment rides in a verified, position-streaming vehicle"),
-        ("e  Automated alerts", "Blocked roads, risky corridors and delayed consignments pushed out"),
-        ("f  Field reporting", "Geo-tagged photo reports; AI reads free text in local languages"),
-        ("g  Central dashboards", "District connectivity, bottlenecks, emergency and supply views"),
-        ("h  Multilingual and offline", "Reports queue offline and sync later; alerts in regional languages"),
+    rows = [
+        ["Problem Statement", "SIH 2026 — MDoNER"],
+        ["Organisation", "Ministry of Development of North Eastern Region"],
+        ["Theme", "Transportation and Logistics"],
+        ["Category", "Software"],
+        ["Team Name", "< fill in >"],
+        ["Team ID", "< fill in >"],
     ]
-    y0 = band_y + Inches(1.74)
-    for i, (k, v) in enumerate(pairs):
-        col, row = i % 2, i // 2
-        x = Inches(0.5) + col * Inches(6.35)
-        y = y0 + row * Inches(0.5)
-        text(s, x, y, Inches(2.25), Inches(0.28), [(k, 10, True, FOREST)])
-        wrapped = fit([v], 4.15, 9, pad_in=0.0)
-        text(s, x + Inches(2.3), y, Inches(3.95), Inches(0.44),
-             [(w, 9, False, GREY) for w in wrapped], line_spacing=1.2)
+    table(s, Inches(3.6), Inches(4.05), Inches(6.2), Inches(2.1),
+          rows, col_widths=[2.0, 4.2], font=11, header=False)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3 — Technical approach
+# 2  Proposed solution
+# ─────────────────────────────────────────────────────────────────────────────
+def slide_solution(prs):
+    s = add(prs, 1)                       # Title and Content
+    set_title(s, "Proposed Solution")
+
+    body = s.placeholders[1]
+    body.left, body.top = Inches(0.85), Inches(1.2)
+    body.width, body.height = Inches(11.6), Inches(2.5)
+
+    bullets(body, [
+        ("The problem", 0, True),
+        ("Roads in the North East close often because of landslides, floods and snow. "
+         "Medicines and food arrive late, and no one has a live picture of which roads are open.", 1),
+        ("A normal courier fleet costs too much to run in these hills, so one was never built.", 1),
+        ("Our solution", 0, True),
+        ("Do not build a fleet. Use the vehicles that are already travelling.", 1),
+        ("A driver enters their vehicle number and where they are going. The app shows only "
+         "the parcels going the same way, and only as many as the vehicle can carry.", 1),
+    ], size=14, space_after=4)
+
+    heading(s, Inches(0.9), Inches(3.72), Inches(11.6), "Why this is different", size=14)
+    textbox(s, Inches(0.9), Inches(4.06), Inches(11.6), Inches(0.6),
+            ["Other systems learn that a road is blocked only when somebody reports it. "
+             "Ours also notices when many vehicles suddenly slow down — and it notices "
+             "because those same vehicles are already carrying the goods."],
+            size=13)
+
+    rows = [
+        ["What the problem statement asks for", "How Sukobin answers it"],
+        ["Watch roads and bridges in real time", "Live road status from driver GPS and officer reports"],
+        ["Predict problems before they happen", "A risk score per road from rainfall, slope and past events"],
+        ["Suggest other routes and likely delay", "Blocked roads are refused; delay is shown road by road"],
+        ["Track vehicles carrying essentials", "Every parcel travels in a checked, tracked vehicle"],
+        ["Send alerts automatically", "Blocked roads, risky roads and late deliveries are pushed out"],
+        ["Let officers send photo reports", "Officers report from the spot, even with no signal"],
+        ["Give one central dashboard", "District status, weak points, emergency view, live supplies"],
+        ["Many languages, works offline", "Reports wait on the phone and upload later; alerts translated"],
+    ]
+    table(s, Inches(0.9), Inches(4.75), Inches(11.6), Inches(2.3),
+          rows, col_widths=[4.7, 6.9], font=10.5)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3  Technical approach
 # ─────────────────────────────────────────────────────────────────────────────
 def slide_technical(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=CREAM)
-    header(s, "02", "Technical Approach",
-           "Two independent evidence sources decide whether a road is passable — neither can act alone")
+    s = add(prs, 5)                       # Title Only
+    set_title(s, "Technical Approach")
 
-    # diagram panel
-    rect(s, Inches(0.5), Inches(1.38), Inches(7.65), Inches(4.42),
-         fill=WHITE, line=GREY_LIGHT, line_w=0.75)
-    text(s, Inches(0.75), Inches(1.55), Inches(7.1), Inches(0.28),
-         [("THE SENSING LOOP", 9.5, True, GREY)])
+    heading(s, Inches(0.9), Inches(1.15), Inches(8.2),
+            "How the system decides whether a road is open", size=14)
 
-    for x, title, sub in [
-        (Inches(0.85), "Carrier vehicles", "GPS every ~15 s while on a trip"),
-        (Inches(4.62), "Field officers", "Geo-tagged photo + description"),
-    ]:
-        rect(s, x, Inches(1.95), Inches(3.15), Inches(0.7), fill=MINT, line=GREEN, line_w=1)
-        text(s, x + Inches(0.15), Inches(2.06), Inches(2.85), Inches(0.5),
-             [(title, 11.5, True, FOREST), (sub, 8.5, False, GREY)], line_spacing=1.25)
+    def box(x, y, w, h, lines, size=11):
+        sh = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
+        sh.shadow.inherit = False
+        tf = sh.text_frame
+        tf.word_wrap = True
+        tf.margin_left = tf.margin_right = Inches(0.05)
+        tf.margin_top = tf.margin_bottom = Inches(0.02)
+        for i, line in enumerate(lines):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.alignment = PP_ALIGN.CENTER
+            p.space_after = Pt(0)
+            run = p.add_run()
+            run.text = line
+            run.font.size = Pt(size if i == 0 else size - 1.5)
+            run.font.bold = (i == 0)
+        return sh
 
-    for x, title, l1, l2 in [
-        (Inches(0.85), "Map-match to segment", "Rolling median speed against", "the road's own baseline"),
-        (Inches(4.62), "AI reads the report", "Local-language text becomes type,", "severity, blocks traffic, clearance"),
-    ]:
-        rect(s, x, Inches(2.95), Inches(3.15), Inches(0.9), fill=WHITE, line=GREY_LIGHT, line_w=0.75)
-        text(s, x + Inches(0.15), Inches(3.06), Inches(2.85), Inches(0.7),
-             [(title, 10.5, True, INK), (l1, 8.5, False, GREY), (l2, 8.5, False, GREY)],
-             line_spacing=1.25)
+    def arrow(x, y):
+        sh = s.shapes.add_shape(MSO_SHAPE.DOWN_ARROW, x, y, Inches(0.28), Inches(0.36))
+        sh.shadow.inherit = False
+        return sh
 
-    for cx in (Inches(2.42), Inches(6.19)):
-        rect(s, cx, Inches(2.69), Pt(2.5), Inches(0.2), fill=GREEN)
-        rect(s, cx, Inches(3.89), Pt(2.5), Inches(0.18), fill=GREEN)
+    box(Inches(0.9), Inches(1.55), Inches(3.6), Inches(0.82),
+        ["Drivers on the road", "Phone sends location while driving"])
+    box(Inches(5.0), Inches(1.55), Inches(3.6), Inches(0.82),
+        ["Field officers", "Photo and note sent from the spot"])
 
-    rect(s, Inches(0.85), Inches(4.09), Inches(6.92), Inches(0.72), fill=FOREST)
-    text(s, Inches(1.05), Inches(4.2), Inches(6.5), Inches(0.5),
-         [("Status resolver — confidence-weighted vote", 12, True, WHITE),
-          ("Field report and probe evidence ranked, corroborated and capped", 8.5, False, MINT_DIM)],
-         line_spacing=1.25)
+    arrow(Inches(2.56), Inches(2.44))
+    arrow(Inches(6.66), Inches(2.44))
 
-    rect(s, Inches(4.28), Inches(4.85), Pt(2.5), Inches(0.18), fill=GREEN)
+    box(Inches(0.9), Inches(2.90), Inches(3.6), Inches(0.88),
+        ["Compare the speed", "Are vehicles slower than usual on this road?"])
+    box(Inches(5.0), Inches(2.90), Inches(3.6), Inches(0.88),
+        ["Read the report", "Turn the note into type, seriousness and effect"])
+
+    arrow(Inches(2.56), Inches(3.85))
+    arrow(Inches(6.66), Inches(3.85))
+
+    box(Inches(0.9), Inches(4.32), Inches(7.7), Inches(0.70),
+        ["Decide the road status: open, slow, restricted or blocked"])
+
+    arrow(Inches(4.61), Inches(5.09))
 
     for i, (t1, t2) in enumerate([
-        ("Route matching", "blocked corridors refused"),
-        ("Dashboard", "district colours, bottlenecks"),
-        ("Alerts", "carriers, officers, citizens"),
+        ("Route matching", "blocked roads refused"),
+        ("Dashboard", "district map and alerts"),
+        ("Notifications", "drivers, officers, customers"),
     ]):
-        x = Inches(0.85) + i * Inches(2.35)
-        rect(s, x, Inches(5.07), Inches(2.15), Inches(0.55), fill=MINT)
-        text(s, x + Inches(0.13), Inches(5.15), Inches(1.95), Inches(0.42),
-             [(t1, 10, True, FOREST), (t2, 8, False, GREY)], line_spacing=1.2)
+        box(Inches(0.9) + i * Inches(2.65), Inches(5.56), Inches(2.4), Inches(0.78), [t1, t2])
 
-    # guards
-    guards_h = card(s, Inches(8.4), Inches(1.38), Inches(4.44), "Guards that keep it honest",
-                    [
-                        "One vehicle cannot close a road: two distinct vehicles and four samples minimum.",
-                        "GPS fixes worse than 120 m accuracy are discarded.",
-                        "A weather forecast predicts risk; it never asserts that a road is currently shut.",
-                        "An unverified report is capped at RESTRICTED until a human verifies it or probe data agrees.",
-                    ], accent=AMBER, body_size=9.5)
+    heading(s, Inches(9.1), Inches(1.55), Inches(3.4), "Rules that keep it safe")
+    textbox(s, Inches(9.1), Inches(1.95), Inches(3.4), Inches(2.2),
+            ["One vehicle cannot close a road. At least two must agree.",
+             "A weak GPS signal is thrown away.",
+             "A weather forecast warns of risk. It never says a road is shut.",
+             "A single report is treated with care until an officer confirms it."],
+            size=11)
 
-    card(s, Inches(8.4), Inches(1.38) + guards_h + Inches(0.16), Inches(4.44), "Stack",
-         [
-             "Android — Kotlin and XML, four native apps on one shared core",
-             "Backend — Node.js, Express, MongoDB with 2dsphere geo queries",
-             "Routing — OSRM road polylines, alternates, corridor matching",
-             "Weather — Open-Meteo hourly rainfall, snowfall, temperature",
-             "AI — report classification with a deterministic keyword fallback",
-             "Dashboard — React and MapLibre GIS",
-             "Push — Firebase Cloud Messaging",
-         ], accent=GREEN, body_size=9.5)
-
-    # matching rule
-    rect(s, Inches(0.5), Inches(5.95), Inches(7.65), Inches(1.05),
-         fill=WHITE, line=GREY_LIGHT, line_w=0.75)
-    text(s, Inches(0.75), Inches(6.08), Inches(7.1), Inches(0.26),
-         [("THE MATCHING RULE", 9.5, True, GREY)])
-    text(s, Inches(0.75), Inches(6.36), Inches(7.15), Inches(0.55),
-         [("Pickup and drop must both lie inside the corridor of the driver's real", 9.5, False, INK),
-          ("road polyline, forward-facing, with no blocked segment on the way.", 9.5, False, INK)],
-         line_spacing=1.25)
+    heading(s, Inches(9.1), Inches(4.32), Inches(3.4), "What we built it with")
+    textbox(s, Inches(9.1), Inches(4.72), Inches(3.4), Inches(2.2),
+            ["Android apps in Kotlin and XML",
+             "Node.js, Express and MongoDB",
+             "OSRM for real road routes",
+             "Open-Meteo for rainfall and snow",
+             "React and MapLibre for the dashboard",
+             "Firebase for notifications"],
+            size=11)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 4 — Feasibility and viability
+# 4  Feasibility and viability
 # ─────────────────────────────────────────────────────────────────────────────
 def slide_feasibility(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=CREAM)
-    header(s, "03", "Feasibility & Viability",
-           "Built and running on live data, with the hard objections answered")
+    s = add(prs, 5)
+    set_title(s, "Feasibility and Viability")
 
-    rect(s, Inches(0.5), Inches(1.38), Inches(12.34), Inches(1.4), fill=FOREST)
-    text(s, Inches(0.8), Inches(1.53), Inches(11.7), Inches(0.26),
-         [("ALREADY BUILT AND RUNNING ON LIVE DATA — NOT A MOCK-UP", 9.5, True, SAGE)])
+    heading(s, Inches(0.9), Inches(1.15), Inches(11.6),
+            "The system is already built and running on real data", size=14)
 
-    for i, (v, l) in enumerate([
-        ("42", "road segments modelled"),
-        ("3,567 km", "on real road geometry"),
-        ("82", "NER districts covered"),
-        ("12", "supply chokepoints"),
-        ("4 + 1", "native apps + dashboard"),
-    ]):
-        x = Inches(0.8) + i * Inches(2.4)
-        text(s, x, Inches(1.9), Inches(2.3), Inches(0.42),
-             [(v, 21, True, WHITE)], align=PP_ALIGN.CENTER)
-        text(s, x, Inches(2.36), Inches(2.3), Inches(0.28),
-             [(l, 9, False, MINT_DIM)], align=PP_ALIGN.CENTER)
+    rows = [
+        ["Roads modelled", "Length covered", "Districts", "Weak points found", "Apps built"],
+        ["42 sections", "3,567 km", "82", "12", "4 apps and 1 dashboard"],
+    ]
+    table(s, Inches(0.9), Inches(1.55), Inches(11.6), Inches(0.72),
+          rows, col_widths=[2.3, 2.3, 2.3, 2.4, 2.3], font=11.5)
 
-    ha = card(s, Inches(0.5), Inches(3.0), Inches(6.1), "Verified behaviour, on real inputs",
-         [
-             "Risk model flagged Dimapur–Kohima SEVERE from 161 mm of actual recorded rainfall, a lifeline route for Manipur.",
-             "Probe sensing graded a corridor OPEN, SLOW, RESTRICTED then BLOCKED as vehicle speeds fell.",
-             "AI classified 8 of 8 messy Hinglish field reports correctly, extracting clearance time and which vehicles can still pass.",
-             "The planner refused Dimapur to Imphal while NH-2 was cut.",
-         ], accent=GREEN, body_size=9.5)
+    heading(s, Inches(0.9), Inches(2.62), Inches(5.6), "What we have already tested")
+    textbox(s, Inches(0.9), Inches(2.98), Inches(5.6), Inches(2.3),
+            ["The risk model marked the Dimapur to Kohima road as high risk after "
+             "161 mm of real rainfall. That road is Manipur's main supply line.",
+             "As vehicle speeds dropped in a test, the road moved from open to slow "
+             "to restricted to blocked, on its own.",
+             "The system correctly read all 8 test reports written in mixed Hindi and "
+             "English, including how long clearing would take.",
+             "With a road marked blocked, the app refused to send a driver on it."],
+            size=11)
 
-    hb = card(s, Inches(6.74), Inches(3.0), Inches(6.1), "Challenges and how they are handled",
-         [
-             "Trust — would you give medicines to a tourist? Tiered carriers: an open tier for commercial parcels, a trusted tier for essential cargo.",
-             "Thin traffic on remote spurs — relay handoff at hubs, so a parcel changes carrier instead of waiting.",
-             "No signal in the hills — offline queue that syncs on return.",
-         ], accent=AMBER, body_size=9.5)
+    heading(s, Inches(6.9), Inches(2.62), Inches(5.6), "Problems we expect, and our answer")
+    textbox(s, Inches(6.9), Inches(2.98), Inches(5.6), Inches(2.3),
+            ["Would you trust a stranger with medicines? Drivers are placed in two "
+             "groups. Anyone can carry normal parcels. Only trusted local drivers with "
+             "a delivery record carry medicines and government supplies.",
+             "Some roads carry very little traffic. A parcel can change hands at a town "
+             "on the way instead of waiting for one driver to do the whole trip.",
+             "Many areas have no mobile signal. Reports are saved on the phone and sent "
+             "later, and are never counted twice."],
+            size=11)
 
-    band = Inches(3.0) + max(ha, hb) + Inches(0.16)
-    rect(s, Inches(0.5), band, Inches(12.34), Inches(1.62),
-         fill=WHITE, line=GREY_LIGHT, line_w=0.75)
-    text(s, Inches(0.78), band + Inches(0.15), Inches(11.7), Inches(0.26),
-         [("WHY IT SUSTAINS ITSELF", 9.5, True, GREY)])
+    heading(s, Inches(0.9), Inches(5.42), Inches(11.6), "Why it can keep running")
 
-    for i, (t1, t2) in enumerate([
-        ("Zero fleet cost", "No vehicles to buy and no drivers to employ. Capacity already exists on the road."),
-        ("Marginal delivery cost", "The journey happens regardless; the only real cost is the driver's small detour."),
-        ("Data costs nothing extra", "The accessibility feed is a by-product of deliveries, so monitoring gets cheaper as usage grows."),
-        ("Government-ready", "Cloud infrastructure, weather and transport API integration, district-level dashboards."),
-    ]):
-        x = Inches(0.78) + i * Inches(3.05)
-        text(s, x, band + Inches(0.47), Inches(2.85), Inches(0.26), [(t1, 11, True, FOREST)])
-        wrapped = fit([t2], 2.85, 9, pad_in=0.0)
-        text(s, x, band + Inches(0.77), Inches(2.85), Inches(0.8),
-             [(w, 9, False, GREY) for w in wrapped], line_spacing=1.25)
+    rows2 = [
+        ["No fleet to pay for", "Almost no added cost", "Road data comes free",
+         "Ready for government use"],
+        ["No vehicles to buy and no drivers to hire. The vehicles are already on the road.",
+         "The journey happens anyway. The driver only makes a small detour.",
+         "Road information is a by-product of deliveries, so it costs nothing extra.",
+         "Runs on cloud servers and connects to weather and transport services."],
+    ]
+    table(s, Inches(0.9), Inches(5.78), Inches(11.6), Inches(1.15),
+          rows2, col_widths=[2.9, 2.9, 2.9, 2.9], font=10.5)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 5 — Impact and benefits
+# 5  Impact and benefits
 # ─────────────────────────────────────────────────────────────────────────────
 def slide_impact(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=CREAM)
-    header(s, "04", "Impact & Benefits",
-           "What changes for a district officer, a family in a remote block, and a person with a car")
+    s = add(prs, 5)
+    set_title(s, "Impact and Benefits")
 
-    rect(s, Inches(0.5), Inches(1.38), Inches(12.34), Inches(1.72), fill=FOREST)
-    text(s, Inches(0.8), Inches(1.53), Inches(11.7), Inches(0.26),
-         [("WHAT THE PLATFORM DOES WHEN A ROAD CLOSES", 9.5, True, SAGE)])
+    heading(s, Inches(0.9), Inches(1.15), Inches(11.6),
+            "What happens when a road closes", size=14)
 
-    steps = [
-        ("1", "Rain rises", ["Risk on the ghat", "turns severe"]),
-        ("2", "Officer reports", ["Photo and text, filed", "offline at the site"]),
-        ("3", "AI reads it", ["Landslide, critical,", "road fully blocked"]),
-        ("4", "Verified", ["Senior officer", "confirms in minutes"]),
-        ("5", "Road marked shut", ["Probe data agrees:", "no vehicle moving"]),
-        ("6", "System reacts", ["Carriers rerouted,", "district flagged"]),
+    rows = [
+        ["1. Heavy rain", "2. Officer reports", "3. System reads it",
+         "4. Officer confirms", "5. Road marked shut", "6. System reacts"],
+        ["Risk on that hill road goes up",
+         "Photo and note sent from the spot",
+         "Landslide, serious, road fully blocked",
+         "A senior officer checks and agrees",
+         "Vehicle speeds show nothing is moving",
+         "Drivers rerouted and the district is shown as cut off"],
     ]
-    for i, (n, t1, t2) in enumerate(steps):
-        x = Inches(0.8) + i * Inches(2.02)
-        text(s, x, Inches(1.9), Inches(0.3), Inches(0.3), [(n, 15, True, AMBER)])
-        text(s, x + Inches(0.28), Inches(1.93), Inches(1.68), Inches(0.26),
-             [(t1, 10.5, True, WHITE)])
-        for j, line in enumerate(t2):
-            text(s, x, Inches(2.32) + j * Inches(0.21), Inches(1.9), Inches(0.22),
-                 [(line, 8.5, False, MINT_DIM)])
-        if i < len(steps) - 1:
-            rect(s, x + Inches(1.86), Inches(1.98), Pt(2), Inches(0.55), fill=GREEN_MID)
+    table(s, Inches(0.9), Inches(1.55), Inches(11.6), Inches(1.15),
+          rows, col_widths=[1.93, 1.93, 1.93, 1.93, 1.94, 1.94], font=10)
 
-    benefits = [
-        ("Social", RED, [
-            "Medicines and food reach blocks that couriers do not serve.",
-            "Emergency response gets a live map instead of phone calls.",
-            "Alerts arrive in the language the recipient reads.",
-        ]),
-        ("Economic", GREEN, [
-            "Travellers earn on a journey they already make.",
-            "Hill shopkeepers reach customers beyond their valley.",
-            "Districts avoid the cost of stock-outs and stranded goods.",
-        ]),
-        ("Environmental", GREEN_MID, [
-            "No new fleet, so no additional vehicles on the road.",
-            "Deliveries ride in vehicles already making the trip.",
-            "Fewer empty return legs across mountain corridors.",
-        ]),
-        ("Governance", AMBER, [
-            "One accessibility picture across all NER districts.",
-            "Field reports become structured, auditable records.",
-            "Disruption is predicted, not recorded after the fact.",
-        ]),
-    ]
-    for i, (title, accent, lines) in enumerate(benefits):
-        x = Inches(0.5) + i * Inches(3.13)
-        card(s, x, Inches(3.3), Inches(2.98), title, lines,
-             accent=accent, body_size=9, h=Inches(2.05))
+    heading(s, Inches(0.9), Inches(3.15), Inches(5.6), "For people")
+    textbox(s, Inches(0.9), Inches(3.52), Inches(5.6), Inches(1.6),
+            ["Medicines and food reach villages that courier companies do not serve.",
+             "In an emergency, officials see a live map instead of making phone calls.",
+             "Alerts arrive in the language the person actually reads."],
+            size=12)
 
-    rect(s, Inches(0.5), Inches(5.55), Inches(12.34), Inches(1.1),
-         fill=WHITE, line=GREEN, line_w=1.5)
-    text(s, Inches(0.85), Inches(5.75), Inches(11.7), Inches(0.7),
-         [("Sukobin turns every journey already being made into delivery capacity — and every carrier into a road sensor.", 15, True, FOREST),
-          ("The network that carries the medicines is the same network that tells the government whether the road is open.", 12, False, GREY)],
-         line_spacing=1.4)
+    heading(s, Inches(6.9), Inches(3.15), Inches(5.6), "For income")
+    textbox(s, Inches(6.9), Inches(3.52), Inches(5.6), Inches(1.6),
+            ["Ordinary travellers earn money on a trip they were making anyway.",
+             "Shopkeepers in the hills can sell beyond their own town.",
+             "Districts lose less money to stock running out and goods getting stuck."],
+            size=12)
+
+    heading(s, Inches(0.9), Inches(5.2), Inches(5.6), "For the environment")
+    textbox(s, Inches(0.9), Inches(5.57), Inches(5.6), Inches(1.6),
+            ["No new delivery fleet, so no extra vehicles on the road.",
+             "Parcels ride in vehicles that were already going that way.",
+             "Fewer empty trips on long mountain routes."],
+            size=12)
+
+    heading(s, Inches(6.9), Inches(5.2), Inches(5.6), "For government")
+    textbox(s, Inches(6.9), Inches(5.57), Inches(5.6), Inches(1.6),
+            ["One clear picture of road access across all districts.",
+             "Field reports become proper records that can be checked later.",
+             "Problems are seen coming, not only written down afterwards."],
+            size=12)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 6 — Research and references
+# 6  Research and references
 # ─────────────────────────────────────────────────────────────────────────────
 def slide_research(prs):
-    s = blank(prs)
-    rect(s, 0, 0, W, H, fill=CREAM)
-    header(s, "05", "Research & References",
-           "Sources, data providers and the corridors the system is modelled on")
+    s = add(prs, 5)
+    set_title(s, "Research and References")
 
-    ch = Inches(2.28)
+    heading(s, Inches(0.9), Inches(1.35), Inches(5.6), "Data and services we use")
+    textbox(s, Inches(0.9), Inches(1.75), Inches(5.6), Inches(2.4),
+            ["OSRM — real road routes and other ways round",
+             "Open-Meteo — hourly rainfall, snow and temperature",
+             "OpenStreetMap and Esri — base maps",
+             "Vahan — checking vehicle registration numbers",
+             "Firebase — sending notifications to phones",
+             "MongoDB — storing and searching map data"],
+            size=12)
 
-    card(s, Inches(0.5), Inches(1.38), Inches(6.1), "Data sources and APIs",
-         [
-             "OSRM — road network routing and alternate paths",
-             "Open-Meteo — hourly rainfall, snowfall, temperature and elevation, no key required",
-             "OpenStreetMap and Esri — base cartography",
-             "Vahan — vehicle registration verification for carriers",
-             "Firebase Cloud Messaging — multilingual push delivery",
-             "MongoDB 2dsphere — geospatial corridor queries",
-         ], accent=GREEN, body_size=9.5, h=ch)
+    heading(s, Inches(6.9), Inches(1.35), Inches(5.6), "Main roads covered so far")
+    textbox(s, Inches(6.9), Inches(1.75), Inches(5.6), Inches(2.4),
+            ["NH-10 Siliguri to Gangtok — Sikkim's only main road",
+             "NH-2 Dimapur to Kohima to Imphal — Manipur's supply line",
+             "NH-6 Shillong to Silchar — cuts off the Barak Valley",
+             "NH-13 Tezpur to Tawang — closed by snow from December",
+             "NH-306 Silchar to Aizawl — Mizoram's all-weather road",
+             "12 main routes in total, across all eight states"],
+            size=12)
 
-    card(s, Inches(6.74), Inches(1.38), Inches(6.1), "NER corridors modelled",
-         [
-             "NH-10 Siliguri–Gangtok — Sikkim's lifeline, Teesta slides",
-             "NH-2 Dimapur–Kohima–Imphal — Manipur's main supply line",
-             "NH-6 Shillong–Jowai–Silchar — cuts off the Barak Valley",
-             "NH-27 Siliguri–Guwahati — the Siliguri Corridor",
-             "NH-13 Tezpur–Sela Pass–Tawang — snow closure Dec to Mar",
-             "NH-306 Silchar–Aizawl — Mizoram's only all-weather road",
-             "Plus NH-8, NH-715, NH-37, NH-127B, NH-29 — twelve in total",
-         ], accent=AMBER, body_size=9.5, h=ch)
+    heading(s, Inches(0.9), Inches(4.35), Inches(5.6), "Government sources")
+    textbox(s, Inches(0.9), Inches(4.75), Inches(5.6), Inches(2.2),
+            ["MDoNER — North East development plans",
+             "NHIDCL and BRO — highway and border road condition",
+             "NDMA — landslide and flood guidance",
+             "IMD — rainfall levels that lead to landslides",
+             "PMGSY — village road connectivity"],
+            size=12)
 
-    ch2 = Inches(1.95)
-
-    card(s, Inches(0.5), Inches(3.82), Inches(6.1), "Problem context",
-         [
-             "MDoNER — North East vision and infrastructure programmes",
-             "NHIDCL and BRO — highway and border road status in NER",
-             "NDMA — landslide and flood hazard guidance for the region",
-             "IMD — rainfall thresholds behind slope-failure reasoning",
-             "PMGSY — rural road connectivity for last-mile blocks",
-         ], accent=FOREST, body_size=9.5, h=ch2)
-
-    card(s, Inches(6.74), Inches(3.82), Inches(6.1), "Technical foundations",
-         [
-             "Probe-vehicle traffic estimation — inferring road condition from vehicle speed traces",
-             "Rainfall-threshold landslide models — antecedent rainfall as the dominant trigger on steep slopes",
-             "Crowdsourced logistics — capacity sharing on existing trips",
-             "Idempotent offline sync — client-generated keys for safe replay",
-         ], accent=GREY, body_size=9.5, h=ch2)
-
-    rect(s, Inches(0.5), Inches(6.02), Inches(12.34), Inches(0.8), fill=FOREST)
-    text(s, Inches(0.85), Inches(6.22), Inches(11.7), Inches(0.42),
-         [("Working code, live data, and a demo that runs end to end — repository and builds available on request.", 12, True, MINT)])
+    heading(s, Inches(6.9), Inches(4.35), Inches(5.6), "Ideas we build on")
+    textbox(s, Inches(6.9), Inches(4.75), Inches(5.6), Inches(2.2),
+            ["Judging road condition from vehicle speed is a known method in "
+             "traffic engineering.",
+             "Warning of landslides based on recent rainfall is widely used.",
+             "Sharing spare space in vehicles that are already travelling is "
+             "proven in other countries."],
+            size=12)
 
 
 def main():
     prs = new_deck()
-    for fn in (slide_title, slide_idea, slide_technical,
+    for fn in (slide_title, slide_solution, slide_technical,
                slide_feasibility, slide_impact, slide_research):
         fn(prs)
 
