@@ -52,3 +52,6 @@ backend/srv.*.log
 backend/srv.*.err
 ppt/preview/
 ~$*.pptx
+dashboard/vite.log
+dashboard/render-check.png
+dashboard/tab-*.png

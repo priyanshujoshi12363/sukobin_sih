@@ -5,6 +5,7 @@ import {
   CONNECTIVITY_COLOR,
   SEVERITY_COLOR,
   timeAgo,
+  pct,
 } from "../api";
 
 export function StatCards({ overview }) {
@@ -393,6 +394,224 @@ export function EmergencyPanel({ emergency }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Clause (g) of the problem statement asks for bottlenecks by name. Exposure is
+ * scored on the server; this shows the ranking and, for each one, the reason it
+ * scored, so an officer can argue with it.
+ */
+export function BottleneckPanel({ data, onSelect }) {
+  if (!data) return <div className="empty">Loading weak points...</div>;
+  if (!data.bottlenecks?.length) return <div className="empty">No weak points scored.</div>;
+
+  return (
+    <div className="scroll-body">
+      <div className="kv" style={{ marginBottom: 10 }}>
+        <span>{data.criticalNow} blocked now</span>
+        <span>{data.atRiskSoon} likely within 3 days</span>
+      </div>
+
+      {data.bottlenecks.map((b) => (
+        <div className="alert" key={b.segmentId} onClick={() => onSelect?.(b.segmentId)}>
+          <div className="t" style={{ display: "flex", gap: 8 }}>
+            <span
+              className="num"
+              style={{
+                color: exposureColor(b.exposure),
+                minWidth: 26,
+                fontWeight: 700,
+              }}
+            >
+              {b.exposure}
+            </span>
+            <span style={{ flex: 1 }}>{b.name}</span>
+            <span className="status-chip" style={{ color: STATUS_COLOR[b.status] }}>
+              {b.status.toLowerCase()}
+            </span>
+          </div>
+
+          <div className="d">{b.reasons.join(" · ")}</div>
+
+          <div className="kv" style={{ marginTop: 6 }}>
+            <span>{Math.round(b.lengthKm)} km</span>
+            <span>
+              3-day risk {pct(b.forecast.h24)} / {pct(b.forecast.h48)} / {pct(b.forecast.h72)}
+            </span>
+          </div>
+
+          {b.lifelineFor?.length > 0 && (
+            <div style={{ marginTop: 6 }}>
+              <span className="tag">lifeline: {b.lifelineFor.join(", ")}</span>
+            </div>
+          )}
+        </div>
+      ))}
+
+      <div className="empty" style={{ marginTop: 10, fontSize: 11, textAlign: "left" }}>
+        {data.scoring}
+      </div>
+    </div>
+  );
+}
+
+function exposureColor(n) {
+  if (n >= 75) return "#ef4444";
+  if (n >= 50) return "#f97316";
+  if (n >= 25) return "#eab308";
+  return "#22c55e";
+}
+
+/**
+ * The trained model's three-day outlook, with the model card underneath so the
+ * numbers can be judged rather than just believed.
+ */
+export function ForecastPanel({ data, onSelect }) {
+  if (!data) return <div className="empty">Loading forecast...</div>;
+
+  const { upcoming = [], model, importance = [] } = data;
+
+  return (
+    <div className="scroll-body">
+      {upcoming.length === 0 ? (
+        <div className="empty">Nothing is expected to close in the next three days.</div>
+      ) : (
+        upcoming.map((u) => (
+          <div className="alert" key={u.segmentId} onClick={() => onSelect?.(u.segmentId)}>
+            <div className="t" style={{ display: "flex", gap: 8 }}>
+              <span style={{ flex: 1 }}>{u.name}</span>
+              <span style={{ color: RISK_COLOR[u.level], fontWeight: 700 }}>
+                {pct(u.peakProbability)}
+              </span>
+            </div>
+
+            <div className="bars" style={{ marginTop: 6 }}>
+              {[
+                ["24h", u.h24],
+                ["48h", u.h48],
+                ["72h", u.h72],
+              ].map(([label, v]) => (
+                <div className="bar-row" key={label}>
+                  <span style={{ minWidth: 26 }}>{label}</span>
+                  <div className="bar-track">
+                    <div
+                      className="bar-fill"
+                      style={{
+                        width: `${(v || 0) * 100}%`,
+                        background: RISK_COLOR[u.level] || "#64748b",
+                      }}
+                    />
+                  </div>
+                  <span className="n">{pct(v)}</span>
+                </div>
+              ))}
+            </div>
+
+            {u.drivers?.length > 0 && (
+              <div className="d" style={{ marginTop: 6 }}>
+                {u.drivers.map((d) => d.factor).join(", ")}
+              </div>
+            )}
+
+            {(u.isChokepoint || u.lifelineFor?.length > 0) && (
+              <div style={{ marginTop: 6 }}>
+                {u.isChokepoint && <span className="tag">weak point</span>}
+                {u.lifelineFor?.length > 0 && (
+                  <span className="tag">lifeline: {u.lifelineFor.join(", ")}</span>
+                )}
+              </div>
+            )}
+          </div>
+        ))
+      )}
+
+      {model?.available && (
+        <div className="section" style={{ borderTop: "1px solid var(--line)", marginTop: 12 }}>
+          <h2>How this is predicted</h2>
+
+          <div className="kv">
+            <span>model</span>
+            <span>{model.chosen === "gbt" ? "boosted trees" : "logistic regression"}</span>
+          </div>
+          <div className="kv">
+            <span>trained on</span>
+            <span>{(model.dataset?.rows || 0).toLocaleString()} road-days</span>
+          </div>
+          <div className="kv">
+            <span>observed weather</span>
+            <span>
+              {model.dataset?.segments} stretches x {model.dataset?.daysPerSegment} days
+            </span>
+          </div>
+          <div className="kv">
+            <span>ranking accuracy (AUC)</span>
+            <span>{model.metrics?.auc}</span>
+          </div>
+          <div className="kv">
+            <span>average error (Brier)</span>
+            <span>{model.metrics?.brier}</span>
+          </div>
+          <div className="kv">
+            <span>held out</span>
+            <span>everything after {model.dataset?.splitDate}</span>
+          </div>
+
+          <h2 style={{ marginTop: 12 }}>What it weighs</h2>
+          <div className="bars">
+            {importance.map((f) => (
+              <div className="bar-row" key={f.feature}>
+                <span style={{ flex: "0 0 44%" }}>{f.label}</span>
+                <div className="bar-track">
+                  <div
+                    className="bar-fill"
+                    style={{ width: `${f.weight * 100}%`, background: "#38bdf8" }}
+                  />
+                </div>
+                <span className="n">{Math.round(f.weight * 100)}%</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="empty" style={{ marginTop: 10, fontSize: 11, textAlign: "left" }}>
+            {model.dataset?.labelNote}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * A map that is mostly grey should say why rather than look broken.
+ */
+export function CoverageBar({ coverage }) {
+  if (!coverage) return null;
+
+  const rows = [
+    ["status known", coverage.percentStatusKnown, "#22c55e"],
+    ["live vehicle data", coverage.percentWithVehicles, "#38bdf8"],
+    ["3-day forecast", coverage.percentWithForecast, "#a78bfa"],
+  ];
+
+  return (
+    <div className="section">
+      <h2>What we can see</h2>
+      <div className="bars">
+        {rows.map(([label, value, colour]) => (
+          <div className="bar-row" key={label}>
+            <span style={{ flex: "0 0 46%" }}>{label}</span>
+            <div className="bar-track">
+              <div className="bar-fill" style={{ width: `${value}%`, background: colour }} />
+            </div>
+            <span className="n">{value}%</span>
+          </div>
+        ))}
+      </div>
+      <div className="empty" style={{ marginTop: 8, fontSize: 11, textAlign: "left" }}>
+        {coverage.note}
+      </div>
     </div>
   );
 }

@@ -510,19 +510,26 @@ tbody tr:hover {
 
 .tabs {
   display: flex;
-  gap: 4px;
-  padding: 10px 16px 0;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding: 10px 14px 0;
 }
 
 .tab {
   background: none;
   border: none;
   color: var(--text-faint);
-  padding: 7px 11px;
+  padding: 7px 9px;
   font-size: 12px;
   font-weight: 700;
+  white-space: nowrap;
   border-radius: 7px 7px 0 0;
   border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--text);
 }
 
 .tab.on {
@@ -531,6 +538,8 @@ tbody tr:hover {
 }
 
 .scroll-body {
-  max-height: 340px;
+  /* The rail is full height; capping this at a few hundred pixels hid most of
+     the weak-point and forecast lists behind an empty panel. */
+  max-height: calc(100vh - 210px);
   overflow-y: auto;
 }

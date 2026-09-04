@@ -32,6 +32,12 @@ export const api = {
   incidents: (days = 30) => get(`/api/incident?days=${days}`),
   planRoute: (from, to) => post("/api/dashboard/plan-route", { from, to }),
   refresh: () => post("/api/dashboard/refresh"),
+  bottlenecks: () => get("/api/dashboard/bottlenecks"),
+  forecast: () => get("/api/dashboard/forecast"),
+  liveAlerts: (lang = "en") => get(`/api/dashboard/live-alerts?lang=${lang}`),
+  coverage: () => get("/api/dashboard/coverage"),
+  refreshForecast: () => post("/api/dashboard/forecast/refresh"),
+  scanAlerts: () => post("/api/dashboard/alerts/scan"),
 };
 
 export const STATUS_COLOR = {
@@ -63,6 +69,17 @@ export const SEVERITY_COLOR = {
   MEDIUM: "#eab308",
   LOW: "#64748b",
 };
+
+export const FORECAST_COLOR = {
+  LOW: "#22c55e",
+  MODERATE: "#eab308",
+  HIGH: "#f97316",
+  SEVERE: "#ef4444",
+};
+
+export function pct(v) {
+  return v === null || v === undefined ? "-" : `${Math.round(v * 100)}%`;
+}
 
 export function timeAgo(iso) {
   if (!iso) return "";

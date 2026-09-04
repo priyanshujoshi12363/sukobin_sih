@@ -2,11 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import MapView from "./components/MapView";
 import {
   AlertsPanel,
+  BottleneckPanel,
   ConsignmentTable,
   CorridorList,
+  CoverageBar,
   DistrictTable,
   Distribution,
   EmergencyPanel,
+  ForecastPanel,
   RoutePlanner,
   StatCards,
 } from "./components/Panels";
@@ -24,6 +27,9 @@ export default function App() {
   const [consignments, setConsignments] = useState([]);
   const [incidents, setIncidents] = useState(null);
   const [emergency, setEmergency] = useState(null);
+  const [bottlenecks, setBottlenecks] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [coverage, setCoverage] = useState(null);
 
   const [colorBy, setColorBy] = useState("status");
   const [showVehicles, setShowVehicles] = useState(true);
@@ -41,16 +47,19 @@ export default function App() {
 
   const load = useCallback(async () => {
     try {
-      const [o, s, d, c, a, v, cn, inc, em] = await Promise.all([
+      const [o, s, d, c, a, v, cn, inc, em, bn, fc, cov] = await Promise.all([
         api.overview(),
         api.segments(),
         api.districts(),
         api.corridors(),
-        api.alerts(),
+        api.liveAlerts(),
         api.vehicles(),
         api.consignments(),
         api.incidents(30),
         api.emergency(),
+        api.bottlenecks(),
+        api.forecast(),
+        api.coverage(),
       ]);
       setOverview(o);
       setSegments(s);
@@ -61,6 +70,9 @@ export default function App() {
       setConsignments(cn.consignments);
       setIncidents(inc.geojson);
       setEmergency(em);
+      setBottlenecks(bn);
+      setForecast(fc);
+      setCoverage(cov);
       setLastSync(new Date().toISOString());
       setError(null);
     } catch (e) {
@@ -78,6 +90,8 @@ export default function App() {
     setRefreshing(true);
     try {
       await api.refresh();
+      await api.refreshForecast();
+      await api.scanAlerts();
       await load();
     } catch (e) {
       setError(e.message);
@@ -155,6 +169,8 @@ export default function App() {
             />
           )}
 
+          <CoverageBar coverage={coverage} />
+
           <div className="tabs">
             <button
               className={`tab ${leftTab === "districts" ? "on" : ""}`}
@@ -201,7 +217,13 @@ export default function App() {
               className={`toggle ${colorBy === "risk" ? "on" : ""}`}
               onClick={() => setColorBy("risk")}
             >
-              Risk
+              Risk now
+            </button>
+            <button
+              className={`toggle ${colorBy === "forecast" ? "on" : ""}`}
+              onClick={() => setColorBy("forecast")}
+            >
+              3-day forecast
             </button>
             <button
               className={`toggle ${showVehicles ? "on" : ""}`}
@@ -218,8 +240,26 @@ export default function App() {
           </div>
 
           <div className="legend">
-            <h3>{colorBy === "risk" ? "Predicted risk" : "Accessibility"}</h3>
-            {colorBy === "risk"
+            <h3>
+              {colorBy === "risk"
+                ? "Risk right now"
+                : colorBy === "forecast"
+                ? "Chance of closing in 3 days"
+                : "Accessibility"}
+            </h3>
+            {colorBy === "forecast"
+              ? [
+                  ["under 15%", "#22c55e"],
+                  ["15-35%", "#eab308"],
+                  ["35-60%", "#f97316"],
+                  ["over 60%", "#ef4444"],
+                ].map(([k, c]) => (
+                  <div className="legend-row" key={k}>
+                    <span className="legend-swatch" style={{ background: c }} />
+                    {k}
+                  </div>
+                ))
+              : colorBy === "risk"
               ? [
                   ["Low", "#22c55e"],
                   ["Moderate", "#eab308"],
@@ -252,7 +292,7 @@ export default function App() {
 
         <aside className="rail right">
           <div className="tabs">
-            {["alerts", "route", "supplies", "emergency"].map((t) => (
+            {["alerts", "weak points", "forecast", "route", "supplies", "emergency"].map((t) => (
               <button
                 key={t}
                 className={`tab ${rightTab === t ? "on" : ""}`}
@@ -265,6 +305,8 @@ export default function App() {
 
           <div className="section" style={{ borderTop: "1px solid var(--line)" }}>
             {rightTab === "alerts" && <AlertsPanel alerts={alerts} />}
+            {rightTab === "weak points" && <BottleneckPanel data={bottlenecks} />}
+            {rightTab === "forecast" && <ForecastPanel data={forecast} />}
             {rightTab === "route" && (
               <RoutePlanner onPlan={handlePlan} plan={plan} planning={planning} />
             )}

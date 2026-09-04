@@ -120,7 +120,7 @@ export const segmentsGeoJson = async (req, res) => {
     if (req.query.chokepoints === "true") filter.isChokepoint = true;
 
     const segments = await RoadSegment.find(filter).select(
-      "segmentId name corridorCode status statusNote statusUpdatedAt lengthKm terrain kind districts states lifelineFor isChokepoint chokepointNote risk geometry baselineSpeedKmph probe hazard openIncidentCount"
+      "segmentId name corridorCode status statusNote statusUpdatedAt lengthKm terrain kind districts states lifelineFor isChokepoint chokepointNote risk forecast geometry baselineSpeedKmph probe hazard openIncidentCount"
     );
 
     res.json({
@@ -155,6 +155,16 @@ export const segmentsGeoJson = async (req, res) => {
             observedSpeedKmph: s.probe?.medianSpeedKmph ?? null,
             speedRatio: s.probe?.speedRatio ?? null,
             probeVehicles: s.probe?.distinctVehicles || 0,
+            forecastH24: s.forecast?.h24?.probability ?? null,
+            forecastH48: s.forecast?.h48?.probability ?? null,
+            forecastH72: s.forecast?.h72?.probability ?? null,
+            forecastLevel: s.forecast?.h72?.level ?? null,
+            forecastPeak: Math.max(
+              s.forecast?.h24?.probability ?? 0,
+              s.forecast?.h48?.probability ?? 0,
+              s.forecast?.h72?.probability ?? 0
+            ),
+            forecastDrivers: (s.forecast?.h72?.drivers || []).map((d) => d.factor),
             landslideProne: s.hazard?.landslideProne || false,
             floodProne: s.hazard?.floodProne || false,
             openIncidents: s.openIncidentCount || 0,

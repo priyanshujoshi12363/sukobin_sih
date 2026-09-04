@@ -66,6 +66,23 @@ const riskExpression = [
   "#ef4444",
 ];
 
+// The model's three-day outlook, on the same scale the legend describes.
+const forecastExpression = [
+  "interpolate",
+  ["linear"],
+  ["coalesce", ["get", "forecastPeak"], 0],
+  0,
+  "#22c55e",
+  0.15,
+  "#84cc16",
+  0.35,
+  "#eab308",
+  0.6,
+  "#f97316",
+  0.85,
+  "#ef4444",
+];
+
 export default function MapView({
   segments,
   vehicles,
@@ -298,7 +315,12 @@ export default function MapView({
 
   useEffect(() => {
     if (!ready.current || !map.current) return;
-    const expr = colorBy === "risk" ? riskExpression : statusExpression;
+    const expr =
+      colorBy === "risk"
+        ? riskExpression
+        : colorBy === "forecast"
+        ? forecastExpression
+        : statusExpression;
     map.current.setPaintProperty("segments-line", "line-color", expr);
     map.current.setPaintProperty("segments-glow", "line-color", expr);
   }, [colorBy]);
@@ -335,11 +357,19 @@ function showSegmentPopup(m, lngLat, p) {
        <div class="popup-row"><span>Terrain</span><b>${esc(p.terrain)}</b></div>
        <div class="popup-row"><span>Rain 72h</span><b>${Number(p.rain72hMm).toFixed(0)} mm</b></div>
        ${speed ? `<div class="popup-row"><span>Observed</span><b>${speed} km/h vs ${p.baselineSpeedKmph}</b></div>` : ""}
+       ${p.forecastH72 !== undefined && p.forecastH72 !== null && p.forecastH72 !== "null"
+         ? `<div class="popup-row"><span>Closing risk</span><b>${fpc(p.forecastH24)} / ${fpc(p.forecastH48)} / ${fpc(p.forecastH72)}</b></div>`
+         : ""}
        ${top ? `<div style="margin-top:7px;color:#93a89b;line-height:1.4">Top driver: ${esc(top.factor)} ${esc(top.detail || "")}</div>` : ""}
        ${p.statusNote ? `<div style="margin-top:6px;color:#93a89b;line-height:1.4">${esc(p.statusNote)}</div>` : ""}
        ${safeParse(p.lifelineFor)?.length ? `<div style="margin-top:7px"><span class="tag">lifeline: ${esc(safeParse(p.lifelineFor).join(", "))}</span></div>` : ""}`
     )
     .addTo(m);
+}
+
+function fpc(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? `${Math.round(n * 100)}%` : "-";
 }
 
 function safeParse(v) {

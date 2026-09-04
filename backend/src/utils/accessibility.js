@@ -1,6 +1,6 @@
 import RoadSegment from "../models/roadSegment.model.js";
 import Incident from "../models/incident.model.js";
-import { refreshSegmentProbe, probeVerdict } from "./probes.js";
+import { refreshSegmentProbe, probeVerdict, PROBE_MIN_VEHICLES } from "./probes.js";
 import { fetchWeather } from "./weather.js";
 import { scoreSegmentRisk } from "./risk.js";
 import { distToRouteKm } from "./geo.js";
@@ -19,6 +19,47 @@ export async function activeIncidentsFor(segmentId) {
   })
     .sort({ capturedAt: -1 })
     .limit(20);
+}
+
+/**
+ * A blocking report older than the lookback window stops counting towards the
+ * road's status, but it used to stay open in the incident log for ever. If the
+ * road has since been observed flowing normally, close the report and say why,
+ * so the log matches what actually happened and the officer who filed it sees
+ * the outcome.
+ */
+export async function autoResolveClearedIncidents(segment) {
+  if (!segment?.segmentId) return [];
+  if (segment.status !== "OPEN") return [];
+
+  const ratio = segment.probe?.speedRatio;
+  const vehicles = segment.probe?.distinctVehicles || 0;
+  if (ratio == null || ratio < 0.75 || vehicles < PROBE_MIN_VEHICLES) return [];
+
+  const cutoff = new Date(Date.now() - INCIDENT_LOOKBACK_HOURS * 3600000);
+
+  const stale = await Incident.find({
+    segmentId: segment.segmentId,
+    status: { $in: ["REPORTED", "VERIFIED"] },
+    capturedAt: { $lt: cutoff },
+  });
+
+  const closed = [];
+  for (const inc of stale) {
+    inc.status = "RESOLVED";
+    inc.resolvedAt = new Date();
+    inc.verificationNote = [
+      inc.verificationNote,
+      `Closed automatically: ${vehicles} vehicles observed at ` +
+        `${Math.round(ratio * 100)}% of normal speed after the report window.`,
+    ]
+      .filter(Boolean)
+      .join(" ");
+    await inc.save();
+    closed.push(inc.incidentId);
+  }
+
+  return closed;
 }
 
 export function resolveStatus({ segment, incidents = [], weather = null, risk = null }) {
@@ -137,6 +178,8 @@ export async function refreshSegment(segmentOrId, { withWeather = true } = {}) {
 
   await segment.save();
 
+  const autoResolved = await autoResolveClearedIncidents(segment);
+
   for (const inc of incidents) {
     const pv = probeVerdict(segment);
     if (pv && SEVERITY_RANK[pv.status] >= 2 && !inc.corroboratedByProbe) {
@@ -146,7 +189,7 @@ export async function refreshSegment(segmentOrId, { withWeather = true } = {}) {
     }
   }
 
-  return { segment, resolved, risk, weather, changed };
+  return { segment, resolved, risk, weather, changed, autoResolved };
 }
 
 export async function refreshAllSegments({ withWeather = true, concurrency = 4 } = {}) {
