@@ -4,7 +4,30 @@ import RoadSegment from "../models/roadSegment.model.js";
 import { matchToSegment } from "../utils/probes.js";
 import { refreshSegment } from "../utils/accessibility.js";
 import { classifyReport, statusFromClassification } from "../utils/incidentAI.js";
-import { haversineKm } from "../utils/geo.js";
+import { haversineKm, distToRouteKm } from "../utils/geo.js";
+
+// An officer standing beside a road is often a few km from the modelled
+// centreline, especially on hairpins. Matching only within 3 km orphaned real
+// reports, so the app sends the road the officer actually picked and this is
+// the fallback when it does not.
+const INCIDENT_MATCH_KM = Number(process.env.INCIDENT_MATCH_KM) || 8;
+
+async function resolveSegment(explicitId, coordinates) {
+  if (explicitId) {
+    const chosen = await RoadSegment.findOne({ segmentId: explicitId }).select(
+      "segmentId name corridorCode districts states geometry status"
+    );
+    if (chosen) return chosen;
+  }
+  return matchToSegment(coordinates, INCIDENT_MATCH_KM);
+}
+
+function offsetKm(coordinates, segment) {
+  const line = segment?.geometry?.coordinates;
+  if (!Array.isArray(line) || !line.length) return null;
+  const d = distToRouteKm(coordinates, line);
+  return Number.isFinite(d) ? +d.toFixed(2) : null;
+}
 
 const newIncidentId = () =>
   `INC-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
@@ -53,6 +76,7 @@ export const createIncident = async (req, res) => {
       capturedAt,
       wasOffline,
       impact,
+      segmentId: chosenSegmentId,
     } = req.body;
 
     if (!clientId) {
@@ -79,7 +103,7 @@ export const createIncident = async (req, res) => {
       });
     }
 
-    const segment = await matchToSegment(coordinates, 3);
+    const segment = await resolveSegment(chosenSegmentId, coordinates);
 
     const classified = await classifyReport({
       text: description,
@@ -106,9 +130,7 @@ export const createIncident = async (req, res) => {
       state: state || segment?.states?.[0],
       segment: segment?._id,
       segmentId: segment?.segmentId,
-      distanceToSegmentKm: segment
-        ? +haversineKm(coordinates, segment.geometry?.coordinates?.[0] || coordinates).toFixed(2)
-        : null,
+      distanceToSegmentKm: segment ? offsetKm(coordinates, segment) : null,
       capturedAt: capturedAt ? new Date(capturedAt) : new Date(),
       syncedAt: new Date(),
       wasOffline: Boolean(wasOffline),
@@ -139,6 +161,7 @@ export const createIncident = async (req, res) => {
       message: "Incident recorded",
       data: {
         incident,
+        unmatched: !segment,
         classification: {
           source: classified.source,
           confidence: classified.confidence,
@@ -222,7 +245,7 @@ function reporterKeys(req) {
 
 async function createOne(req) {
   const b = req.body;
-  const segment = await matchToSegment(b.coordinates, 3);
+  const segment = await resolveSegment(b.segmentId, b.coordinates);
 
   const classified = await classifyReport({
     text: b.description,
@@ -246,6 +269,7 @@ async function createOne(req) {
     state: b.state || segment?.states?.[0],
     segment: segment?._id,
     segmentId: segment?.segmentId,
+    distanceToSegmentKm: segment ? offsetKm(b.coordinates, segment) : null,
     capturedAt: b.capturedAt ? new Date(b.capturedAt) : new Date(),
     syncedAt: new Date(),
     wasOffline: true,

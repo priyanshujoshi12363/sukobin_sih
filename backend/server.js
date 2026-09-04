@@ -15,6 +15,7 @@ import parcelRoutes from "./src/routes/parcelRoutes.js"
 import partnerRoutes from "./src/routes/partnerRoutes.js"
 import dashboardRoutes from "./src/routes/dashboardRoutes.js"
 import incidentRoutes from "./src/routes/incidentRoutes.js"
+import officerRoutes from "./src/routes/officerRoutes.js"
 import { razorpayWebhook } from "./src/controller/orderController.js"
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use('/api/parcel' , parcelRoutes)
 app.use('/api/partner' , partnerRoutes)
 app.use("/api/dashboard", dashboardRoutes)
 app.use("/api/incident", incidentRoutes)
+app.use("/api/officer", officerRoutes)
 
 app.get('/', (req, res) => {
   res.status(200).json({

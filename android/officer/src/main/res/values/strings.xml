@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sukobin Officer</string>
+
+    <string name="splash_tagline">Road access, seen from the ground</string>
+    <string name="splash_status_verify">Checking your sign-in</string>
+    <string name="splash_status_offline">No connection - working offline</string>
+    <string name="splash_status_syncing">Sending saved reports</string>
+
+    <string name="login_title">Field officer sign-in</string>
+    <string name="login_sub">Use the mobile number registered with your department.</string>
+    <string name="login_phone_hint">10-digit mobile number</string>
+    <string name="login_continue">Continue</string>
+    <string name="login_footnote">Only registered officers of PWD, Disaster Management, District Administration, BRO and NHIDCL can sign in.</string>
+
+    <string name="otp_title">Enter the code</string>
+    <string name="otp_verify">Verify</string>
+
+    <string name="register_title">Register as an officer</string>
+    <string name="register_sub">Tell us what you cover so you only see the roads you are responsible for.</string>
+    <string name="register_name">Full name</string>
+    <string name="register_employee">Employee ID (optional)</string>
+    <string name="register_designation">Designation (optional)</string>
+    <string name="register_department">Department</string>
+    <string name="register_level">You cover a</string>
+    <string name="register_district">District</string>
+    <string name="register_state">State</string>
+    <string name="register_language">Language for alerts</string>
+    <string name="register_submit">Create account</string>
+
+    <string name="tab_home">Overview</string>
+    <string name="tab_roads">Roads</string>
+    <string name="tab_forecast">Forecast</string>
+    <string name="tab_profile">You</string>
+    <string name="report_road">Report</string>
+
+    <string name="home_alerts">What needs attention</string>
+    <string name="home_no_alerts">Nothing needs your attention right now.</string>
+
+    <string name="roads_search">Search a road</string>
+    <string name="roads_empty">No roads match this filter.</string>
+
+    <string name="forecast_empty">Nothing looks likely to close in the next three days.</string>
+    <string name="forecast_model">How this forecast is made</string>
+
+    <string name="profile_reports">Your reports</string>
+    <string name="profile_no_reports">You have not sent a report yet.</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_sync">Send now</string>
+
+    <string name="report_title">Report from the field</string>
+    <string name="report_finding_location">Finding your location…</string>
+    <string name="report_update_location">Update location</string>
+    <string name="report_try_again">Try again</string>
+    <string name="report_looking_for_roads">Looking for roads near you…</string>
+    <string name="report_no_roads_near">No mapped road within 30 km. The report will still be saved.</string>
+    <string name="report_offline_road_hint">No signal. The road will be worked out when this is sent.</string>
+    <string name="report_road_distance">%1$s from where you are standing</string>
+    <string name="report_which_road">Which road</string>
+    <string name="report_what_happened">What happened</string>
+    <string name="report_how_bad">How bad is it</string>
+    <string name="report_describe">Describe it in your own words</string>
+    <string name="report_describe_helper">Write in Hindi, English or a mix. The system reads it and works out the effect on traffic.</string>
+    <string name="report_describe_error">Please describe what you can see</string>
+    <string name="report_blocks">Traffic cannot pass at all</string>
+    <string name="report_clearance">Hours to clear (if you know)</string>
+    <string name="report_save">Save report</string>
+    <string name="report_save_hint">Saved on this phone first, then sent when there is signal.</string>
+    <string name="report_need_location">Waiting for a GPS fix.</string>
+    <string name="report_sent">Report sent</string>
+    <string name="report_saved_offline">Saved. It will be sent when you have signal.</string>
+
+    <string name="verify_title">Reports to confirm</string>
+    <string name="verify_empty">Nothing is waiting for you.</string>
+    <string name="verify_confirm">Confirm</string>
+    <string name="verify_reject">Reject</string>
+
+    <string name="common_retry">Try again</string>
+    <string name="common_back">Back</string>
+</resources>

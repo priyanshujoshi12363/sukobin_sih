@@ -45,3 +45,10 @@ ppt/preview/
 srv.out.log
 srv.err.log
 .devdb/
+
+# ── local run artefacts ──
+backend/.cache/
+backend/srv.*.log
+backend/srv.*.err
+ppt/preview/
+~$*.pptx

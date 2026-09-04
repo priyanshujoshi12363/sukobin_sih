@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="officer_navy">#12263A</color>
+    <color name="officer_navy_deep">#0B1A29</color>
+    <color name="officer_steel">#2F5D7C</color>
+    <color name="officer_sky">#8FB8D4</color>
+    <color name="officer_paper">#F7F9FB</color>
+</resources>

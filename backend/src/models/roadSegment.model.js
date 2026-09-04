@@ -20,6 +20,15 @@ const lineStringSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const forecastWindowSchema = new mongoose.Schema(
+  {
+    probability: { type: Number, min: 0, max: 1 },
+    level: { type: String, enum: RISK_LEVEL },
+    drivers: [{ factor: String, contribution: Number, _id: false }],
+  },
+  { _id: false }
+);
+
 const roadSegmentSchema = new mongoose.Schema(
   {
     segmentId: { type: String, required: true, unique: true, trim: true, index: true },
@@ -69,6 +78,17 @@ const roadSegmentSchema = new mongoose.Schema(
       rain72hMm: { type: Number, default: 0 },
       computedAt: { type: Date },
       validUntil: { type: Date },
+    },
+
+    // What the trained model expects over the next three days. risk above
+    // describes conditions now; this is the part an officer can act on early.
+    forecast: {
+      h24: forecastWindowSchema,
+      h48: forecastWindowSchema,
+      h72: forecastWindowSchema,
+      model: { type: String },
+      source: { type: String },
+      computedAt: { type: Date },
     },
 
     hazard: {

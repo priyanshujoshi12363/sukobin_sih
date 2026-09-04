@@ -89,3 +89,72 @@ export async function fetchWeatherBatch(points, concurrency = 6) {
 }
 
 export const clearWeatherCache = () => cache.clear();
+
+// ── forecast windows for the ML risk model ──────────────────────────────────
+// The risk score above describes conditions now. The model needs the shape of
+// the next three days, so this pulls a longer forecast and slices it into the
+// windows buildRow() expects.
+
+const windowCache = new Map();
+const WINDOW_TTL_MS = Number(process.env.FORECAST_CACHE_MS) || 45 * 60 * 1000;
+
+export const PREDICTION_HORIZONS = [24, 48, 72];
+
+export async function fetchPredictionWindows(coordinates) {
+  if (!Array.isArray(coordinates) || coordinates.length !== 2) return null;
+  const [lng, lat] = coordinates;
+  const k = keyOf(lng, lat);
+
+  const hit = windowCache.get(k);
+  if (hit && Date.now() - hit.at < WINDOW_TTL_MS) return hit.value;
+
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lng),
+    hourly: "precipitation,snowfall,temperature_2m",
+    past_days: "3",
+    forecast_days: "4",
+    timezone: "Asia/Kolkata",
+  });
+
+  try {
+    const res = await fetch(`${OPEN_METEO}?${params}`, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`open-meteo ${res.status}`);
+    const data = await res.json();
+
+    const times = data?.hourly?.time || [];
+    const precip = data?.hourly?.precipitation || [];
+    const snow = data?.hourly?.snowfall || [];
+    const temp = data?.hourly?.temperature_2m || [];
+
+    const nowIso = new Date().toISOString().slice(0, 13);
+    let now = times.findIndex((t) => String(t).slice(0, 13) >= nowIso);
+    if (now < 0) now = Math.min(times.length - 1, 72);
+
+    const rainPast24Mm = +sum(precip, now - 24, now).toFixed(1);
+    const rainPast72Mm = +sum(precip, now - 72, now).toFixed(1);
+
+    const windows = {};
+    for (const h of PREDICTION_HORIZONS) {
+      const slice = (arr) => (arr || []).slice(now, now + h).map((n) => Number(n) || 0);
+      const rain = slice(precip);
+      const temps = slice(temp);
+      windows[h] = {
+        rainPast24Mm,
+        rainPast72Mm,
+        rainHorizonMm: +rain.reduce((a, b) => a + b, 0).toFixed(1),
+        maxHourlyHorizonMm: +Math.max(0, ...rain).toFixed(1),
+        snowHorizonCm: +slice(snow).reduce((a, b) => a + b, 0).toFixed(1),
+        freezeHours: temps.filter((t) => t <= 0).length,
+      };
+    }
+
+    const value = { windows, fetchedAt: new Date(), source: "open-meteo" };
+    windowCache.set(k, { at: Date.now(), value });
+    return value;
+  } catch {
+    return hit ? hit.value : null;
+  }
+}
+
+export const clearForecastCache = () => windowCache.clear();

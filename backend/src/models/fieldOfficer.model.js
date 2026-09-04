@@ -57,6 +57,7 @@ const fieldOfficerSchema = new mongoose.Schema(
 
     expoPushToken: { type: String },
     fcmToken: { type: String },
+    pushPlatform: { type: String, enum: ["expo", "android", "ios"] },
     watchedCorridors: [String],
 
     stats: {
@@ -75,11 +76,12 @@ const fieldOfficerSchema = new mongoose.Schema(
 
 fieldOfficerSchema.index({ "jurisdiction.state": 1, "jurisdiction.district": 1 });
 
-fieldOfficerSchema.pre("save", function (next) {
+// Who may confirm a report is derived from the jurisdiction, never sent by the
+// client. Zero-arity so mongoose runs it as a synchronous hook.
+fieldOfficerSchema.pre("save", function () {
   const senior = this.jurisdiction?.level === "STATE" || this.jurisdiction?.level === "REGION";
   this.canVerifyIncidents = senior;
   this.canOverrideSegmentStatus = senior;
-  next();
 });
 
 fieldOfficerSchema.methods.covers = function (district, state) {

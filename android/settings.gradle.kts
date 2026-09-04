@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "sukobin"
-include(":core", ":customer", ":mart", ":partner")
+include(":core", ":customer", ":mart", ":partner", ":officer")

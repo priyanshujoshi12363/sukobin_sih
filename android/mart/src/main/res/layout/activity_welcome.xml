@@ -21,6 +21,70 @@
         android:fitsSystemWindows="true"
         android:scrollbars="none">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="72dp"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_mint"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:text="@string/welcome_kicker"
+                android:textColor="#1A3B32"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/welcome_line1"
+                android:textColor="@color/gray_500"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/welcome_headline"
+                android:textColor="#1A3B32"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:lineSpacingExtra="4dp"
+                android:text="@string/welcome_sub"
+                android:textColor="@color/gray_600"
+                android:textSize="14sp" />
+
+            <include
+                android:id="@+id/step1"
+                layout="@layout/item_welcome_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp" />
+
+            <include
+                android:id="@+id/step2"
+                layout="@layout/item_welcome_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp" />
+
+            <include
+                android:id="@+id/step3"
+                layout="@layout/item_welcome_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp" />
 
             <Space
                 android:layout_width="match_parent"

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="20dp">
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/bg_search"
+            android:hint="@string/roads_search"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:textColor="@color/gray_800"
+            android:textColorHint="@color/gray_400"
+            android:textSize="14sp" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="16dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filterGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="All roads"
+                    android:textSize="13sp"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeColor="@color/gray_200"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBlocked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="Blocked"
+                    android:textSize="13sp"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeColor="@color/gray_200"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDifficult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="Difficult"
+                    android:textSize="13sp"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeColor="@color/gray_200"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipChoke"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="Weak points"
+                    android:textSize="13sp"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeColor="@color/gray_200"
+                    app:chipStrokeWidth="1dp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRisk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="At risk"
+                    android:textSize="13sp"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeColor="@color/gray_200"
+                    app:chipStrokeWidth="1dp" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/countLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/gray_400"
+            android:textSize="11sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/roadList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp" />
+
+        <TextView
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingVertical="40dp"
+            android:text="@string/roads_empty"
+            android:textColor="@color/gray_500"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/errorState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingVertical="48dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/errorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray_500"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btnRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_pill_unknown"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="@string/common_retry"
+                android:textColor="@color/gray_700"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

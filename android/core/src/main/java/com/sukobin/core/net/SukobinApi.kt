@@ -200,4 +200,70 @@ interface SukobinApi {
 
     @PATCH("api/product/toggle/{id}")
     suspend fun toggleProduct(@Path("id") id: String): Response<JsonObject>
+
+    // ── field officer ────────────────────────────────────────────────────────
+
+    @GET("api/officer/directory")
+    suspend fun officerDirectory(): Response<JsonObject>
+
+    @POST("api/officer/otp")
+    suspend fun officerSendOtp(@Body body: JsonObject): Response<JsonObject>
+
+    @POST("api/officer/login")
+    suspend fun officerLogin(@Body body: JsonObject): Response<JsonObject>
+
+    @POST("api/officer/register")
+    suspend fun officerRegister(@Body body: JsonObject): Response<JsonObject>
+
+    @POST("api/officer/verify")
+    suspend fun officerVerifySession(): Response<JsonObject>
+
+    @PATCH("api/officer/profile")
+    suspend fun officerUpdateProfile(@Body body: JsonObject): Response<JsonObject>
+
+    @POST("api/officer/push-token")
+    suspend fun officerSavePushToken(@Body body: JsonObject): Response<JsonObject>
+
+    @GET("api/officer/home")
+    suspend fun officerHome(@Query("lang") lang: String? = null): Response<JsonObject>
+
+    @GET("api/officer/segments")
+    suspend fun officerSegments(@Query("status") status: String? = null): Response<JsonObject>
+
+    @GET("api/officer/nearby")
+    suspend fun officerNearby(
+        @Query("lng") lng: Double,
+        @Query("lat") lat: Double,
+        @Query("radiusKm") radiusKm: Int = 25
+    ): Response<JsonObject>
+
+    @GET("api/officer/alerts")
+    suspend fun officerAlerts(@Query("lang") lang: String? = null): Response<JsonObject>
+
+    @GET("api/officer/forecast")
+    suspend fun officerForecast(@Query("min") min: Double = 0.2): Response<JsonObject>
+
+    @GET("api/officer/reports")
+    suspend fun officerMyReports(): Response<JsonObject>
+
+    @POST("api/officer/report")
+    suspend fun officerReport(@Body body: JsonObject): Response<JsonObject>
+
+    @POST("api/officer/report/sync")
+    suspend fun officerSyncReports(@Body body: JsonObject): Response<JsonObject>
+
+    @GET("api/officer/verify-queue")
+    suspend fun officerVerifyQueue(): Response<JsonObject>
+
+    @PATCH("api/officer/incident/{id}/verify")
+    suspend fun officerVerifyIncident(
+        @Path("id") id: String,
+        @Body body: JsonObject
+    ): Response<JsonObject>
+
+    @POST("api/officer/segment/{segmentId}/status")
+    suspend fun officerSetSegmentStatus(
+        @Path("segmentId") segmentId: String,
+        @Body body: JsonObject
+    ): Response<JsonObject>
 }

@@ -19,7 +19,7 @@ export async function matchToSegment(coordinates, maxKm = PROBE_MATCH_KM) {
         $maxDistance: maxKm * 1000,
       },
     },
-  }).select("segmentId name corridorCode baselineSpeedKmph districts states status");
+  }).select("segmentId name corridorCode baselineSpeedKmph districts states status geometry");
   return seg || null;
 }
 
