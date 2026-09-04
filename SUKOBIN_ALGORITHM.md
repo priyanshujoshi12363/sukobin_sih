@@ -289,22 +289,32 @@ Who: shopkeepers in hill towns.
 
 PS relevance: **low**. Same status as the citizen app: supporting cast.
 
-### 12.4 Officer app — `com.sukobin.officer` — NOT BUILT
+### 12.4 Officer app — `com.sukobin.officer` — BUILT
 
 Who: BDO, SDM, PWD engineer, disaster-management staff, BRO/NHIDCL.
 
-| Should do | Why |
+| Does | Status |
 |---|---|
-| Login by phone + OTP (accounts provisioned, **no self-signup**) | an officer who can close a highway cannot be self-declared |
-| File a geo-tagged incident with photos | clause f, the entire clause |
-| Work offline and sync when signal returns | clause h, and the honest NER scenario |
-| See own reports and their status | trust: the officer sees the effect of their report |
-| Verify or reject others' reports (senior officers only) | prevents one report closing a road |
-| Read-only district status | so an officer sees what the platform believes |
-| Switch language | clause h |
+| Login by phone + OTP; registration asks for department and jurisdiction | done |
+| File a geo-tagged report, picking the road from a nearby list | done |
+| Saves to disk before any network call, syncs when signal returns | done |
+| See own reports and whether they were confirmed | done |
+| Verify or reject others' reports — STATE and REGION officers only | done |
+| Override road status directly — senior officers only | done |
+| Road list and three-day model forecast scoped to the officer's own patch | done |
+| Switch alert language across 10 languages | done |
 
-PS relevance: **highest of anything unbuilt**. Clause f is currently answered by
-an API with no user interface.
+Two things the app deliberately does **not** do. It has no photo capture yet:
+the report carries a `photos` array the server accepts, but the camera and the
+upload are not wired, so photo evidence is still API-only. And a district
+officer cannot confirm anything, including their own report — `canVerifyIncidents`
+is derived from jurisdiction in a pre-save hook and is never accepted from the
+client, so the app cannot grant itself the power to close a highway.
+
+`com.sukobin.officer` is not in the shared `google-services.json`. The Gradle
+file applies the Google services plugin only when that file is present, so the
+app builds and runs without push; register it in the Firebase console and drop
+the file into `android/officer/` to switch push on.
 
 ### 12.5 Control dashboard — web
 
@@ -507,24 +517,75 @@ Ranked by problem-statement value, not by ease.
 
 ## 17. Honest status
 
-What is verified working on live data:
+### Verified on live data
 
 - 42 road segments, 3,567 km, real OSRM geometry, elevation-derived gradients
-- Risk model on live Open-Meteo: Dimapur-Kohima SEVERE at 0.76 from 161 mm real rain
-- Probe sensing: 95% speed -> OPEN, 50% -> SLOW, 25% -> RESTRICTED, 8% -> BLOCKED
+- Probe sensing end to end: vehicles slowing on NH-10 drove OPEN -> SLOW ->
+  BLOCKED with no human involved, and the "Sikkim has no open road" alert
+  followed automatically
 - AI classification: 8/8 messy Hinglish reports classified correctly
 - Route planner refuses a blocked corridor and reports per-segment delay
-- Dashboard renders: 42 segments drawn, 40 district rows, 3 alerts, live map
+- Officer API: 38/38 checks, including that a district officer is refused the
+  verify queue and the status override
+- Dashboard API: 25/25 checks
+- Dashboard renders with zero console errors: 42 segments, 40 district rows,
+  weak points, forecast, emergency view
 
-What is claimed but thin:
+### The forecast model
 
-- Multilingual: 10 languages declared in the model, 0 translation bundles exist
-- Offline: server-side idempotency done, no client queue in any app
-- "AI": the risk model is calibrated, not trained. Say **calibrated risk model**,
-  not machine learning, and show the feature attribution instead.
+`backend/src/ml/` trains two learners and keeps whichever wins on a held-out
+split. Both are plain JavaScript with no native dependency, so training and
+inference run anywhere the API runs.
 
-What does not exist:
+| | |
+|---|---|
+| Training rows | 1,09,116 road-days (42 stretches x 877 days x 3 horizons) |
+| Features | 18, including two rain-terrain interactions |
+| Weather | Open-Meteo archive, real observed hourly precipitation, snow, temperature |
+| Split | by date — everything after 2026-03-01 held out, so no road's future leaks |
+| Logistic regression | AUC 0.883, Brier 0.092 |
+| Boosted stumps | AUC 0.872, Brier 0.099 |
+| Chosen | logistic regression; ties go to the model that explains itself |
+| Calibration | all ten reliability bins track the diagonal |
+| By horizon | 24h AUC 0.859, 48h 0.877, 72h 0.893 |
 
-- Officer app (clause f has no user interface)
-- Bottleneck panel (clause g, named bullet)
-- Carrier trip completion screen
+**The one caveat, stated plainly.** Nobody has a machine-readable two-year
+closure log for these 42 stretches, so the historical labels are Bernoulli
+draws from a rainfall-threshold hazard function of the shape used in landslide
+early-warning work. The label uses a 7-day antecedent window and multiplicative
+terms the feature vector never sees, and it is a draw rather than the
+probability itself, so the model is genuinely learning a signal out of noise —
+which is why held-out AUC is 0.88 and not 1.0. Verified field reports override
+the drawn label, so the training set gets more real every time the officer app
+is used. This is written into the artifact as `dataset.labelNote` and shown on
+the dashboard's model card. Do not claim it is trained on observed closures.
+
+### Now true that was thin before
+
+- **Multilingual**: 7 alert templates x 10 languages, stored on every alert and
+  picked by the recipient's `preferredLanguage`. English and Hindi are
+  authoritative; the other eight were written to be understood and need a
+  native speaker before real deployment.
+- **Offline**: the client queue exists. Reports are written to disk before any
+  network call and keyed by a device-generated `clientId`, so a retry can never
+  create a second copy. Verified: replaying a report returns `duplicate: true`,
+  and a 3-report batch containing one already-sent report accepts 2.
+- **"AI"**: now defensible as machine learning, with the caveat above. The
+  calibrated risk model still runs alongside it and describes conditions *now*;
+  the trained model describes the next three days.
+
+### Still missing
+
+- Photo capture in the officer app (server accepts photos, camera is not wired)
+- Carrier trip completion screen (pickup and delivery OTP)
+- Merchant product management screens — deliberately deprioritised, scores
+  nothing against this problem statement
+- Push for the officer app, until `google-services.json` includes it
+
+### Demo note
+
+`node backend/scripts/simulateTraffic.js` drives vehicles along the real
+geometry so the sensing layer has something to sense; `--slow <segmentId>`
+stages a closure and `--clear` removes everything it made. Every vehicle it
+creates is named `SIM-*`. This is a demo and load-testing tool and nothing on
+the server calls it.

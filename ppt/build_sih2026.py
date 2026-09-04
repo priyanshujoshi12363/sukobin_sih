@@ -273,8 +273,8 @@ def slide_technical(prs):
 
     for i, (t1, t2) in enumerate([
         ("Route matching", "blocked roads refused"),
-        ("Dashboard", "district map and alerts"),
-        ("Notifications", "drivers, officers, customers"),
+        ("Dashboard", "weak points and forecast"),
+        ("Alerts", "sent in the reader's own language"),
     ]):
         box(Inches(0.9) + i * Inches(2.65), Inches(5.56), Inches(2.4), Inches(0.78), [t1, t2])
 
@@ -288,12 +288,12 @@ def slide_technical(prs):
 
     heading(s, Inches(9.1), Inches(4.32), Inches(3.4), "What we built it with")
     textbox(s, Inches(9.1), Inches(4.72), Inches(3.4), Inches(2.2),
-            ["Android apps in Kotlin and XML",
+            ["Four Android apps in Kotlin and XML",
              "Node.js, Express and MongoDB",
+             "A model trained in plain JavaScript, no add-ons needed",
              "OSRM for real road routes",
              "Open-Meteo for rainfall and snow",
-             "React and MapLibre for the dashboard",
-             "Firebase for notifications"],
+             "React and MapLibre for the dashboard"],
             size=11)
 
 
@@ -308,25 +308,27 @@ def slide_feasibility(prs):
             "The system is already built and running on real data", size=14)
 
     rows = [
-        ["Roads modelled", "Length covered", "Districts", "Weak points found", "Apps built"],
-        ["42 sections", "3,567 km", "82", "12", "4 apps and 1 dashboard"],
+        ["Roads modelled", "Length covered", "Model trained on", "Forecast accuracy", "Built"],
+        ["42 sections, 82 districts", "3,567 km", "1,09,116 road-days of real weather",
+         "0.88 (1.0 is perfect)", "4 apps and 1 dashboard"],
     ]
-    table(s, Inches(0.9), Inches(1.55), Inches(11.6), Inches(0.72),
-          rows, col_widths=[2.3, 2.3, 2.3, 2.4, 2.3], font=11.5)
+    table(s, Inches(0.9), Inches(1.55), Inches(11.6), Inches(0.8),
+          rows, col_widths=[2.3, 1.9, 3.1, 2.2, 2.1], font=11)
 
-    heading(s, Inches(0.9), Inches(2.62), Inches(5.6), "What we have already tested")
-    textbox(s, Inches(0.9), Inches(2.98), Inches(5.6), Inches(2.3),
-            ["The risk model marked the Dimapur to Kohima road as high risk after "
-             "161 mm of real rainfall. That road is Manipur's main supply line.",
-             "As vehicle speeds dropped in a test, the road moved from open to slow "
-             "to restricted to blocked, on its own.",
+    heading(s, Inches(0.9), Inches(2.7), Inches(5.6), "What we have already tested")
+    textbox(s, Inches(0.9), Inches(3.06), Inches(5.6), Inches(2.3),
+            ["The forecast model was trained on two years of real recorded weather "
+             "and tested only on later dates it had never seen. When it says 30%, "
+             "the event happens about 30% of the time.",
+             "As vehicle speeds dropped, one road moved from open to slow to blocked "
+             "on its own, with no person involved, and the district alert followed.",
              "The system correctly read all 8 test reports written in mixed Hindi and "
              "English, including how long clearing would take.",
              "With a road marked blocked, the app refused to send a driver on it."],
             size=11)
 
-    heading(s, Inches(6.9), Inches(2.62), Inches(5.6), "Problems we expect, and our answer")
-    textbox(s, Inches(6.9), Inches(2.98), Inches(5.6), Inches(2.3),
+    heading(s, Inches(6.9), Inches(2.7), Inches(5.6), "Problems we expect, and our answer")
+    textbox(s, Inches(6.9), Inches(3.06), Inches(5.6), Inches(2.3),
             ["Would you trust a stranger with medicines? Drivers are placed in two "
              "groups. Anyone can carry normal parcels. Only trusted local drivers with "
              "a delivery record carry medicines and government supplies.",
