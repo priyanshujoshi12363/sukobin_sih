@@ -1,4 +1,13 @@
-# Sukobin — The Core Algorithm (road-route matching + live tracking)
+# Sukobin — Platform Spec
+
+> **Sections 0-10** are the original route-matching engine (written against the
+> Uttarakhand pilot; the same maths now runs on the NER network).
+> **Sections 11-16** are the platform plan: what each app does, how the four
+> apps and the dashboard fit together, and the process flows to review.
+
+---
+
+# Part A — The Core Algorithm (road-route matching + live tracking)
 
 The definitive spec for the engine. Builds on `ROUTE_MATCHING.md` / `ROUTE_MATCHING_FLOW.md`
 but upgrades it to **real road polylines**, a **2 km corridor**, **vehicle-capacity locking**,
@@ -188,3 +197,334 @@ GET   /api/partner/history         past deliveries (orders+parcels, paginated)
 > Already done before this spec: normalized DeliveryJobs, corridor+direction matcher,
 > atomic claim, online gate, stats, history, driver-bound "new job" push. This spec adds the
 > **road polylines, ETA, live tracking, and customer proximity notifications** on top.
+
+---
+
+# Part B — Platform Plan
+
+Everything below is the plan for review. Mark it up freely: strike what should not
+exist, add what is missing, and move items between the "build" and "skip" columns.
+Nothing here is built until it survives that pass.
+
+---
+
+## 11. What problem each piece answers
+
+The problem statement (MDoNER, NER Logistics Accessibility Intelligence) asks for
+eight things, a to h. Every component below exists to answer one of them. If a
+component cannot be traced to a clause, it should be cut or kept out of the pitch.
+
+| Clause | Asked for | Answered by |
+|---|---|---|
+| a | real-time road, bridge, transport accessibility | RoadSegment state + probe sensing + officer reports |
+| b | predict disruptions (landslide, flood, rain, damage, congestion) | risk model over weather + terrain + history |
+| c | AI alternate routes and travel-delay estimates | route planner (OSRM alternates, condition-adjusted ETA) |
+| d | GPS tracking of essential commodities | carrier app location stream + consignment tracking |
+| e | automated alerts (blocked, inaccessible, delayed, high-risk) | alert engine + FCM push |
+| f | field officials upload geo-tagged updates, photos, incidents | **officer app (not built)** |
+| g | centralized dashboards (4 named views) | control dashboard |
+| h | multilingual notifications + offline sync for low-network areas | **partially built** |
+
+### The one-line thesis
+
+> There is no delivery fleet in the hills, and building one is uneconomical.
+> Sukobin uses the vehicles already making the journey — and because those
+> vehicles are constantly on the road, they double as the sensor network that
+> measures whether the road is passable.
+
+The carrier network and the intelligence layer are the same system. That is the
+claim the whole platform has to support.
+
+---
+
+## 12. The four apps and the dashboard
+
+Four Android apps plus one web dashboard, over one backend.
+
+### 12.1 Citizen app — `com.sukobin.app`
+
+Who: anyone sending a parcel or ordering from a local shop.
+
+| Does | Status |
+|---|---|
+| Register / login by phone + OTP | built |
+| Browse shops and products, cart, checkout, pay | built |
+| Book a parcel: pickup and drop on a map, receiver, type, weight, live fare | built |
+| Track their order or parcel | list only, no live map |
+| Receive delivery notifications | built (FCM) |
+
+PS relevance: **low**. This is the commercial layer that gives the carrier network
+volume and revenue. It should be one line in the pitch, not the headline.
+
+### 12.2 Carrier app — `com.sukobin.partner`
+
+Who: any traveller with a vehicle — tourist, commuter, local driver — who wants
+to earn on a journey they are already making.
+
+| Does | Status |
+|---|---|
+| Register by number plate (registry-verified) + OTP | built |
+| Declare a route (from, to) | built |
+| See only deliveries that ride along that road | built |
+| Accept up to vehicle capacity, capacity locks | built |
+| Refuse to be routed down a blocked corridor | built |
+| Stream GPS while online — this is the sensor feed | built |
+| Pickup and delivery with OTP handoff | endpoints built, screen missing |
+| Earnings, trip history | built |
+| Report a road problem seen on the way | **not built** |
+
+PS relevance: **high**. Clause d directly; and it is the source of the probe data
+behind clause a.
+
+### 12.3 Merchant app — `com.sukobin.merchant`
+
+Who: shopkeepers in hill towns.
+
+| Does | Status |
+|---|---|
+| Register a shop, login | built |
+| Revenue, order and product stats | built |
+| See incoming orders | built |
+| List and manage products | **not built** |
+
+PS relevance: **low**. Same status as the citizen app: supporting cast.
+
+### 12.4 Officer app — `com.sukobin.officer` — NOT BUILT
+
+Who: BDO, SDM, PWD engineer, disaster-management staff, BRO/NHIDCL.
+
+| Should do | Why |
+|---|---|
+| Login by phone + OTP (accounts provisioned, **no self-signup**) | an officer who can close a highway cannot be self-declared |
+| File a geo-tagged incident with photos | clause f, the entire clause |
+| Work offline and sync when signal returns | clause h, and the honest NER scenario |
+| See own reports and their status | trust: the officer sees the effect of their report |
+| Verify or reject others' reports (senior officers only) | prevents one report closing a road |
+| Read-only district status | so an officer sees what the platform believes |
+| Switch language | clause h |
+
+PS relevance: **highest of anything unbuilt**. Clause f is currently answered by
+an API with no user interface.
+
+### 12.5 Control dashboard — web
+
+Who: district and state administration, MDoNER.
+
+Clause g names four views explicitly:
+
+| Named view | Status |
+|---|---|
+| District-wise connectivity status | built (table + map) |
+| **Logistics bottlenecks and supply chain gaps** | **missing** |
+| Emergency and disaster-time accessibility routes | thin |
+| Real-time movement and delivery status of essential supplies | list only |
+
+PS relevance: **highest scrutiny**. This is what a judge looks at longest.
+
+---
+
+## 13. Process flow — the sensing loop
+
+The core claim of the platform. Two independent sources decide whether a road is
+passable, and neither can act alone.
+
+```
+   CARRIER VEHICLES                        FIELD OFFICERS
+   (already on the road)                   (eyes on the ground)
+          |                                       |
+          | GPS fix every ~15 s                   | geo-tagged report
+          | PATCH /partner/location               | photo + description
+          v                                       v
+   +---------------+                       +----------------+
+   | map-match to  |                       | AI classifies  |
+   | RoadSegment   |                       | free text ->   |
+   | rolling median|                       | type, severity,|
+   | speed vs      |                       | blocks traffic,|
+   | baseline      |                       | clearance hrs  |
+   +-------+-------+                       +--------+-------+
+           |                                        |
+           | speed ratio                            | implied status
+           | 0.95 -> OPEN                           | LANDSLIDE -> BLOCKED
+           | 0.50 -> SLOW                           | ACCIDENT  -> SLOW
+           | 0.25 -> RESTRICTED                     |
+           | 0.08 -> BLOCKED                        |
+           |                                        |
+           +------------------+---------------------+
+                              |
+                              v
+                   +----------------------+
+                   |  STATUS RESOLVER     |
+                   |  confidence-weighted |
+                   |  vote                |
+                   +----------+-----------+
+                              |
+        unverified report  -> capped at RESTRICTED
+        verified by officer -> full implied status
+        probe corroborates  -> confidence raised
+        single vehicle only -> ignored (needs >= 2)
+        weather forecast    -> never sets status, only risk
+                              |
+                              v
+                   +----------------------+
+                   |  RoadSegment.status  |
+                   +----------+-----------+
+                              |
+         +--------------------+--------------------+
+         |                    |                    |
+         v                    v                    v
+   route matching       dashboard map          alerts + push
+   refuses blocked      district colours       to carriers,
+   corridors            bottleneck panel       officers, customers
+```
+
+**Guards that must not be removed**
+
+- One vehicle cannot close a road. Two distinct vehicles and four samples minimum.
+- A GPS fix worse than 120 m accuracy is discarded.
+- A weather forecast predicts; it never asserts current status.
+- An unverified field report is capped at RESTRICTED until a human verifies it
+  or probe data corroborates it.
+
+---
+
+## 14. Process flow — a parcel, end to end
+
+```
+CITIZEN                    BACKEND                       CARRIER
+   |                          |                             |
+   | pick pickup + drop       |                             |
+   | on the map               |                             |
+   |------------------------->|                             |
+   |                     quote fare                          |
+   |<-------------------------|                             |
+   |                          |                             |
+   | confirm booking          |                             |
+   |------------------------->|                             |
+   |                    road polyline fetched                |
+   |                    parcel -> POOLED (1 h)               |
+   |                          |                             |
+   |                          |   declares route A -> B      |
+   |                          |<----------------------------|
+   |                          |                             |
+   |                    road polyline for the journey        |
+   |                    accessibility check:                 |
+   |                      any BLOCKED segment -> refuse      |
+   |                    corridor match:                      |
+   |                      pickup and drop within 10 km       |
+   |                      forward direction only             |
+   |                      rank by fee, detour, age           |
+   |                          |---- matching parcels ------->|
+   |                          |                             |
+   |                          |<--- accepts (<= capacity) ---|
+   |                    atomic claim, capacity lock          |
+   |                          |                             |
+   |<-- "your parcel is with the driver" ---|<-- picked up --|
+   |                          |                             |
+   |                          |<--- GPS stream (sensing) ----|
+   |                          |                             |
+   |<-- "driver is near" (10 km) -----------|                |
+   |                          |                             |
+   |                          |<--- delivered + OTP ---------|
+   |<-- "delivered" ----------|      fee credited           |
+```
+
+---
+
+## 15. Process flow — a road closes
+
+The demo sequence. Every step already works except the officer's screen.
+
+```
+1. HEAVY RAIN            risk model raises Dimapur-Kohima to SEVERE (0.76)
+                         from 161 mm real rainfall over 72 h
+                         -> dashboard shows the corridor amber
+                         -> NOT marked blocked: a forecast is not an observation
+
+2. OFFICER REPORTS       BDO Senapati, no signal, photographs a landslide
+   [OFFICER APP]         "Bada landslide ho gaya hai Maram ke paas, pura road
+                         band hai, koi gaadi nahi ja sakti"
+                         queued on device with a clientId
+
+3. SYNC                  officer reaches signal; report uploads
+                         replayed uploads are idempotent on clientId
+
+4. AI CLASSIFIES         LANDSLIDE / CRITICAL / blocks traffic / ~72 h clearance
+                         from Hinglish free text
+
+5. STATUS                unverified -> segment RESTRICTED (cautious)
+
+6. VERIFIED              SDM confirms -> segment BLOCKED
+
+7. CONSEQUENCE           carrier app refuses Dimapur -> Imphal
+                         dashboard: Manipur shown as isolated
+                         alerts: CRITICAL to officers and affected carriers
+                         consignments already on that road are flagged
+```
+
+---
+
+## 16. Build order — for review
+
+Ranked by problem-statement value, not by ease.
+
+### Tier 1 — closes named PS gaps
+
+| # | Item | Clause | Est |
+|---|---|---|---|
+| 1 | **Bottleneck panel** on the dashboard | g | 2 h |
+| 2 | Fix the map reading as UNKNOWN everywhere | g | 30 m |
+| 3 | Strengthen the emergency view | g | 1 h |
+| 4 | **Officer app** — report, my reports, verify queue, district status | f | 1-2 d |
+| 5 | Offline queue with photos in the officer app | h | half d |
+| 6 | Multilingual notifications (5 languages, machine-assisted, labelled) | h | half d |
+
+### Tier 2 — high value, not explicitly named
+
+| # | Item | Why |
+|---|---|---|
+| 7 | Essential-commodity priority lane + trusted-carrier tier | answers "would you trust a tourist with medicines" |
+| 8 | Carrier trip screen (pickup/deliver with OTP) | the delivery loop cannot be completed in the app today |
+| 9 | Multi-leg relay via hubs | what actually reaches Tawang |
+| 10 | Live consignment trace on the dashboard map | clause g bullet 4, properly |
+
+### Tier 3 — only with time to spare
+
+| # | Item | Note |
+|---|---|---|
+| 11 | Learned ETA from delivery timestamps | real ML; labels already exist in `timeline[]` |
+| 12 | Demand forecasting per corridor | tells carriers where the work is |
+| 13 | Government data integration stubs (Bhuvan, IMD, PMGSY) | integration story for clause "integration capability" |
+
+### Explicitly not doing
+
+| Item | Why |
+|---|---|
+| Merchant product management screens | scores zero against the PS |
+| More commerce polish | same |
+| Real payment gateway integration | demo mode is sufficient for judging |
+
+---
+
+## 17. Honest status
+
+What is verified working on live data:
+
+- 42 road segments, 3,567 km, real OSRM geometry, elevation-derived gradients
+- Risk model on live Open-Meteo: Dimapur-Kohima SEVERE at 0.76 from 161 mm real rain
+- Probe sensing: 95% speed -> OPEN, 50% -> SLOW, 25% -> RESTRICTED, 8% -> BLOCKED
+- AI classification: 8/8 messy Hinglish reports classified correctly
+- Route planner refuses a blocked corridor and reports per-segment delay
+- Dashboard renders: 42 segments drawn, 40 district rows, 3 alerts, live map
+
+What is claimed but thin:
+
+- Multilingual: 10 languages declared in the model, 0 translation bundles exist
+- Offline: server-side idempotency done, no client queue in any app
+- "AI": the risk model is calibrated, not trained. Say **calibrated risk model**,
+  not machine learning, and show the feature attribution instead.
+
+What does not exist:
+
+- Officer app (clause f has no user interface)
+- Bottleneck panel (clause g, named bullet)
+- Carrier trip completion screen
