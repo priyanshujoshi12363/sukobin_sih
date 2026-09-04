@@ -164,6 +164,21 @@ interface SukobinApi {
     @GET("api/partner/history")
     suspend fun partnerHistory(@Query("page") page: Int = 1): Response<JsonObject>
 
+    @GET("api/partner/road-conditions")
+    suspend fun partnerRoadConditions(
+        @Query("lng") lng: Double? = null,
+        @Query("lat") lat: Double? = null
+    ): Response<JsonObject>
+
+    @GET("api/partner/where-am-i")
+    suspend fun partnerWhereAmI(
+        @Query("lng") lng: Double,
+        @Query("lat") lat: Double
+    ): Response<JsonObject>
+
+    @POST("api/partner/report")
+    suspend fun partnerReportHazard(@Body body: JsonObject): Response<JsonObject>
+
     @POST("api/merchant/register")
     suspend fun merchantRegister(@Body body: JsonObject): Response<JsonObject>
 

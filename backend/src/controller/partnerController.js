@@ -17,6 +17,7 @@ import { searchTowns, cityRadiusKm } from "../data/nerNetwork.js";
 import { fetchRoutePolyline } from "../utils/routing.js";
 import { routeAccessibility } from "../utils/accessibility.js";
 import { ingestProbe } from "../utils/probeIngest.js";
+import RoadSegment from "../models/roadSegment.model.js";
 
 const gen4 = () => String(Math.floor(1000 + Math.random() * 9000));
 const SHOP_FIELDS = "location address shopName phoneNumber";
@@ -619,15 +620,39 @@ export const updateLocation = async (req, res) => {
       console.error("proximityNotify:", e.message)
     );
 
-    ingestProbe(req.partner, {
-      coordinates,
-      speedKmph: Number.isFinite(speedKmph) ? speedKmph : null,
-      headingDeg: Number.isFinite(headingDeg) ? headingDeg : null,
-      accuracyM: Number.isFinite(accuracyM) ? accuracyM : null,
-      onTrip: Boolean(onTrip),
-    }).catch((e) => console.error("ingestProbe:", e.message));
+    // Awaited rather than fired and forgotten: the same call that senses the
+    // road can tell the driver what it just learned about it, which saves the
+    // app a second round trip on a connection that may not get one.
+    let road = null;
+    try {
+      const probe = await ingestProbe(req.partner, {
+        coordinates,
+        speedKmph: Number.isFinite(speedKmph) ? speedKmph : null,
+        headingDeg: Number.isFinite(headingDeg) ? headingDeg : null,
+        accuracyM: Number.isFinite(accuracyM) ? accuracyM : null,
+        onTrip: Boolean(onTrip),
+      });
 
-    res.status(200).json({ success: true });
+      if (probe?.segmentId) {
+        const seg = await RoadSegment.findOne({ segmentId: probe.segmentId })
+          .select("segmentId name status statusNote forecast")
+          .lean();
+
+        if (seg) {
+          road = {
+            segmentId: seg.segmentId,
+            name: seg.name,
+            status: seg.status,
+            statusNote: seg.statusNote || "",
+            forecastH24: seg.forecast?.h24?.probability ?? null,
+          };
+        }
+      }
+    } catch (e) {
+      console.error("ingestProbe:", e.message);
+    }
+
+    res.status(200).json({ success: true, data: { road } });
   } catch (error) {
     console.error("updateLocation error:", error);
     res.status(500).json({ success: false, message: "Could not update location" });

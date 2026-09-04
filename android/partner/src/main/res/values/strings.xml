@@ -115,4 +115,28 @@
     <string name="profile_sign_out_confirm">Sign out of Sukobin Partner?</string>
     <string name="history_title">Delivery history</string>
     <string name="history_empty">No deliveries yet</string>
+
+    <string name="hazard_title">Report a hazard</string>
+    <string name="hazard_back">Back</string>
+    <string name="hazard_where">WHERE YOU ARE</string>
+    <string name="hazard_what">What have you found?</string>
+    <string name="hazard_blocks">Nothing can get past</string>
+    <string name="hazard_note">Anything to add? (optional)</string>
+    <string name="hazard_note_helper">Hindi, English or a mix. Leave it blank if you are in a hurry.</string>
+    <string name="hazard_send">Send report</string>
+    <string name="hazard_sent">Sent. Thank you - other drivers will be warned.</string>
+    <string name="hazard_footnote">Your report warns every driver heading this way, and goes to the district officer to confirm.</string>
+    <string name="hazard_finding">Getting your location…</string>
+    <string name="hazard_located">Location fixed to within %1$d m</string>
+    <string name="hazard_no_fix">Could not get a GPS fix</string>
+    <string name="hazard_need_location">Location permission is needed to report</string>
+    <string name="hazard_refresh">Refresh</string>
+    <string name="hazard_matching_road">Finding the road…</string>
+    <string name="hazard_road_unknown">Road not identified</string>
+    <string name="hazard_road_offline">No signal - the road will be worked out when this is sent</string>
+
+    <string name="home_report_hazard">Report a hazard on the road</string>
+    <string name="home_sensing_on">Sharing your location - this is what keeps road status live</string>
+    <string name="home_on_road">On %1$s</string>
+    <string name="home_road_warning">%1$s is %2$s</string>
 </resources>

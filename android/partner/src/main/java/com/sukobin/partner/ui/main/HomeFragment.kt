@@ -28,7 +28,11 @@ import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.num
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Intent
 import com.sukobin.partner.R
+import com.sukobin.partner.data.LocationReporter
+import com.sukobin.partner.ui.report.ReportHazardActivity
 import com.sukobin.partner.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -51,6 +55,14 @@ class HomeFragment : Fragment() {
 
     private var suggestJob: Job? = null
     private var busy = false
+
+    // Built eagerly: registerForActivityResult throws if it is created after
+    // the fragment has started.
+    private val locationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        if (grants.values.any { it }) startSensing() else renderSensingState()
+    }
 
     data class Town(val label: String, val lng: Double, val lat: Double)
 
@@ -85,6 +97,14 @@ class HomeFragment : Fragment() {
         wireAutocomplete(b.inputFrom) { fromTown = it }
         wireAutocomplete(b.inputTo) { toTown = it }
 
+        b.btnReportHazard.setOnClickListener {
+            startActivity(Intent(requireContext(), ReportHazardActivity::class.java))
+        }
+
+        // The server tells us which road each fix matched, so the driver can
+        // see the sensing is real rather than being asked to trust it.
+        LocationReporter.onRoadUpdate = { name, status -> showRoad(name, status) }
+
         loadProfile()
     }
 
@@ -106,12 +126,69 @@ class HomeFragment : Fragment() {
                         ).joinToString("   ")
                         b.onlineSwitch.isChecked = online
                         renderOnlineState()
+                        if (online) startSensing()
+                        renderSensingState()
                     }
                 }
 
                 is ApiResult.Err -> toast(r.message)
             }
         }
+    }
+
+    private fun startSensing() {
+        if (!LocationReporter.hasPermission(requireContext())) {
+            locationPermission.launch(
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return
+        }
+        LocationReporter.start(requireContext())
+        renderSensingState()
+    }
+
+    private fun renderSensingState() {
+        if (_b == null) return
+        if (!LocationReporter.running) {
+            b.roadStrip.visibility = View.GONE
+            return
+        }
+        b.roadStrip.visibility = View.VISIBLE
+        if (LocationReporter.lastRoadName == null) {
+            b.roadName.setText(R.string.home_sensing_on)
+            b.roadSub.text = ""
+        } else {
+            showRoad(LocationReporter.lastRoadName, LocationReporter.lastRoadStatus)
+        }
+    }
+
+    private fun showRoad(name: String?, status: String?) {
+        if (_b == null || name == null) return
+
+        b.roadStrip.visibility = View.VISIBLE
+        b.roadName.text = getString(R.string.home_on_road, name)
+
+        val warn = status == "BLOCKED" || status == "RESTRICTED" || status == "SLOW"
+        b.roadSub.text = if (warn) {
+            getString(R.string.home_road_warning, name, status!!.lowercase())
+        } else {
+            getString(R.string.home_sensing_on)
+        }
+
+        b.roadDot.backgroundTintList = ColorStateList.valueOf(
+            requireContext().getColor(
+                when (status) {
+                    "BLOCKED" -> com.sukobin.core.R.color.status_blocked
+                    "RESTRICTED" -> com.sukobin.core.R.color.status_restricted
+                    "SLOW" -> com.sukobin.core.R.color.status_slow
+                    "OPEN" -> com.sukobin.core.R.color.status_open
+                    else -> com.sukobin.core.R.color.status_unknown
+                }
+            )
+        )
     }
 
     private fun renderOnlineState() {
@@ -131,6 +208,9 @@ class HomeFragment : Fragment() {
                 is ApiResult.Ok -> {
                     online = value
                     renderOnlineState()
+                    // A driver who is not working is not tracked.
+                    if (value) startSensing() else LocationReporter.stop()
+                    renderSensingState()
                     if (!value) clearJobs()
                 }
 

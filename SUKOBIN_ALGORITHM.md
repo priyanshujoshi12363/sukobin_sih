@@ -589,10 +589,38 @@ the dashboard's model card. Do not claim it is trained on observed closures.
   calibrated risk model still runs alongside it and describes conditions *now*;
   the trained model describes the next three days.
 
+### The carrier as a sensor — now actually connected
+
+The whole thesis is that carriers double as the sensor network. Until now that
+was only true on paper: `PATCH /api/partner/location` called `ingestProbe`
+correctly, but **no app had ever called it**, so every road status came from
+the simulator. That is now wired end to end.
+
+- `LocationReporter` streams GPS while the driver is online, at 20 s / 40 m,
+  balanced-power. Going offline stops it — a driver who is not working is not
+  tracked. Fixes worse than 120 m accuracy are dropped on the device.
+- The same call that senses also informs: `updateLocation` returns the road it
+  matched and its status, so the driver sees "On Kohima - Senapati (NH-2)" with
+  a status dot, and the app needs no second round trip on a connection that may
+  not get one.
+- `GET /api/partner/road-conditions` gives the driver the road they are on, the
+  roads around them, and at most five warnings — STOP for blocked, CAUTION for
+  slow, WATCH for a road the model expects to close today.
+- `ReportHazardActivity` lets a driver file a hazard in about four seconds
+  without typing: the road comes from GPS, the hazard is one tap of six, and
+  the description writes itself if left blank.
+
+Trust holds at the edge: a driver's unconfirmed report caps the road at
+RESTRICTED, never BLOCKED, until a senior officer confirms it. Verified.
+
 ### Still missing
 
-- Photo capture in the officer app (server accepts photos, camera is not wired)
+- Photo capture in either reporting app (the server accepts photos, no camera
+  is wired in the officer or partner app)
 - Carrier trip completion screen (pickup and delivery OTP)
+- Background location: streaming stops when the partner app is backgrounded,
+  because there is no foreground service yet. Fine for a demo, not for a real
+  deployment where the phone is in a cradle all day.
 - Merchant product management screens — deliberately deprioritised, scores
   nothing against this problem statement
 
