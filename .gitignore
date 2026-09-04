@@ -40,6 +40,7 @@ _legacy_expo/
 
 # ── logs / scratch ──
 render-check.png
+ppt/preview/
 *.log
 srv.out.log
 srv.err.log
