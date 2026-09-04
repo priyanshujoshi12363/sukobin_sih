@@ -15,7 +15,6 @@ import com.sukobin.core.net.Session
 import com.sukobin.core.net.apiCall
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
-import com.sukobin.core.push.Push
 import com.sukobin.officer.R
 import com.sukobin.officer.data.OfficerSession
 import com.sukobin.officer.data.ReportQueue
@@ -127,7 +126,6 @@ class SplashActivity : AppCompatActivity() {
         return when (val res = apiCall { officerVerifySession() }) {
             is ApiResult.Ok -> {
                 OfficerSession.store(res.value.obj("officer"))
-                Push.register(this) { officerSavePushToken(it) }
                 // Anything the officer saved with no signal goes up now.
                 if (ReportQueue.pendingCount() > 0) {
                     b.statusLine.setText(R.string.splash_status_syncing)

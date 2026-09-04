@@ -9,7 +9,7 @@ import Otp from "../models/otp.model.js";
 import Incident from "../models/incident.model.js";
 import RoadSegment from "../models/roadSegment.model.js";
 import Alert from "../models/alert.model.js";
-import { saveToken } from "../utils/pushTokens.js";
+import OfficerNotification from "../models/officerNotification.model.js";
 import { activeAlerts } from "../utils/alertEngine.js";
 import { upcomingRisk } from "../utils/forecast.js";
 import { refreshSegment } from "../utils/accessibility.js";
@@ -212,18 +212,6 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-export const registerPushToken = async (req, res) => {
-  try {
-    const { token } = req.body;
-    if (!token) return res.status(400).json({ success: false, message: "token is required" });
-    const saved = await saveToken(FieldOfficer, req.officer._id, token, req.body.platform);
-    if (!saved.ok) return res.status(400).json({ success: false, message: saved.reason });
-    res.json({ success: true, data: { kind: saved.kind } });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
-
 // ─── what the officer sees ───────────────────────────────────────────────────
 
 function jurisdictionFilter(officer) {
@@ -249,7 +237,7 @@ export const home = async (req, res) => {
     for (const s of segments) byStatus[s.status] = (byStatus[s.status] || 0) + 1;
 
     const j = officer.jurisdiction || {};
-    const [alerts, upcoming, myPending, toVerify] = await Promise.all([
+    const [alerts, upcoming, myPending, toVerify, unread] = await Promise.all([
       activeAlerts({
         district: j.level === "DISTRICT" ? j.district : null,
         state: j.level === "STATE" ? j.state : null,
@@ -266,6 +254,7 @@ export const home = async (req, res) => {
       officer.canVerifyIncidents
         ? Incident.countDocuments({ status: "REPORTED", ...(j.level === "DISTRICT" && j.district ? { district: j.district } : {}) })
         : Promise.resolve(0),
+      OfficerNotification.countDocuments({ officer: officer._id, read: false }),
     ]);
 
     const blocked = segments.filter((s) => s.status === "BLOCKED");
@@ -292,11 +281,108 @@ export const home = async (req, res) => {
         upcoming,
         myPendingReports: myPending,
         awaitingMyVerification: toVerify,
+        unreadNotifications: unread,
         model: modelInfo(),
       },
     });
   } catch (error) {
     console.error("officer/home:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * The officer app has no push channel, so this is how an alert actually
+ * reaches an officer. Rows are written by the alert engine; the app polls.
+ */
+export const notifications = async (req, res) => {
+  try {
+    const officer = req.officer;
+    const q = { officer: officer._id };
+    if (req.query.unreadOnly === "true") q.read = false;
+
+    const limit = Math.min(Number(req.query.limit) || 50, 200);
+
+    const [rows, unread, total] = await Promise.all([
+      OfficerNotification.find(q).sort({ createdAt: -1 }).limit(limit).lean(),
+      OfficerNotification.countDocuments({ officer: officer._id, read: false }),
+      OfficerNotification.countDocuments({ officer: officer._id }),
+    ]);
+
+    // If the officer has since changed language, re-resolve the copy from the
+    // alert rather than showing the language they used to read.
+    const lang = req.query.lang || officer.preferredLanguage || "en";
+    const needsRelocalising = rows.filter((r) => r.lang !== lang && r.alert);
+
+    const relocalised = new Map();
+    if (needsRelocalising.length) {
+      const alerts = await Alert.find({
+        _id: { $in: needsRelocalising.map((r) => r.alert) },
+      });
+      for (const a of alerts) {
+        const text = a.textFor(lang);
+        if (text?.title) relocalised.set(String(a._id), text);
+      }
+    }
+
+    res.json({
+      success: true,
+      data: {
+        notifications: rows.map((r) => {
+          const swap = relocalised.get(String(r.alert));
+          return {
+            id: String(r._id),
+            alertId: r.alertId,
+            kind: r.kind,
+            severity: r.severity,
+            title: swap?.title || r.title,
+            body: swap?.body || r.body,
+            segmentId: r.segmentId || null,
+            segmentName: r.segmentName || null,
+            districts: r.districts || [],
+            payload: r.payload || null,
+            read: r.read,
+            createdAt: r.createdAt,
+          };
+        }),
+        unread,
+        total,
+        lang,
+      },
+    });
+  } catch (error) {
+    console.error("officer/notifications:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const markNotificationsRead = async (req, res) => {
+  try {
+    const officer = req.officer;
+    const { ids, all } = req.body || {};
+
+    const filter = { officer: officer._id, read: false };
+    if (!all) {
+      if (!Array.isArray(ids) || !ids.length) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Send ids, or all: true" });
+      }
+      filter._id = { $in: ids };
+    }
+
+    const r = await OfficerNotification.updateMany(filter, {
+      $set: { read: true, readAt: new Date() },
+    });
+
+    const unread = await OfficerNotification.countDocuments({
+      officer: officer._id,
+      read: false,
+    });
+
+    res.json({ success: true, data: { marked: r.modifiedCount || 0, unread } });
+  } catch (error) {
+    console.error("officer/notifications/read:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

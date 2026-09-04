@@ -77,4 +77,19 @@
 
     <string name="common_retry">Try again</string>
     <string name="common_back">Back</string>
+
+    <string name="notif_title">Notifications</string>
+    <string name="notif_mark_all">Mark all read</string>
+    <string name="notif_show_unread">Unread only</string>
+    <string name="notif_show_all">Show all</string>
+    <string name="notif_all_read">You are up to date</string>
+    <string name="notif_showing">%1$d shown</string>
+    <string name="notif_empty">Nothing has come in yet.</string>
+    <string name="notif_empty_unread">You have read everything.</string>
+    <string name="notif_open">Notifications</string>
+
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d unread</item>
+        <item quantity="other">%1$d unread</item>
+    </plurals>
 </resources>

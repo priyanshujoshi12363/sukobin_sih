@@ -15,8 +15,6 @@ import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
 import com.sukobin.core.net.stringList
-import com.sukobin.core.push.Push
-import com.sukobin.core.push.PushPermission
 import com.sukobin.core.ui.Motion
 import com.sukobin.officer.data.OfficerSession
 import com.sukobin.officer.databinding.ActivityRegisterBinding
@@ -30,7 +28,6 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private lateinit var b: ActivityRegisterBinding
-    private lateinit var pushPermission: PushPermission
 
     private var phone = ""
     private var busy = false
@@ -46,8 +43,6 @@ class RegisterActivity : AppCompatActivity() {
         b = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(b.root)
         Motion.applyEnter(this)
-
-        pushPermission = PushPermission(this)
 
         phone = intent.getStringExtra(EXTRA_PHONE).orEmpty()
         b.phoneLine.text = "+91 $phone"
@@ -202,11 +197,6 @@ class RegisterActivity : AppCompatActivity() {
                     OfficerSession.store(officer)
                     setBusy(false)
 
-                    pushPermission.request {
-                        lifecycleScope.launch {
-                            Push.register(this@RegisterActivity) { officerSavePushToken(it) }
-                        }
-                    }
                     startActivity(
                         Intent(this@RegisterActivity, MainActivity::class.java)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

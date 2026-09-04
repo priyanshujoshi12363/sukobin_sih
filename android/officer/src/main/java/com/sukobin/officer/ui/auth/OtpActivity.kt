@@ -16,8 +16,6 @@ import com.sukobin.core.net.apiCall
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
-import com.sukobin.core.push.Push
-import com.sukobin.core.push.PushPermission
 import com.sukobin.core.ui.Motion
 import com.sukobin.officer.data.OfficerSession
 import com.sukobin.officer.databinding.ActivityOtpBinding
@@ -35,11 +33,6 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var b: ActivityOtpBinding
     private lateinit var boxes: List<EditText>
 
-    // Built eagerly. registerForActivityResult throws if it is created after
-    // the activity has resumed, which is what used to bounce the officer back
-    // to the login screen the moment the OTP was accepted.
-    private lateinit var pushPermission: PushPermission
-
     private var phone: String = ""
     private var busy = false
     private var timer: CountDownTimer? = null
@@ -49,8 +42,6 @@ class OtpActivity : AppCompatActivity() {
         b = ActivityOtpBinding.inflate(layoutInflater)
         setContentView(b.root)
         Motion.applyEnter(this)
-
-        pushPermission = PushPermission(this)
 
         phone = intent.getStringExtra(EXTRA_PHONE).orEmpty()
         b.subtitle.text = "Sent to +91 $phone"
@@ -150,9 +141,6 @@ class OtpActivity : AppCompatActivity() {
     }
 
     private fun goToMain() {
-        pushPermission.request {
-            lifecycleScope.launch { Push.register(this@OtpActivity) { officerSavePushToken(it) } }
-        }
         startActivity(
             Intent(this, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

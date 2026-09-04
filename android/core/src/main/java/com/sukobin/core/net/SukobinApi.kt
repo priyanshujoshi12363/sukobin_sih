@@ -221,9 +221,6 @@ interface SukobinApi {
     @PATCH("api/officer/profile")
     suspend fun officerUpdateProfile(@Body body: JsonObject): Response<JsonObject>
 
-    @POST("api/officer/push-token")
-    suspend fun officerSavePushToken(@Body body: JsonObject): Response<JsonObject>
-
     @GET("api/officer/home")
     suspend fun officerHome(@Query("lang") lang: String? = null): Response<JsonObject>
 
@@ -245,6 +242,15 @@ interface SukobinApi {
 
     @GET("api/officer/reports")
     suspend fun officerMyReports(): Response<JsonObject>
+
+    @GET("api/officer/notifications")
+    suspend fun officerNotifications(
+        @Query("unreadOnly") unreadOnly: Boolean = false,
+        @Query("lang") lang: String? = null
+    ): Response<JsonObject>
+
+    @POST("api/officer/notifications/read")
+    suspend fun officerMarkNotificationsRead(@Body body: JsonObject): Response<JsonObject>
 
     @POST("api/officer/report")
     suspend fun officerReport(@Body body: JsonObject): Response<JsonObject>

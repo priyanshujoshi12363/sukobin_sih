@@ -3,6 +3,7 @@ import Alert from "../models/alert.model.js";
 import RoadSegment from "../models/roadSegment.model.js";
 import Incident from "../models/incident.model.js";
 import FieldOfficer from "../models/fieldOfficer.model.js";
+import OfficerNotification from "../models/officerNotification.model.js";
 import Partner from "../models/partner.model.js";
 import { tAll, reasonText, LANGUAGES } from "./i18n.js";
 import { sendPushMany } from "./notification.js";
@@ -88,7 +89,7 @@ async function officerRecipients(alert) {
   if (alert.corridorCode) geo.push({ watchedCorridors: alert.corridorCode });
   if (geo.length) q.$or = geo;
 
-  return FieldOfficer.find(q).select("name fcmToken expoPushToken preferredLanguage").lean();
+  return FieldOfficer.find(q).select("name preferredLanguage").lean();
 }
 
 async function partnerRecipients() {
@@ -101,74 +102,122 @@ async function partnerRecipients() {
     .lean();
 }
 
-const RECIPIENTS = {
-  OFFICER: officerRecipients,
-  PARTNER: partnerRecipients,
-};
+/**
+ * Officers have no push channel by design: the officer app carries an inbox
+ * instead, so an alert reaches them as a row they can read, mark and act on
+ * rather than a banner that disappears. Partners still get push, because a
+ * driver on the road cannot be expected to open an app to find out the road
+ * ahead is shut.
+ */
+async function deliverToOfficers(alert) {
+  const people = await officerRecipients(alert);
+  let written = 0;
+  let already = 0;
+
+  for (const person of people) {
+    const lang = person.preferredLanguage && alert.textFor(person.preferredLanguage).title
+      ? person.preferredLanguage
+      : "en";
+    const text = alert.textFor(lang);
+
+    try {
+      await OfficerNotification.create({
+        officer: person._id,
+        alert: alert._id,
+        alertId: alert.alertId,
+        kind: alert.kind,
+        severity: alert.severity,
+        title: text.title,
+        body: text.body,
+        lang,
+        segmentId: alert.segmentId,
+        segmentName: alert.segmentName,
+        districts: alert.districts,
+        payload: alert.payload,
+      });
+      written++;
+    } catch (e) {
+      // The unique (officer, alertId) index is what stops a re-scan from
+      // filling an inbox with copies of the same news.
+      if (e?.code === 11000) already++;
+      else throw e;
+    }
+  }
+
+  return { people: people.length, delivered: written, alreadyHeld: already };
+}
+
+async function deliverToPartners(alert) {
+  const people = await partnerRecipients();
+  const tokens = people.map((p) => p.fcmToken || p.expoPushToken).filter(Boolean);
+  if (!tokens.length) return { people: people.length, sent: 0 };
+
+  const text = alert.textFor("en");
+  try {
+    const r = await sendPushMany(tokens, {
+      title: text.title,
+      body: text.body,
+      data: {
+        type: "ALERT",
+        alertId: alert.alertId,
+        kind: alert.kind,
+        severity: alert.severity,
+        segmentId: alert.segmentId || "",
+      },
+    });
+    const sent = (r?.results || []).reduce((acc, x) => acc + (x?.sent || 0), 0);
+    return { people: people.length, sent };
+  } catch {
+    return { people: people.length, sent: 0 };
+  }
+}
 
 export async function deliver(alert) {
   const byAudience = {};
-  let attempted = 0;
+  let inbox = 0;
   let sent = 0;
 
   for (const audience of alert.audiences || []) {
-    const fetch = RECIPIENTS[audience];
-    if (!fetch) continue;
-
-    let people = [];
-    try {
-      people = await fetch(alert);
-    } catch {
-      people = [];
+    if (audience === "OFFICER") {
+      const r = await deliverToOfficers(alert);
+      byAudience.OFFICER = r;
+      inbox += r.delivered;
+    } else if (audience === "PARTNER") {
+      const r = await deliverToPartners(alert);
+      byAudience.PARTNER = r;
+      sent += r.sent;
     }
-
-    // Group by language so each person gets one push in their own language.
-    const byLang = new Map();
-    for (const p of people) {
-      const token = p.fcmToken || p.expoPushToken;
-      if (!token) continue;
-      const lang = p.preferredLanguage && alert.textFor(p.preferredLanguage).title ? p.preferredLanguage : "en";
-      if (!byLang.has(lang)) byLang.set(lang, []);
-      byLang.get(lang).push(token);
-    }
-
-    let audienceSent = 0;
-    for (const [lang, tokens] of byLang) {
-      const text = alert.textFor(lang);
-      attempted += tokens.length;
-      try {
-        const r = await sendPushMany(tokens, {
-          title: text.title,
-          body: text.body,
-          data: {
-            type: "ALERT",
-            alertId: alert.alertId,
-            kind: alert.kind,
-            severity: alert.severity,
-            segmentId: alert.segmentId || "",
-          },
-        });
-        const n = (r?.results || []).reduce((s, x) => s + (x?.sent || 0), 0);
-        audienceSent += n;
-        sent += n;
-      } catch {
-        /* a dead token must not stop the rest of the fan-out */
-      }
-    }
-
-    byAudience[audience] = { people: people.length, sent: audienceSent };
   }
 
   alert.delivery = {
-    attempted,
+    attempted: (byAudience.OFFICER?.people || 0) + (byAudience.PARTNER?.people || 0),
     sent,
-    failed: Math.max(0, attempted - sent),
+    inbox,
+    failed: 0,
     byAudience,
     at: new Date(),
   };
   await alert.save();
 
   return alert.delivery;
+}
+
+/**
+ * Delivers every still-active alert to any officer who does not already hold
+ * it. Without this an officer who registers today would see an empty inbox
+ * while their district is cut off, because alerts are only delivered at the
+ * moment they are raised.
+ */
+export async function backfillInboxes() {
+  const live = await Alert.find({ active: true, audiences: "OFFICER" });
+  let written = 0;
+
+  for (const alert of live) {
+    const r = await deliverToOfficers(alert);
+    written += r.delivered;
+  }
+
+  return { alerts: live.length, written };
 }
 
 // ── the scan ────────────────────────────────────────────────────────────────
@@ -327,12 +376,16 @@ export async function runAlertScan({ deliverPush = true } = {}) {
     if (a) raised.push(a);
   }
 
-  let delivered = { attempted: 0, sent: 0 };
+  let delivered = { attempted: 0, sent: 0, inbox: 0 };
   if (deliverPush) {
+    // Catches officers who joined, or changed patch, since an alert was raised.
+    delivered.inbox += (await backfillInboxes()).written;
+
     for (const a of raised) {
       const d = await deliver(a);
       delivered.attempted += d.attempted;
       delivered.sent += d.sent;
+      delivered.inbox += d.inbox || 0;
     }
   }
 

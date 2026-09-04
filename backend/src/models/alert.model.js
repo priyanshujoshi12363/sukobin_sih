@@ -40,6 +40,7 @@ const alertSchema = new mongoose.Schema(
     delivery: {
       attempted: { type: Number, default: 0 },
       sent: { type: Number, default: 0 },
+      inbox: { type: Number, default: 0 },
       failed: { type: Number, default: 0 },
       byAudience: { type: mongoose.Schema.Types.Mixed },
       at: { type: Date },

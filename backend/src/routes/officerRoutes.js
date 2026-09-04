@@ -6,13 +6,14 @@ import {
   register,
   verifyToken,
   updateProfile,
-  registerPushToken,
   home,
   segments,
   nearby,
   alerts,
   forecast,
   myReports,
+  notifications,
+  markNotificationsRead,
   verifyQueue,
   overrideSegmentStatus,
   directory,
@@ -30,7 +31,6 @@ router.use(officerProtect);
 
 router.post("/verify", verifyToken);
 router.patch("/profile", updateProfile);
-router.post("/push-token", registerPushToken);
 
 router.get("/home", home);
 router.get("/segments", segments);
@@ -38,6 +38,8 @@ router.get("/nearby", nearby);
 router.get("/alerts", alerts);
 router.get("/forecast", forecast);
 router.get("/reports", myReports);
+router.get("/notifications", notifications);
+router.post("/notifications/read", markNotificationsRead);
 
 router.post("/report", createIncident);
 router.post("/report/sync", syncIncidents);

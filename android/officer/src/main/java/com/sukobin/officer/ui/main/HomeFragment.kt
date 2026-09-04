@@ -48,12 +48,32 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         b.swipe.setOnRefreshListener { refresh() }
         b.btnRetry.setOnClickListener { refresh() }
 
+        b.btnNotifications.setOnClickListener {
+            startActivity(android.content.Intent(requireContext(), NotificationsActivity::class.java))
+        }
+
         refresh()
     }
 
     override fun onResume() {
         super.onResume()
         showQueueBanner()
+        // Coming back from the inbox should clear the badge without a full reload.
+        refreshUnreadBadge()
+    }
+
+    private fun refreshUnreadBadge() {
+        lifecycleScope.launch {
+            when (val r = apiCall { officerNotifications(true, OfficerSession.language) }) {
+                is ApiResult.Ok -> if (_b != null) setBadge(r.value.int("unread"))
+                is ApiResult.Err -> Unit
+            }
+        }
+    }
+
+    private fun setBadge(count: Int) {
+        b.notifBadge.visibility = if (count > 0) View.VISIBLE else View.GONE
+        b.notifBadge.text = if (count > 99) "99+" else count.toString()
     }
 
     override fun refresh() {
@@ -114,6 +134,8 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         } else {
             "$chokepoints weak ${if (chokepoints == 1) "point is" else "points are"} blocked or likely to close"
         }
+
+        setBadge(data.int("unreadNotifications"))
 
         val toVerify = data.int("awaitingMyVerification")
         b.verifyCard.visibility = if (OfficerSession.canVerify && toVerify > 0) View.VISIBLE else View.GONE

@@ -303,6 +303,7 @@ Who: BDO, SDM, PWD engineer, disaster-management staff, BRO/NHIDCL.
 | Override road status directly — senior officers only | done |
 | Road list and three-day model forecast scoped to the officer's own patch | done |
 | Switch alert language across 10 languages | done |
+| Read alerts in an in-app inbox, filter unread, mark read | done |
 
 Two things the app deliberately does **not** do. It has no photo capture yet:
 the report carries a `photos` array the server accepts, but the camera and the
@@ -311,10 +312,24 @@ officer cannot confirm anything, including their own report — `canVerifyIncide
 is derived from jurisdiction in a pre-save hook and is never accepted from the
 client, so the app cannot grant itself the power to close a highway.
 
-`com.sukobin.officer` is not in the shared `google-services.json`. The Gradle
-file applies the Google services plugin only when that file is present, so the
-app builds and runs without push; register it in the Firebase console and drop
-the file into `android/officer/` to switch push on.
+**This app has no push channel, by design.** Alerts reach an officer through an
+in-app inbox instead: the alert engine writes one `OfficerNotification` row per
+officer whose jurisdiction the alert touches, and the Notifications screen is
+where it lands. A `(officer, alertId)` unique index means a re-scan can never
+fill an inbox with copies of the same news, and `backfillInboxes()` delivers
+everything still live to an officer who registers later, so a new account does
+not open onto an empty inbox while its district is cut off.
+
+The reasoning: an alert an officer must act on should be a row they can keep,
+re-read, filter and mark, not a banner that vanishes from a lock screen.
+Partners still get push, because a driver already on the road cannot be
+expected to open an app to learn the road ahead is shut.
+
+Consequences: the app carries no Firebase dependency, no `google-services.json`
+and no `POST_NOTIFICATIONS` permission. `:core` supplies Firebase to the other
+three apps, so the officer manifest strips the messaging service, the Firebase
+metadata and the notification permission with `tools:node="remove"` — verified
+absent from the merged manifest.
 
 ### 12.5 Control dashboard — web
 
@@ -580,7 +595,6 @@ the dashboard's model card. Do not claim it is trained on observed closures.
 - Carrier trip completion screen (pickup and delivery OTP)
 - Merchant product management screens — deliberately deprioritised, scores
   nothing against this problem statement
-- Push for the officer app, until `google-services.json` includes it
 
 ### Demo note
 
