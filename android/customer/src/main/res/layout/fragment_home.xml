@@ -14,17 +14,27 @@
             android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="false"
             android:clipToPadding="false"
             android:paddingBottom="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="vertical">
 
+                <!--
+                  The search bar hangs 24dp below this hero on purpose, so this
+                  and every ancestor must stop clipping or the overhang is cut
+                  off and the chips below draw over what is left.
+                -->
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="380dp">
+                    android:layout_height="380dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
 
                     <ImageView
                         android:id="@+id/banner"
@@ -129,7 +139,8 @@
                         android:layout_marginHorizontal="16dp"
                         android:layout_marginBottom="-24dp"
                         android:background="@drawable/bg_search"
-                        android:elevation="6dp"
+                        android:elevation="12dp"
+                        android:translationZ="12dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="14dp">
