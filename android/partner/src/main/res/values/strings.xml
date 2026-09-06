@@ -221,4 +221,48 @@ You carry parcels along the road you were already travelling. While you drive, y
         <item quantity="one">%1$d delivery was just taken by another driver. Starting with the rest.</item>
         <item quantity="other">%1$d deliveries were just taken by another driver. Starting with the rest.</item>
     </plurals>
+
+    <string name="speak_title">Say what you see</string>
+    <string name="speak_step_photo">1. Take a photo</string>
+    <string name="speak_photo_optional">Helps the officer see it. You can skip this.</string>
+    <string name="speak_photo_added">Photo added</string>
+    <string name="speak_take_photo">Camera</string>
+    <string name="speak_choose_photo">From gallery</string>
+    <string name="speak_step_say">2. Say what happened</string>
+    <string name="speak_hint">Speak normally in %1$s. No form to fill in.</string>
+    <string name="speak_hint_fallback">No voice for %1$s on this phone, so it will listen in %2$s.</string>
+    <string name="speak_tap_to_talk">Tap and speak</string>
+    <string name="speak_prompt">Say what you can see on the road</string>
+    <string name="speak_you_said">YOU SAID</string>
+    <string name="speak_again">Say it again</string>
+    <string name="speak_understood_as">WHAT WE UNDERSTOOD</string>
+    <string name="speak_reading">Reading what you said…</string>
+    <string name="speak_blocks">Nothing can pass</string>
+    <string name="speak_passable">Traffic still moving</string>
+    <string name="speak_clears_in">Clear in about %1$d h</string>
+    <string name="speak_check_this">Please check this is right before sending.</string>
+    <string name="speak_offline_reading">Read without the internet, so this may be rough. Check it.</string>
+    <string name="speak_could_not_read">Could not read it just now</string>
+    <string name="speak_will_send_anyway">Your words will still be sent and read later.</string>
+    <string name="speak_say_first">Tap the button above and say what you see.</string>
+    <string name="speak_send_hint">Your words go with the report, in your own language.</string>
+    <string name="speak_finding_road">Finding the road…</string>
+    <string name="speak_need_location">Location permission is needed</string>
+    <string name="speak_need_camera">Camera permission is needed for a photo</string>
+    <string name="speak_no_camera">No camera app found</string>
+
+    <string name="hazard_landslide">Landslide</string>
+    <string name="hazard_flood">Flooding</string>
+    <string name="hazard_tree">Tree down</string>
+    <string name="hazard_damage">Road broken</string>
+    <string name="hazard_snow">Snow or ice</string>
+    <string name="hazard_accident">Accident</string>
+    <string name="hazard_blockade">Blockade</string>
+    <string name="hazard_congestion">Heavy traffic</string>
+    <string name="hazard_other">Something else</string>
+
+    <string name="home_speak_report">Speak a report</string>
+    <string name="home_speak_sub">Photo and a few words in your own language</string>
+    <string name="home_report_form">Or fill in the form instead</string>
+    <string name="speak_waiting_location">Waiting for a GPS fix.</string>
 </resources>

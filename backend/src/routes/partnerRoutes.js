@@ -19,6 +19,8 @@ import {
 } from "../controller/partnerController.js";
 import { partnerProtect } from "../middleware/protect.js";
 import { roadConditions, whereAmI } from "../controller/driverRoadController.js";
+import { understand as aiUnderstand, submit as aiSubmit } from "../controller/voiceReportController.js";
+import upload from "../middleware/multer.js";
 import { createIncident } from "../controller/incidentController.js";
 
 const router = Router();
@@ -50,5 +52,14 @@ router.get("/history", partnerProtect, getPartnerHistory);
 router.get("/road-conditions", partnerProtect, roadConditions);
 router.get("/where-am-i", partnerProtect, whereAmI);
 router.post("/report", partnerProtect, createIncident);
+
+// Speak it in any language, attach a photo, let the model do the rest.
+router.post("/report/understand", partnerProtect, aiUnderstand);
+router.post(
+  "/report/voice",
+  partnerProtect,
+  upload.fields([{ name: "photos", maxCount: 4 }]),
+  aiSubmit
+);
 
 export default router;

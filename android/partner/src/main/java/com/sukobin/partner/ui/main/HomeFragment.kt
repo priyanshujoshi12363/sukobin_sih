@@ -33,6 +33,7 @@ import android.content.Intent
 import com.sukobin.partner.R
 import com.sukobin.partner.data.LocationReporter
 import com.sukobin.partner.ui.report.ReportHazardActivity
+import com.sukobin.partner.ui.report.SpeakReportActivity
 import com.sukobin.partner.ui.trip.TripActivity
 import com.sukobin.partner.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Job
@@ -98,7 +99,12 @@ class HomeFragment : Fragment() {
         wireAutocomplete(b.inputFrom) { fromTown = it }
         wireAutocomplete(b.inputTo) { toTown = it }
 
+        // Speaking is the fast path; the tap-a-category form is still there
+        // for a driver who would rather not talk.
         b.btnReportHazard.setOnClickListener {
+            startActivity(Intent(requireContext(), SpeakReportActivity::class.java))
+        }
+        b.btnReportForm.setOnClickListener {
             startActivity(Intent(requireContext(), ReportHazardActivity::class.java))
         }
 

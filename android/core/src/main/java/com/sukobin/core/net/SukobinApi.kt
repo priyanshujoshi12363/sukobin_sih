@@ -183,6 +183,45 @@ interface SukobinApi {
     @POST("api/partner/report")
     suspend fun partnerReportHazard(@Body body: JsonObject): Response<JsonObject>
 
+    // Speak it, let the model read it, then confirm before it is filed.
+    @POST("api/partner/report/understand")
+    suspend fun partnerUnderstandReport(@Body body: JsonObject): Response<JsonObject>
+
+    @Multipart
+    @POST("api/partner/report/voice")
+    suspend fun partnerVoiceReport(
+        @Part("clientId") clientId: RequestBody,
+        @Part("segmentId") segmentId: RequestBody,
+        @Part("spokenText") spokenText: RequestBody,
+        @Part("spokenLang") spokenLang: RequestBody,
+        @Part("coordinates") coordinates: RequestBody,
+        @Part("accuracyM") accuracyM: RequestBody,
+        @Part("capturedAt") capturedAt: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("severity") severity: RequestBody,
+        @Part("blocksTraffic") blocksTraffic: RequestBody,
+        @Part photos: List<MultipartBody.Part>
+    ): Response<JsonObject>
+
+    @POST("api/officer/report/understand")
+    suspend fun officerUnderstandReport(@Body body: JsonObject): Response<JsonObject>
+
+    @Multipart
+    @POST("api/officer/report/voice")
+    suspend fun officerVoiceReport(
+        @Part("clientId") clientId: RequestBody,
+        @Part("segmentId") segmentId: RequestBody,
+        @Part("spokenText") spokenText: RequestBody,
+        @Part("spokenLang") spokenLang: RequestBody,
+        @Part("coordinates") coordinates: RequestBody,
+        @Part("accuracyM") accuracyM: RequestBody,
+        @Part("capturedAt") capturedAt: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("severity") severity: RequestBody,
+        @Part("blocksTraffic") blocksTraffic: RequestBody,
+        @Part photos: List<MultipartBody.Part>
+    ): Response<JsonObject>
+
     @POST("api/merchant/register")
     suspend fun merchantRegister(@Body body: JsonObject): Response<JsonObject>
 
