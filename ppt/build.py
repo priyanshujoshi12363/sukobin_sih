@@ -47,8 +47,9 @@ TEMPLATE = os.path.join(ROOT, "SIH2026-IDEA-Presentation-Format.pptx")
 OUTPUT = os.path.join(ROOT, "SIH2026_Sukobin.pptx")
 
 # ── the things only the team knows ──────────────────────────────────────────
-PS_ID = "SIH26-MDoNER-01"
+PS_ID = "26002"
 PS_TITLE = "AI-Enabled Logistics Accessibility Intelligence Platform for the North Eastern Region"
+ORG = "Ministry of Development of North Eastern Region (MDoNER)"
 THEME = "Transportation & Logistics"
 CATEGORY = "Software"
 TEAM_ID = "<team id>"
@@ -254,8 +255,8 @@ def clear_guidance(slide):
 def build_title(slide):
     sub_ph = shape_named(slide, "Subtitle")
     if sub_ph is not None:
-        sub_ph.top = Inches(1.12)
-        sub_ph.height = Inches(1.25)
+        sub_ph.top = Inches(1.10)
+        sub_ph.height = Inches(1.30)
         stf = sub_ph.text_frame
         stf.clear()
         para(stf, "SUKOBIN", size=30, bold=True, color=NAVY, first=True,
@@ -273,15 +274,16 @@ def build_title(slide):
     rows = [
         ("Problem Statement ID", PS_ID),
         ("Problem Statement Title", PS_TITLE),
+        ("Organization", ORG),
         ("Theme", THEME),
         ("PS Category", CATEGORY),
         ("Team ID", TEAM_ID),
         ("Team Name", TEAM_NAME),
     ]
     for i, (k, v) in enumerate(rows):
-        size = 12.5 if k == "Problem Statement Title" else 13.5
+        size = 11.5 if len(v) > 60 else 12.5
         rich(tf, [(k + " – ", True, NAVY), (v, False, INK)],
-             size=size, first=(i == 0), space_before=9, line=0.95)
+             size=size, first=(i == 0), space_before=8, line=0.95)
 
 
 # ══ slide 2 - proposed solution ═════════════════════════════════════════════
@@ -296,60 +298,58 @@ def build_idea(slide):
 
     # ── pointer 1 ──
     y = pointer(slide, LEFT, TOP, lw, "Detailed explanation of the proposed solution")
-    _, tf = textbox(slide, LEFT, y, lw, 1.85)
-    rich(tf, [("The problem. ", True, AMBER),
-              ("Landslides, floods and infrastructure gaps cut the NER's roads "
-               "without warning. Medicines, food, produce and construction "
-               "material arrive late or not at all, and no integrated platform "
-               "exists to see it happening.", False, INK)],
+    _, tf = textbox(slide, LEFT, y, lw, 1.72)
+    rich(tf, [("Sukobin ", True, NAVY),
+              ("combines GPS from registered transporters, field reports, weather "
+               "and road-network data to understand how accessible a route is. "
+               "Instead of costly roadside sensors, it turns vehicles already "
+               "travelling the region into mobile road probes.", False, INK)],
          size=11, first=True, line=1.0)
     rich(tf, [("Nobody drives for us. ", True, NAVY),
-              ("Anyone already travelling A to B enters their vehicle and route, "
-               "and is offered only the consignments lying along that road, up "
-               "to what the vehicle holds. No fleet, no empty return leg.",
+              ("A driver declares a journey they were making anyway and is offered "
+               "only the consignments lying along that road, within capacity.",
                False, INK)],
          size=11, space_before=7, line=1.0)
-    rich(tf, [("Those carriers stream GPS while they drive. ", True, NAVY),
-              ("Median speed against each road's baseline is a live "
-               "accessibility reading; the weather model turns it into a "
-               "72-hour closure forecast.", False, INK)],
+    rich(tf, [("Their movement is the measurement. ", True, NAVY),
+              ("Median speed against each road's baseline gives live accessibility; "
+               "AI turns it into risk, forecasts and alternate routes.", False, INK)],
          size=11, space_before=7, line=1.0)
-    y += 1.92
+    y += 1.80
 
     # ── pointer 3 ──
     y = pointer(slide, LEFT, y, lw, "Innovation and uniqueness of the solution")
-    card = band(slide, LEFT, y, lw, 1.16)
+    card = band(slide, LEFT, y, lw, 1.18)
     tf = card.text_frame
     for i, (lead, rest) in enumerate([
-        ("The carrier network IS the sensor network — ",
-         "one GPS stream both delivers goods and measures the road."),
-        ("Coverage without hardware — ",
-         "no roadside sensors, no dedicated fleet, nothing to power or maintain."),
-        ("It improves as it is used — ",
+        ("The carrier network IS the sensing network — ",
+         "one journey delivers goods and reads the road."),
+        ("No hardware, no dedicated fleet — ",
+         "nothing to install, power or maintain anywhere."),
+        ("Self-improving — ",
          "every new carrier adds sensing density at zero marginal cost."),
     ]):
-        rich(tf, [("•  " + lead, True, NAVY), (rest, False, INK)],
+        rich(tf, [("\u2022  " + lead, True, NAVY), (rest, False, INK)],
              size=10.5, first=(i == 0), space_before=7, line=1.0)
-    y += 1.26
+    y += 1.30
 
-    # ── right: the loop, drawn ──
-    yy = label(slide, rx, TOP + 0.32, rw, "One trip, two products")
+    # ── right: how it addresses the problem, drawn ──
+    yy = label(slide, rx, TOP + 0.30, rw, "One trip, two products")
     steps = [
-        ("Driver declares  Dimapur → Imphal", True),
-        ("Offered only parcels on that road", False),
-        ("Drives — GPS every 20 s / 40 m", False),
-        ("Median speed vs baseline → status", True),
-        ("Alerts · forecast · re-route · dashboard", False),
+        ("Driver declares  Dimapur \u2192 Imphal", True),
+        ("Offered only consignments on that road", False),
+        ("Drives \u2014 GPS every 20 s / 40 m", False),
+        ("Median speed vs baseline \u2192 road status", True),
+        ("Alerts \u00b7 forecast \u00b7 re-route \u00b7 dashboard", False),
     ]
-    h, gap = 0.50, 0.16
+    h, gap = 0.48, 0.15
     for i, (text, strong) in enumerate(steps):
-        s = band(slide, rx, yy, rw, h,
-                 fill=WHITE if strong else PAPER,
-                 line=STEEL if strong else RULE)
-        s.line.width = Pt(1.25 if strong else 0.75)
-        tf = s.text_frame
+        sp = band(slide, rx, yy, rw, h,
+                  fill=WHITE if strong else PAPER,
+                  line=STEEL if strong else RULE)
+        sp.line.width = Pt(1.25 if strong else 0.75)
+        tf = sp.text_frame
         tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(tf, text, size=11, bold=strong, color=NAVY if strong else INK,
+        para(tf, text, size=10.5, bold=strong, color=NAVY if strong else INK,
              first=True, align=PP_ALIGN.CENTER, line=0.92)
         yy += h
         if i < len(steps) - 1:
@@ -364,7 +364,7 @@ def build_idea(slide):
 
     # ── pointer 2, across the full width ──
     y = pointer(slide, LEFT, y, FULL,
-                "How it addresses the problem — every clause of the problem statement")
+                "How it addresses the problem \u2014 every clause of the problem statement")
     clauses = [
         ("a", "Road & bridge accessibility", "42 stretches, 3,567 km, 82 districts, live from GPS"),
         ("b", "Disruption prediction", "24 / 48 / 72 h closure risk on every road"),
@@ -376,15 +376,15 @@ def build_idea(slide):
         ("h", "Multilingual + offline", "10 languages, sync when the signal returns"),
     ]
     cw = (FULL - 3 * 0.12) / 4
-    ch = 0.60
+    ch = 0.58
     for i, (letter, title, detail) in enumerate(clauses):
         cx = LEFT + (i % 4) * (cw + 0.12)
-        cy = y + (i // 4) * (ch + 0.09)
+        cy = y + (i // 4) * (ch + 0.08)
         b = band(slide, cx, cy, cw, ch)
         tf = b.text_frame
         rich(tf, [("(%s)  " % letter, True, BLUE), (title, True, NAVY)],
-             size=10.5, first=True, line=0.95)
-        para(tf, detail, size=9, color=MUTED, space_before=2, line=0.95)
+             size=10, first=True, line=0.95)
+        para(tf, detail, size=8.5, color=MUTED, space_before=2, line=0.95)
 
 
 # ══ slide 3 - technical approach ════════════════════════════════════════════
@@ -397,196 +397,208 @@ def build_technical(slide):
     y = pointer(slide, LEFT, TOP, FULL,
                 "Technologies to be used (programming languages, frameworks, hardware)")
 
-    colw = (FULL - 2 * 0.22) / 3
+    colw = (FULL - 2 * 0.20) / 3
     cols = [
         ("Software stack", [
-            ("Backend", "Node.js · Express 5 · MongoDB with 2dsphere indexes · JWT"),
-            ("Web", "React · Vite · MapLibre GL for the GIS dashboard"),
-            ("Mobile", "Kotlin + XML — four Android apps: customer, merchant, driver, officer"),
-            ("Cloud", "Render · MongoDB Atlas · Cloudinary · Firebase push"),
+            ("Mobile", "Kotlin + XML \u2014 4 Android apps: customer, merchant, partner, officer"),
+            ("Web", "React \u00b7 Vite \u00b7 MapLibre GL dashboard"),
+            ("Backend", "Node.js \u00b7 Express 5 \u00b7 MongoDB 2dsphere \u00b7 JWT"),
+            ("Cloud", "Render \u00b7 Atlas \u00b7 Cloudinary \u00b7 FCM"),
         ]),
-        ("AI / ML", [
-            ("Model", "Logistic regression, benchmarked against gradient-boosted stumps"),
-            ("Features", "18 — antecedent rain, burst intensity, slope, terrain, closure history"),
-            ("Trained on", "109,116 road-days of observed weather · 42 stretches x 877 days"),
-            ("Scored", "AUC 0.883 · Brier 0.092 · held out after 2026-03-01"),
-        ]),
-        ("Hardware and external data", [
-            ("Hardware", "None to deploy — the driver's own phone is the sensor"),
+        ("AI / ML and data", [
+            ("Model", "Logistic regression vs gradient-boosted stumps, 18 features"),
+            ("Trained on", "109,116 road-days \u00b7 AUC 0.883 \u00b7 Brier 0.092"),
             ("Weather", "Open-Meteo archive + forecast, hourly"),
-            ("Roads", "OSRM geometry and route alternates"),
-            ("Transport DB", "VAHAN registration lookup at driver sign-up"),
+            ("Roads", "OSRM geometry and route alternates \u00b7 VAHAN lookup"),
+        ]),
+        ("Platform components", [
+            ("Hardware", "None \u2014 the driver's own phone is the sensor"),
+            ("Engines", "Route prediction \u00b7 GIS monitoring \u00b7 GPS tracking \u00b7 alerts"),
+            ("Field layer", "Photo, GPS and voice reporting in 10 languages"),
+            ("Resilience", "Offline queue, cloud storage, secure token auth"),
         ]),
     ]
     for i, (heading, rows) in enumerate(cols):
-        x = LEFT + i * (colw + 0.22)
+        x = LEFT + i * (colw + 0.20)
         ly = label(slide, x, y, colw, heading)
-        box = band(slide, x, ly, colw, 2.02)
+        box = band(slide, x, ly, colw, 1.66)
         tf = box.text_frame
         for j, (k, v) in enumerate(rows):
             rich(tf, [(k + "  ", True, NAVY), (v, False, INK)],
-                 size=10, first=(j == 0), space_before=8, line=1.0)
+                 size=9.5, first=(j == 0), space_before=7, line=0.98)
 
-    # ── pointer 2 ──
-    py = pointer(slide, LEFT, y + 2.42, FULL,
+    # ── pointer 2: the diagram, then the algorithms behind it ──
+    py = pointer(slide, LEFT, y + 2.00, FULL,
                  "Methodology and process for implementation")
 
     steps = [
-        ("GPS ping", "every 20 s / 40 m"),
-        ("Map-matched", "to a road ≤ 600 m"),
-        ("45-min rolling", "median speed"),
-        ("Road status", "OPEN → BLOCKED"),
-        ("Alert engine", "10 languages"),
-        ("Re-route + ETA", "for the corridor"),
+        ("Declare route", "driver states A \u2192 B"),
+        ("Match corridor", "consignments on that road"),
+        ("Stream GPS", "every 20 s / 40 m"),
+        ("Map-match", "to a road \u2264 600 m"),
+        ("Resolve status", "median speed vs baseline"),
+        ("Alert + re-route", "and forecast 72 h"),
     ]
     n = len(steps)
-    aw = 0.28
+    aw = 0.26
     sw = (FULL - (n - 1) * aw) / n
-    sh = 0.66
-    for i, (head, tail) in enumerate(steps):
+    sh = 0.62
+    for i, (head_t, tail_t) in enumerate(steps):
         x = LEFT + i * (sw + aw)
-        strong = i in (0, 3, 5)
-        s = band(slide, x, py, sw, sh,
-                 fill=WHITE if strong else PAPER,
-                 line=STEEL if strong else RULE)
-        s.line.width = Pt(1.25 if strong else 0.75)
-        tf = s.text_frame
+        strong = i in (0, 4, 5)
+        sp = band(slide, x, py, sw, sh,
+                  fill=WHITE if strong else PAPER,
+                  line=STEEL if strong else RULE)
+        sp.line.width = Pt(1.25 if strong else 0.75)
+        tf = sp.text_frame
         tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(tf, head, size=10, bold=True, color=NAVY, first=True,
+        para(tf, head_t, size=9.5, bold=True, color=NAVY, first=True,
              align=PP_ALIGN.CENTER, line=0.95)
-        para(tf, tail, size=8.5, color=MUTED, align=PP_ALIGN.CENTER,
+        para(tf, tail_t, size=8, color=MUTED, align=PP_ALIGN.CENTER,
              space_before=1, line=0.95)
         if i < n - 1:
             a = slide.shapes.add_shape(
-                MSO_SHAPE.RIGHT_ARROW, Inches(x + sw + 0.05),
-                Inches(py + sh / 2 - 0.05), Inches(aw - 0.10), Inches(0.10))
+                MSO_SHAPE.RIGHT_ARROW, Inches(x + sw + 0.045),
+                Inches(py + sh / 2 - 0.045), Inches(aw - 0.09), Inches(0.09))
             a.fill.solid()
             a.fill.fore_color.rgb = STEEL
             a.line.fill.background()
             a.shadow.inherit = False
 
-    # ── the Expected Solution, component by component ──
-    ey = label(slide, LEFT, py + sh + 0.16, FULL,
-               "Expected solution — every component, and what implements it")
-    expected = [
-        ("AI route engine", "3 OSRM alternates scored, condition-adjusted ETA"),
-        ("GIS dashboard", "MapLibre, 42 stretches, status / risk / forecast"),
-        ("GPS tracking", "20 s pings, map-matched, essentials flagged"),
-        ("Real-time alerts", "7 alert kinds, push + in-app, 10 languages"),
-        ("Mobile + web apps", "4 Android apps and a control dashboard"),
-        ("External integration", "Open-Meteo · OSRM · VAHAN"),
-        ("Cloud + offline", "Atlas · JWT · queue-and-sync on the phone"),
-    ]
-    n2 = len(expected)
-    gx = 0.10
-    ew = (FULL - (n2 - 1) * gx) / n2
-    eh = 0.66
-    for i, (head, tail) in enumerate(expected):
-        x = LEFT + i * (ew + gx)
-        b = band(slide, x, ey, ew, eh)
-        tf = b.text_frame
-        para(tf, head, size=9, bold=True, color=NAVY, first=True,
-             align=PP_ALIGN.CENTER, line=0.95)
-        para(tf, tail, size=7.5, color=MUTED, align=PP_ALIGN.CENTER,
-             space_before=2, line=0.95)
+    # ── the two algorithms, side by side ──
+    ay = py + sh + 0.16
+    half = (FULL - 0.24) / 2
 
-    b = band(slide, LEFT, ey + eh + 0.14, FULL, 0.52, fill=WHITE, line=STEEL)
-    b.line.width = Pt(1.25)
-    tf = b.text_frame
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    rich(tf, [("Trust rule  ", True, NAVY),
-              ("— a status needs at least 4 samples from at least 2 distinct "
-               "vehicles, and a driver's report is capped at RESTRICTED until an "
-               "officer confirms it, so one parked vehicle can never close a "
-               "highway.", False, INK)],
-         size=10.5, first=True, line=1.0)
+    aly = label(slide, LEFT, ay, half, "Algorithm 1 \u2014 corridor matching")
+    a1 = band(slide, LEFT, aly, half, 1.62)
+    tf = a1.text_frame
+    for j, t in enumerate([
+        "1  Coarse fetch \u2014 bounding box around the route polyline",
+        "2  Corridor \u2014 pickup and drop \u2264 10 km off the line, or inside the endpoint city",
+        "3  Detour cap \u2014 mid-route deviation \u2264 24 km, else rejected",
+        "4  Direction \u2014 driver \u2192 pickup \u2192 drop, projected along the line",
+        "5  Score, then sequence stops by position so the route never doubles back",
+    ]):
+        para(tf, t, size=9, color=INK, first=(j == 0), space_before=5, line=0.95)
+    rich(tf, [("score = 1.0 \u00d7 fee  \u2212  8.0 \u00d7 offRouteKm  \u2212  0.15 \u00d7 ageMinutes",
+               True, BLUE)], size=9.5, space_before=7, line=1.0,
+         align=PP_ALIGN.CENTER)
+
+    a2y = label(slide, LEFT + half + 0.24, ay, half,
+                "Algorithm 2 \u2014 probe sensing")
+    a2 = band(slide, LEFT + half + 0.24, a2y, half, 1.62)
+    tf = a2.text_frame
+    para(tf, "45-minute rolling median of vehicle speed \u00f7 the road's own baseline:",
+         size=9, color=INK, first=True, line=0.95)
+    for j, (r, st, col) in enumerate([
+        ("\u2264 0.15", "BLOCKED", AMBER),
+        ("\u2264 0.35", "RESTRICTED", AMBER),
+        ("\u2264 0.60", "SLOW", MUTED),
+        ("> 0.60", "OPEN", GREEN),
+    ]):
+        rich(tf, [(r.ljust(8), True, NAVY), ("  \u2192  ", False, MUTED), (st, True, col)],
+             size=9, space_before=4, line=0.95)
+    rich(tf, [("Trust rule \u2014 ", True, NAVY),
+              ("\u2265 4 samples from \u2265 2 distinct vehicles, else discarded. "
+               "An unverified driver report is capped at RESTRICTED.", False, INK)],
+         size=9, space_before=7, line=0.95)
 
 
-# ══ slide 4 - feasibility and viability ═════════════════════════════════════
+# ══ slide 4 - feasibility, viability and the business model ═════════════════
 def build_feasibility(slide):
     clear_guidance(slide)
     set_title(slide, "FEASIBILITY AND VIABILITY")
     set_team_badge(slide)
 
-    lw = 4.75
-    rx = LEFT + lw + 0.32
+    lw = 4.62
+    rx = LEFT + lw + 0.28
     rw = RIGHT - rx
-    chw = 2.72                      # challenge column
-    stw = rw - chw - 0.14           # strategy column
+    chw = 2.55
+    stw = rw - chw - 0.12
 
     # ── pointer 1 ──
     y = pointer(slide, LEFT, TOP, lw, "Analysis of the feasibility of the idea")
-    card = band(slide, LEFT, y, lw, 2.70)
+    card = band(slide, LEFT, y, lw, 1.72)
     tf = card.text_frame
+    para(tf, "Runs on smartphones, GPS, GIS and cloud services \u2014 no roadside "
+             "hardware to procure, install or power. Modular, so weather, routing "
+             "and government sources can be swapped per state.",
+         size=9.5, color=INK, first=True, line=0.98)
     for i, (n, what) in enumerate([
-        ("42 stretches · 3,567 km", "real OSRM geometry, 12 corridors, 82 districts, 8 states"),
-        ("4 Android apps + dashboard", "customer, merchant, driver, officer, control room"),
-        ("195 / 195", "backend tests passing across 10 suites"),
-        ("10 languages · 8,424 units", "every screen, zero English fallbacks"),
-        ("100 % coverage", "status, live vehicle data and forecast on every road"),
+        ("42 stretches \u00b7 3,567 km", "real OSRM geometry, 12 corridors, 8 states"),
+        ("4 apps + dashboard", "built and running against live data"),
+        ("195 / 195 tests", "10 suites \u00b7 10 languages \u00b7 0 English fallbacks"),
     ]):
         rich(tf, [(n + "  ", True, BLUE), (what, False, INK)],
-             size=11, first=(i == 0), space_before=11, line=1.0)
+             size=9.5, space_before=6, line=0.98)
 
-    ny = label(slide, LEFT, y + 2.84, lw,
-               "Viable because scaling costs almost nothing")
-    _, tf = textbox(slide, LEFT, ny, lw, 1.6)
-    for i, t in enumerate([
-        "No hardware to buy, install, power or maintain.",
-        "A new district needs its road geometry seeded — hours, not procurement.",
-        "Sensing density rises with adoption, at no extra cost per reading.",
-        "Runs on managed cloud services already in use.",
+    # ── business model ──
+    by = label(slide, LEFT, y + 1.86, lw, "Business model \u2014 how it sustains itself")
+    bcard = band(slide, LEFT, by, lw, 2.30, fill=WHITE, line=STEEL)
+    bcard.line.width = Pt(1.25)
+    tf = bcard.text_frame
+    for i, (lead, rest) in enumerate([
+        ("Flat platform fee  ",
+         "\u20b95 per parcel, \u20b92 per shop order. The driver keeps the full "
+         "delivery charge \u2014 that is what makes carrying worth it."),
+        ("Government licence  ",
+         "the accessibility dashboard sold per state or district to transport "
+         "and disaster-management departments."),
+        ("Merchant plans  ",
+         "optional listing and analytics tiers for shops."),
+        ("Cost side  ",
+         "cloud only. No fleet, no vehicles, no hardware, so marginal cost per "
+         "extra parcel is a payment-gateway fee."),
     ]):
-        rich(tf, [("•  ", True, STEEL), (t, False, INK)],
-             size=11, first=(i == 0), space_before=9, line=1.0)
+        rich(tf, [(lead, True, NAVY), (rest, False, INK)],
+             size=9.5, first=(i == 0), space_before=8, line=0.98)
 
-    # ── pointers 2 and 3, side by side so each risk faces its answer ──
+    # ── pointers 2 and 3 ──
     pointer(slide, rx, TOP, chw, "Potential challenges and risks")
-    pointer(slide, rx + chw + 0.14, TOP, stw,
+    pointer(slide, rx + chw + 0.12, TOP, stw,
             "Strategies for overcoming these challenges")
 
     rows = [
-        ("No public register of past road closures",
-         "Labels drawn from a rainfall-threshold hazard function; verified field "
-         "reports override them, and the dashboard states this openly."),
-        ("One parked driver could read as a closure",
-         "A status needs ≥ 4 samples from ≥ 2 distinct vehicles, else the "
-         "reading is discarded and the road keeps its previous status."),
-        ("Hill districts drop off the network",
-         "Reports queue on the phone under a client ID and sync later; the "
+        ("Remote areas lose network",
+         "Field reports queue on the phone under a client ID and sync later; the "
          "server rejects duplicates, so nothing is filed twice."),
-        ("Officers and drivers do not share a language",
-         "Ten languages including Khasi, Mizo, Nagamese and Kokborok — spoken "
-         "aloud as well as written, so literacy is not a barrier."),
-        ("A quiet road has no vehicles to sense it",
-         "The weather model forecasts every road regardless of traffic, and the "
-         "dashboard shows honestly what is sensed and what is not."),
+        ("Noisy or inaccurate GPS",
+         "Fixes worse than 120 m are dropped on the device, and a road status "
+         "needs \u2265 4 samples from \u2265 2 distinct vehicles before it changes."),
+        ("Incorrect user reports",
+         "An unverified report is capped at RESTRICTED; only an officer's "
+         "verification can close a road."),
+        ("Uncertainty in AI predictions",
+         "Every prediction is explainable by feature, calibration is published on "
+         "screen, and current risk is kept separate from the forecast."),
+        ("Roads close mid-journey",
+         "The route planner scores three real alternatives and reports why each "
+         "rejected one failed."),
+        ("No historical closure dataset",
+         "Labels come from a rainfall-threshold hazard function; verified field "
+         "reports override them, and the platform says so openly."),
     ]
     yy = TOP + 0.32
-    rh = 0.86
+    rh = 0.72
     for i, (risk, fix) in enumerate(rows):
         shade = PAPER if i % 2 else WHITE
         a = band(slide, rx, yy, chw, rh, fill=shade)
         a.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(a.text_frame, risk, size=10.5, bold=True, color=AMBER,
-             first=True, line=0.98)
-
-        b = band(slide, rx + chw + 0.14, yy, stw, rh, fill=shade)
+        para(a.text_frame, risk, size=9.5, bold=True, color=AMBER, first=True, line=0.98)
+        b = band(slide, rx + chw + 0.12, yy, stw, rh, fill=shade)
         b.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(b.text_frame, fix, size=10, color=INK, first=True, line=1.0)
-
-        arrow = slide.shapes.add_shape(
-            MSO_SHAPE.RIGHT_ARROW, Inches(rx + chw + 0.025),
-            Inches(yy + rh / 2 - 0.045), Inches(0.09), Inches(0.09))
-        arrow.fill.solid()
-        arrow.fill.fore_color.rgb = STEEL
-        arrow.line.fill.background()
-        arrow.shadow.inherit = False
-
-        yy += rh + 0.09
+        para(b.text_frame, fix, size=9, color=INK, first=True, line=0.98)
+        ar = slide.shapes.add_shape(
+            MSO_SHAPE.RIGHT_ARROW, Inches(rx + chw + 0.015),
+            Inches(yy + rh / 2 - 0.04), Inches(0.08), Inches(0.08))
+        ar.fill.solid()
+        ar.fill.fore_color.rgb = STEEL
+        ar.line.fill.background()
+        ar.shadow.inherit = False
+        yy += rh + 0.07
 
 
-# ══ slide 5 - impact and benefits ═══════════════════════════════════════════
+# ══ slide 5 - impact, benefits and the timeline ═════════════════════════════
 def build_impact(slide):
     clear_guidance(slide)
     set_title(slide, "IMPACT AND BENEFITS")
@@ -596,63 +608,87 @@ def build_impact(slide):
     y = pointer(slide, LEFT, TOP, FULL, "Potential impact on the target audience")
     who = [
         ("District administration",
-         "A lifeline corridor's closure risk 72 hours out, ranked by how many "
-         "people lose their only road."),
+         "Continuous visibility of accessibility, and a lifeline corridor's "
+         "closure risk 72 hours out."),
         ("Field officers",
-         "One screen: weak points ranked with the reason each scored, and a "
-         "queue of reports to confirm."),
-        ("Drivers and small operators",
-         "Income from a journey already being made — no fleet, no contract, "
-         "no empty return leg."),
+         "Weak points ranked with the reason each scored, and a queue of reports "
+         "to verify."),
+        ("Transporters and drivers",
+         "Income from a journey already being made, and route conditions before "
+         "setting out."),
         ("People in remote blocks",
-         "Medicines, food, produce and construction material arrive — and an "
+         "Medicines, food, produce and construction material arrive \u2014 with an "
          "alert in the language spoken at home when they will not."),
     ]
-    cw = (FULL - 3 * 0.18) / 4
+    cw = (FULL - 3 * 0.16) / 4
     for i, (title, text) in enumerate(who):
-        x = LEFT + i * (cw + 0.18)
-        b = band(slide, x, y, cw, 1.42)
+        x = LEFT + i * (cw + 0.16)
+        b = band(slide, x, y, cw, 1.34)
         tf = b.text_frame
-        para(tf, title, size=11.5, bold=True, color=NAVY, first=True, line=0.95)
-        para(tf, text, size=10.5, color=INK, space_before=4, line=0.98)
+        para(tf, title, size=10.5, bold=True, color=NAVY, first=True, line=0.95)
+        para(tf, text, size=9, color=INK, space_before=3, line=0.98)
 
     # ── pointer 2 ──
-    by = pointer(slide, LEFT, y + 1.58, FULL,
+    by = pointer(slide, LEFT, y + 1.48, FULL,
                  "Benefits of the solution (social, economic, environmental, etc.)")
     kinds = [
         ("Social", GREEN,
-         "8 states · 82 districts. Alerts and voice reporting in 10 languages, "
-         "four of which have almost no other software support."),
+         "8 states, 82 districts. Alerts and voice reporting in 10 languages, four "
+         "with almost no other software support."),
         ("Economic", BLUE,
-         "No dedicated fleet, so moving one more parcel costs close to nothing. "
-         "Spare capacity in vehicles already on the road becomes income."),
+         "Corridor matching turns spare capacity into income. No dedicated fleet, "
+         "so cost per extra parcel is near zero."),
         ("Environmental", GREEN,
-         "Fewer dedicated trips — a parcel rides in a vehicle that was making "
-         "the journey anyway, instead of a second one setting out."),
+         "Fewer dedicated trips \u2014 a parcel rides in a vehicle already making "
+         "the journey, not a second one."),
         ("Governance", STEEL,
-         "Every incident carries a photo, a GPS fix, a timestamp and the officer "
-         "who confirmed it — an evidence trail, not a phone call."),
+         "Photo, GPS fix, timestamp and the verifying officer on every incident. "
+         "An evidence trail, not a phone call."),
     ]
-    # The problem statement names four outcomes; they are what this is measured on.
-    outcomes = ("Improved regional connectivity  ·  stronger emergency response  ·  "
-                "fewer supply-chain disruptions  ·  planning and monitoring on evidence")
-    kh = 0.64
     for i, (kind, colour, text) in enumerate(kinds):
-        yy = by + i * (kh + 0.09)
-        chip = band(slide, LEFT, yy, 1.58, kh, fill=colour, line=None)
+        x = LEFT + i * (cw + 0.16)
+        chip = band(slide, x, by, cw, 0.34, fill=colour, line=None)
         chip.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(chip.text_frame, kind, size=12, bold=True, color=WHITE, first=True,
+        para(chip.text_frame, kind, size=10.5, bold=True, color=WHITE, first=True,
              align=PP_ALIGN.CENTER)
-        b = band(slide, LEFT + 1.70, yy, FULL - 1.70, kh)
+        b = band(slide, x, by + 0.38, cw, 0.98)
         b.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-        para(b.text_frame, text, size=11, color=INK, first=True, line=1.0)
+        para(b.text_frame, text, size=9, color=INK, first=True, line=0.98)
 
-    strip = band(slide, LEFT, by + 4 * (kh + 0.09) + 0.04, FULL, 0.44,
-                 fill=WHITE, line=STEEL)
-    strip.line.width = Pt(1.25)
-    strip.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-    para(strip.text_frame, outcomes, size=10.5, bold=True, color=NAVY,
-         first=True, align=PP_ALIGN.CENTER, line=1.0)
+    # ── product development timeline ──
+    ty = label(slide, LEFT, by + 1.50, FULL, "Product development timeline")
+    phases = [
+        ("Phase 1", "DONE", "Core platform", "4 apps, dashboard, 118 endpoints", GREEN),
+        ("Phase 2", "DONE", "Intelligence layer", "probe sensing, forecast model, alerts, 10 languages", GREEN),
+        ("Phase 3", "4 WEEKS", "Close the loop", "road-ahead warnings, mid-trip re-route, delay alerts", BLUE),
+        ("Phase 4", "3 MONTHS", "District pilot", "one corridor with a state transport department", STEEL),
+        ("Phase 5", "6-12 MONTHS", "Scale", "multi-state rollout, government system integration", MUTED),
+    ]
+    pw = (FULL - 4 * 0.12) / 5
+    for i, (ph, when, title, detail, colour) in enumerate(phases):
+        x = LEFT + i * (pw + 0.12)
+        b = band(slide, x, ty, pw, 1.04,
+                 fill=WHITE if colour in (GREEN, BLUE) else PAPER)
+        tf = b.text_frame
+        rich(tf, [(ph + "   ", True, NAVY), (when, True, colour)],
+             size=8.5, first=True, line=0.95)
+        para(tf, title, size=10, bold=True, color=NAVY, space_before=2, line=0.95)
+        para(tf, detail, size=8, color=MUTED, space_before=1, line=0.95)
+        # a small progress bar under each phase, filled for what is done
+        barw = pw * (1.0 if when == "DONE" else 0.0)
+        track = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE, Inches(x), Inches(ty + 1.08), Inches(pw), Inches(0.05))
+        track.fill.solid()
+        track.fill.fore_color.rgb = RULE
+        track.line.fill.background()
+        track.shadow.inherit = False
+        if barw > 0:
+            fillbar = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE, Inches(x), Inches(ty + 1.08), Inches(barw), Inches(0.05))
+            fillbar.fill.solid()
+            fillbar.fill.fore_color.rgb = colour
+            fillbar.line.fill.background()
+            fillbar.shadow.inherit = False
 
 
 # ══ slide 6 - research and references ═══════════════════════════════════════
@@ -668,50 +704,51 @@ def build_research(slide):
     groups = [
         ("Data sources the platform runs on", [
             ("Open-Meteo Historical Weather API",
-             "open-meteo.com/en/docs/historical-weather-api — observed hourly "
+             "open-meteo.com/en/docs/historical-weather-api \u2014 observed hourly "
              "rainfall, snowfall and temperature; the model's training set"),
-            ("OSRM — Open Source Routing Machine",
-             "project-osrm.org — road geometry and route alternates, 42 stretches"),
+            ("OSRM \u2014 Open Source Routing Machine",
+             "project-osrm.org \u2014 real road geometry and route alternates"),
             ("VAHAN / Parivahan registration lookup",
-             "parivahan.gov.in — vehicle class and capacity at driver sign-up"),
+             "parivahan.gov.in \u2014 vehicle class and capacity at driver sign-up"),
             ("MapLibre GL JS + Esri Dark Gray Canvas",
-             "maplibre.org — the GIS layer of the control dashboard"),
+             "maplibre.org \u2014 the GIS layer of the control dashboard"),
         ]),
         ("Problem and domain research", [
-            ("MDoNER — problem statement and regional context",
-             "mdoner.gov.in — NER connectivity gaps and infrastructure priorities"),
+            ("MDoNER \u2014 problem statement 26002",
+             "mdoner.gov.in \u2014 NER connectivity gaps and infrastructure priorities"),
             ("NHIDCL / MoRTH national highway network",
-             "nhidcl.com · morth.nic.in — corridor alignments and NH numbering "
-             "used to seed the road network"),
+             "nhidcl.com \u00b7 morth.nic.in \u2014 corridor alignments and NH numbering"),
             ("IMD rainfall climatology for the North East",
-             "mausam.imd.gov.in — monsoon windows and the rain thresholds "
-             "behind the hazard function"),
+             "mausam.imd.gov.in \u2014 monsoon windows and the rain thresholds used"),
             ("GSI landslide susceptibility mapping",
-             "gsi.gov.in — which stretches are treated as landslide-prone"),
+             "gsi.gov.in \u2014 which stretches are treated as landslide-prone"),
         ]),
     ]
     for i, (heading, rows) in enumerate(groups):
         x = LEFT + i * (colw + 0.24)
         ly = label(slide, x, y, colw, heading)
-        box = band(slide, x, ly, colw, 3.30)
+        box = band(slide, x, ly, colw, 3.24)
         tf = box.text_frame
         for j, (title, detail) in enumerate(rows):
-            para(tf, title, size=11, bold=True, color=NAVY,
-                 first=(j == 0), space_before=22, line=0.95)
-            para(tf, detail, size=9.5, color=MUTED, space_before=2, line=0.95)
+            para(tf, title, size=10.5, bold=True, color=NAVY,
+                 first=(j == 0), space_before=23, line=0.95)
+            para(tf, detail, size=9, color=MUTED, space_before=2, line=0.95)
 
-    ny = y + 3.70
-    b = band(slide, LEFT, ny, FULL, 0.92, fill=WHITE, line=STEEL)
+    my = label(slide, LEFT, y + 3.62, FULL, "Method \u2014 how the model was built and judged")
+    b = band(slide, LEFT, my, FULL, 0.94, fill=WHITE, line=STEEL)
     b.line.width = Pt(1.25)
     tf = b.text_frame
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    rich(tf, [("Honest note on the model  ", True, NAVY),
-              ("— no public register of past NER road closures exists, so "
-               "historical labels are drawn from a rainfall-threshold hazard "
-               "function calibrated on IMD and GSI data. Verified field reports "
-               "override every drawn label, and the dashboard says so on screen.",
-               False, INK)],
-         size=10.5, first=True, line=1.02)
+    rich(tf, [("Date-based evaluation \u2014 ", True, NAVY),
+              ("trained on 109,116 road-days across 42 stretches x 877 days of "
+               "observed weather, with everything after 2026-03-01 held out. "
+               "AUC 0.883, Brier 0.092.", False, INK)],
+         size=10, first=True, line=1.0)
+    rich(tf, [("Stated openly: ", True, AMBER),
+              ("no public register of past NER road closures exists, so historical "
+               "labels are drawn from a rainfall-threshold hazard function "
+               "calibrated on IMD and GSI data. Verified field reports override "
+               "every drawn label.", False, INK)],
+         size=10, space_before=5, line=1.0)
 
 
 # ══ main ════════════════════════════════════════════════════════════════════
@@ -733,9 +770,10 @@ def main():
     delete_slide(prs, 6)
     prs.save(OUTPUT)
 
-    print("\nwrote %s  —  %d slides"
+    print("\nwrote %s  -  %d slides"
           % (os.path.relpath(OUTPUT, ROOT), len(Presentation(OUTPUT).slides)))
-    print("all 11 template pointers answered under their own heading")
+    print("11 template pointers answered, plus the algorithms, business model "
+          "and timeline")
     if "<" in TEAM_ID:
         print("\nstill to fill in ppt/build.py:  TEAM_ID")
     print("Save as PDF before uploading - the portal accepts nothing else.\n")
