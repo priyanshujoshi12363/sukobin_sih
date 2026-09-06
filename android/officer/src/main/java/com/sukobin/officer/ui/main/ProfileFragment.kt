@@ -190,7 +190,7 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
 
     private fun syncNow() {
         lifecycleScope.launch {
-            val r = ReportQueue.sync()
+            val r = ReportQueue.sync(requireContext())
             (activity as? MainActivity)?.updateQueueBadge()
             renderLocal()
             refresh()

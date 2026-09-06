@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         // Coming back into signal is the natural moment to flush the queue.
         if (ReportQueue.pendingCount() > 0) {
             lifecycleScope.launch {
-                ReportQueue.sync()
+                ReportQueue.sync(this@MainActivity)
                 updateQueueBadge()
                 (current as? Refreshable)?.refresh()
             }

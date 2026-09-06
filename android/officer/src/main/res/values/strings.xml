@@ -102,4 +102,20 @@
     <string name="voice_read_aloud">Read aloud</string>
     <string name="voice_stop_reading">Stop</string>
     <string name="voice_no_tts">This phone cannot read %1$s aloud</string>
+
+    <string name="report_photos">Photos</string>
+    <string name="report_photo_none">A photo lets a senior officer confirm without driving out.</string>
+    <string name="report_photo_clear">Remove</string>
+    <string name="report_take_photo">Camera</string>
+    <string name="report_choose_photo">From gallery</string>
+    <string name="report_photo_limit">Three photos is the most that will be sent</string>
+    <string name="report_need_camera">Camera permission is needed to take a photo</string>
+    <string name="report_no_camera">No camera app found</string>
+    <plurals name="report_photo_count">
+        <item quantity="one">%1$d photo attached</item>
+        <item quantity="other">%1$d photos attached</item>
+    </plurals>
+
+    <string name="verify_photo">Photo from the reporter</string>
+    <string name="verify_photo_from">Sent by %1$s</string>
 </resources>

@@ -129,7 +129,7 @@ class SplashActivity : AppCompatActivity() {
                 // Anything the officer saved with no signal goes up now.
                 if (ReportQueue.pendingCount() > 0) {
                     b.statusLine.setText(R.string.splash_status_syncing)
-                    ReportQueue.sync()
+                    ReportQueue.sync(this@SplashActivity)
                 }
                 MainActivity::class.java
             }

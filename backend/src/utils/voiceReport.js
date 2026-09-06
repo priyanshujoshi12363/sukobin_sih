@@ -41,7 +41,9 @@ Rules:
 - "kuch nahi ja sakta" / "nothing can pass" means blocksTraffic true, passableBy [].
 - A landslide or flood that blocks everything is CRITICAL. One lane open is MEDIUM.
 - If they are reporting the road is now fine, set roadClear true and severity LOW.
-- If you cannot tell what happened, use type OTHER and set needsReview true.`;
+- If you cannot tell what happened, use type OTHER and set needsReview true.
+- BLOCKADE means people deliberately blocking the road: a bandh, a strike, a protest, a dharna. A vehicle that has crashed or overturned is an ACCIDENT, however completely it blocks the road. Do not confuse a road being blocked with a BLOCKADE.
+- Rocks, mud or a hillside coming down is LANDSLIDE, not ROAD_DAMAGE. ROAD_DAMAGE is the surface itself failing: potholes, cracks, subsidence, a washed-out stretch.`;
 
 const ALL_VEHICLES = ["bike", "auto", "car", "pickup", "truck"];
 

@@ -1,5 +1,6 @@
 package com.sukobin.officer.ui.report
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.google.gson.JsonObject
 import com.sukobin.core.net.ApiResult
 import com.sukobin.core.net.apiCall
@@ -21,6 +23,7 @@ import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
 import com.sukobin.core.ui.Motion
+import com.sukobin.officer.R
 import com.sukobin.officer.databinding.ActivityVerifyQueueBinding
 import com.sukobin.officer.databinding.ItemVerifyBinding
 import com.sukobin.officer.ui.Status
@@ -51,7 +54,14 @@ class VerifyQueueActivity : AppCompatActivity() {
 
     private val adapter = VerifyAdapter(
         onConfirm = { row -> decide(row, "VERIFIED") },
-        onReject = { row -> decide(row, "REJECTED") }
+        onReject = { row -> decide(row, "REJECTED") },
+        onPhoto = { url, caption ->
+            startActivity(
+                Intent(this, PhotoViewActivity::class.java)
+                    .putExtra(PhotoViewActivity.EXTRA_URL, url)
+                    .putExtra(PhotoViewActivity.EXTRA_CAPTION, caption)
+            )
+        }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,7 +174,8 @@ class VerifyQueueActivity : AppCompatActivity() {
 
 class VerifyAdapter(
     private val onConfirm: (VerifyRow) -> Unit,
-    private val onReject: (VerifyRow) -> Unit
+    private val onReject: (VerifyRow) -> Unit,
+    private val onPhoto: (String, String) -> Unit = { _, _ -> }
 ) : ListAdapter<VerifyRow, VerifyAdapter.VH>(DIFF) {
 
     companion object {
@@ -201,6 +212,22 @@ class VerifyAdapter(
         b.blocksTag.visibility = if (row.blocksTraffic) View.VISIBLE else View.GONE
         b.photoTag.visibility = if (row.photos.isEmpty()) View.GONE else View.VISIBLE
         b.photoTag.text = "${row.photos.size} photo${if (row.photos.size == 1) "" else "s"}"
+
+        // The photo is the evidence. Show it here rather than making the officer
+        // take the reporter's word and go and look.
+        val slots = listOf(b.vPhoto1, b.vPhoto2, b.vPhoto3)
+        b.photoStrip.visibility = if (row.photos.isEmpty()) View.GONE else View.VISIBLE
+
+        slots.forEachIndexed { i, view ->
+            val url = row.photos.getOrNull(i)
+            view.visibility = if (url == null) View.GONE else View.VISIBLE
+            if (url != null) {
+                view.load(url) { crossfade(true) }
+                view.setOnClickListener {
+                    onPhoto(url, ctx.getString(R.string.verify_photo_from, row.reporterName))
+                }
+            }
+        }
 
         b.btnConfirm.setOnClickListener { onConfirm(row) }
         b.btnReject.setOnClickListener { onReject(row) }

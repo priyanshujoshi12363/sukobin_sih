@@ -3,19 +3,23 @@ package com.sukobin.officer.ui.report
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.gson.JsonObject
 import com.sukobin.core.net.ApiResult
 import com.sukobin.core.net.apiCall
+import com.sukobin.core.net.Upload
 import com.sukobin.core.net.arr
 import com.sukobin.core.ui.Motion
 import com.sukobin.core.voice.Voice
@@ -26,6 +30,8 @@ import com.sukobin.officer.data.ReportQueue
 import com.sukobin.officer.databinding.ActivityReportBinding
 import com.sukobin.officer.ui.Status
 import kotlinx.coroutines.launch
+import coil.load
+import java.io.File
 import java.time.Instant
 
 class ReportActivity : AppCompatActivity() {
@@ -40,6 +46,35 @@ class ReportActivity : AppCompatActivity() {
     }
 
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
+
+    // Clause (f) of the problem statement asks for photos by name, and a photo
+    // is what turns "there is a landslide" into something a senior officer can
+    // confirm without driving out to look.
+    private val photos = mutableListOf<Uri>()
+    private var cameraTarget: Uri? = null
+
+    private val takePhoto = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { saved ->
+        if (saved) cameraTarget?.let { photos.add(it); renderPhotos() }
+    }
+
+    private val cameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) launchCamera()
+        else Toast.makeText(this, getString(R.string.report_need_camera), Toast.LENGTH_SHORT).show()
+    }
+
+    private val pickPhotos = registerForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(3)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            photos.clear()
+            photos.addAll(uris.take(3))
+            renderPhotos()
+        }
+    }
 
     private val dictate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -86,11 +121,63 @@ class ReportActivity : AppCompatActivity() {
         setupSeverityChips()
         setupVoice()
 
+        b.btnCamera.setOnClickListener { requestCamera() }
+        b.btnGallery.setOnClickListener {
+            pickPhotos.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        }
+        b.btnClearPhotos.setOnClickListener { photos.clear(); renderPhotos() }
+        renderPhotos()
+
         b.blocksSwitch.setOnCheckedChangeListener { _, checked ->
             b.clearanceGroup.visibility = if (checked) View.VISIBLE else View.GONE
         }
 
         requestLocation()
+    }
+
+    private fun requestCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            launchCamera()
+        } else {
+            cameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun launchCamera() {
+        if (photos.size >= 3) {
+            Toast.makeText(this, getString(R.string.report_photo_limit), Toast.LENGTH_SHORT).show()
+            return
+        }
+        val dir = File(cacheDir, "photos").apply { mkdirs() }
+        val file = File(dir, "report_${System.currentTimeMillis()}.jpg")
+        val target = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        cameraTarget = target
+        try {
+            takePhoto.launch(target)
+        } catch (e: Exception) {
+            Toast.makeText(this, getString(R.string.report_no_camera), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun renderPhotos() {
+        val previews = listOf(b.photo1, b.photo2, b.photo3)
+        previews.forEachIndexed { i, view ->
+            val uri = photos.getOrNull(i)
+            view.visibility = if (uri == null) View.GONE else View.VISIBLE
+            if (uri != null) view.load(uri) { crossfade(true) }
+        }
+
+        b.photoStrip.visibility = if (photos.isEmpty()) View.GONE else View.VISIBLE
+        b.btnClearPhotos.visibility = if (photos.isEmpty()) View.GONE else View.VISIBLE
+        b.photoHint.text = if (photos.isEmpty()) {
+            getString(R.string.report_photo_none)
+        } else {
+            resources.getQuantityString(R.plurals.report_photo_count, photos.size, photos.size)
+        }
     }
 
     private fun setupVoice() {
@@ -324,6 +411,8 @@ class ReportActivity : AppCompatActivity() {
             district = chosenRoad?.district ?: OfficerSession.district,
             state = chosenRoad?.state ?: OfficerSession.state,
             capturedAt = Instant.now().toString(),
+            localPhotos = photos.map { it.toString() },
+            spokenLang = OfficerSession.language,
             blocksTraffic = b.blocksSwitch.isChecked,
             estimatedClearanceHours = clearance
         )
@@ -333,7 +422,7 @@ class ReportActivity : AppCompatActivity() {
         ReportQueue.add(report)
 
         lifecycleScope.launch {
-            val result = ReportQueue.sync()
+            val result = ReportQueue.sync(this@ReportActivity)
             saving = false
             b.saveSpinner.visibility = View.GONE
 

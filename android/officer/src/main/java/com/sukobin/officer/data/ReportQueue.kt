@@ -1,6 +1,7 @@
 package com.sukobin.officer.data
 
 import android.content.Context
+import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -9,6 +10,7 @@ import com.sukobin.core.net.apiCall
 import com.sukobin.core.net.arr
 import com.sukobin.core.net.int
 import com.sukobin.core.net.jsonArrayOf
+import com.sukobin.core.net.Upload
 import com.sukobin.core.net.jsonOf
 import java.io.File
 import java.util.UUID
@@ -26,9 +28,13 @@ data class QueuedReport(
     val district: String?,
     val state: String?,
     val capturedAt: String,
+    /** URLs, once the server has them. */
     val photos: List<String> = emptyList(),
+    /** Content URIs of photos still on this phone, waiting to be uploaded. */
+    val localPhotos: List<String> = emptyList(),
     val blocksTraffic: Boolean = false,
     val estimatedClearanceHours: Int? = null,
+    val spokenLang: String? = null,
     var attempts: Int = 0,
     var lastError: String? = null,
     var sent: Boolean = false,
@@ -126,14 +132,81 @@ object ReportQueue {
     }
 
     /**
-     * Pushes everything waiting in one batch. A duplicate coming back is a
-     * success: it means the server already has that report.
+     * Photos have to go up one report at a time as multipart; the JSON batch
+     * endpoint cannot carry a file. Reports without a photo still batch, so a
+     * queue of twenty text reports is still one request.
      */
-    suspend fun sync(): SyncResult {
+    private suspend fun sendWithPhotos(context: Context, report: QueuedReport): Boolean {
+        val parts = Upload.parts(
+            context,
+            report.localPhotos.mapNotNull { runCatching { Uri.parse(it) }.getOrNull() },
+            "photos"
+        )
+
+        val r = apiCall {
+            officerVoiceReport(
+                Upload.text(report.clientId),
+                Upload.text(report.segmentId.orEmpty()),
+                // The officer typed this rather than spoke it, but the endpoint
+                // treats it the same: it is still translated and summarised.
+                Upload.text(report.description),
+                Upload.text(report.spokenLang.orEmpty()),
+                Upload.text("${report.lng},${report.lat}"),
+                Upload.text(report.accuracyM.toString()),
+                Upload.text(report.capturedAt),
+                // The officer chose these, so they override what the model reads.
+                Upload.text(report.type),
+                Upload.text(report.severity),
+                Upload.text(report.blocksTraffic.toString()),
+                parts
+            )
+        }
+
+        Upload.clearCache(context)
+        return r is ApiResult.Ok
+    }
+
+    /**
+     * Pushes everything waiting. A duplicate coming back is a success: it means
+     * the server already has that report.
+     */
+    suspend fun sync(context: Context? = null): SyncResult {
         val waiting = pending()
         if (waiting.isEmpty()) return SyncResult(0, 0, 0, 0, null)
 
-        val payload = jsonArrayOf(*waiting.map { it.toJson() }.toTypedArray())
+        val withPhotos = waiting.filter { it.localPhotos.isNotEmpty() }
+        val plain = waiting.filter { it.localPhotos.isEmpty() }
+
+        var photoSent = 0
+        if (context != null) {
+            val now = java.time.Instant.now().toString()
+            for (report in withPhotos) {
+                if (sendWithPhotos(context, report)) {
+                    photoSent++
+                    synchronized(this) {
+                        cache.firstOrNull { it.clientId == report.clientId }?.apply {
+                            sent = true
+                            sentAt = now
+                            lastError = null
+                        }
+                        write()
+                    }
+                } else {
+                    synchronized(this) {
+                        cache.firstOrNull { it.clientId == report.clientId }?.apply {
+                            attempts += 1
+                        }
+                        write()
+                    }
+                }
+            }
+        }
+
+        if (plain.isEmpty()) {
+            return SyncResult(waiting.size, photoSent, 0, waiting.size - photoSent, null)
+        }
+
+        val payload = jsonArrayOf(*plain.map { it.toJson() }.toTypedArray())
 
         return when (val r = apiCall { officerSyncReports(jsonOf("incidents" to payload)) }) {
             is ApiResult.Ok -> {
@@ -163,7 +236,7 @@ object ReportQueue {
 
                 SyncResult(
                     attempted = waiting.size,
-                    accepted = accepted.size,
+                    accepted = accepted.size + photoSent,
                     duplicates = duplicates.size,
                     failed = r.value.int("failed"),
                     message = null
@@ -180,7 +253,7 @@ object ReportQueue {
                     }
                     write()
                 }
-                SyncResult(waiting.size, 0, 0, waiting.size, r.message)
+                SyncResult(waiting.size, photoSent, 0, waiting.size - photoSent, r.message)
             }
         }
     }

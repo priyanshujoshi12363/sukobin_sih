@@ -184,7 +184,7 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         b.queueText.text = "$pending ${if (pending == 1) "report is" else "reports are"} saved on this phone, waiting for signal"
         b.btnSyncNow.setOnClickListener {
             lifecycleScope.launch {
-                val r = ReportQueue.sync()
+                val r = ReportQueue.sync(requireContext())
                 (activity as? MainActivity)?.updateQueueBadge()
                 showQueueBanner()
                 if (r.settled > 0) refresh()
