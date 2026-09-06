@@ -1,1023 +1,471 @@
-# Sukobin 🚚
+# Sukobin
 
-> A hyperlocal logistics + commerce platform for the hills of Uttarakhand (Haldwani, Almora, Nainital belt) that turns **existing journeys into delivery routes**.
+**An AI-enabled logistics accessibility intelligence platform for the North Eastern Region.**
 
-Sukobin's core idea is **ride-sharing for parcels**. Instead of running a dedicated delivery fleet, Sukobin matches a customer's order with a driver (taxi, truck, bike) who is *already* travelling along the same route.
+Built for Smart India Hackathon 2026 · MDoNER problem statement — *AI-Enabled Logistics
+Accessibility Intelligence Platform for the North Eastern Region*.
+
+---
+
+## The one idea everything else hangs off
+
+The NER has no road-condition sensor network. A district usually learns a road is shut when a
+truck is already stuck on it, and instrumenting 3,500 km of hill highway with roadside sensors
+is not affordable.
+
+So Sukobin doesn't try to.
 
 ```
-A taxi driver is already going Haldwani → Almora with passengers.
+Anyone already driving Dimapur → Imphal declares that route.
         │
         ▼
-Sukobin detects the route.
+They are offered only the consignments whose pickup and drop
+lie along that road, up to what their vehicle holds.
         │
         ▼
-The pending parcel for Almora is shown to that driver.
+They drive. Their phone streams GPS every 20 seconds.
         │
         ▼
-Driver accepts the parcel (within vehicle capacity).
+The rolling median of those speeds, against the road's own baseline,
+IS the live accessibility reading for that stretch.
         │
         ▼
-Parcel rides along the existing journey → Customer receives the product.
+Officers, forecasts, alerts and re-routes all run off that reading.
 ```
 
-This makes last-mile delivery in remote hill regions cheaper, faster, and lower-emission than a traditional courier model.
+**The carrier network and the sensor network are the same network.** One GPS stream delivers the
+goods *and* measures the road. That is why there is no dedicated fleet and no roadside hardware
+anywhere in this design — the marginal cost of one more road-condition reading is zero, because
+the driver was making the trip anyway.
 
 ---
 
-## 📦 Monorepo Structure
+## Repository layout
 
-This repository contains **three apps + one backend**, each currently in its own git repo:
-
-| Folder | What it is | Who uses it | Status |
-|---|---|---|---|
-| `backend/` | Node.js + Express + MongoDB REST API | All apps | 🟡 Core built, parcel engine missing |
-| `sukobin/` | Customer app (Expo / React Native) | End customers | 🟢 Most built |
-| `sukobin_mart/` | Mart / merchant admin app (Expo / React Native) | Shop owners | 🟢 Most built |
-| `sukobin_partner/` | Driver / delivery partner app (Expo / React Native) | Drivers | 🔴 Template only |
-
-> **Note:** `node_modules/`, lockfiles, `.env`, and credential JSON files are ignored in this overview. Only `.js / .ts / .tsx / .jsx` source was analysed.
+| Folder | What it is |
+|---|---|
+| `backend/` | Node.js + Express 5 + MongoDB. 118 endpoints, the ML model, the sensing and alert engines. |
+| `android/` | Gradle multi-module project — four Kotlin/XML apps sharing a `core` module. |
+| `dashboard/` | React + Vite + MapLibre GL control room for officers and administrators. |
+| `ppt/` | Builder for the SIH idea deck; fills the official template in place. |
+| `_legacy_expo/` | The first-generation Expo apps, kept for reference only. Not built, not shipped. |
+| `SUKOBIN_ALGORITHM.md` | Long-form write-up of the matching and scoring maths. |
 
 ---
 
-## 🧭 The Full Product Flow (Vision)
+# The four apps
 
-1. **Customer (`sukobin`)** browses shops/products by category, adds to cart, and places an order to a nearby **Mart**.
-2. **Mart (`sukobin_mart`)** receives the order, packs it, and lists the packed parcel into a **special "ready for pickup" pool that is visible for ~1 hour**.
-3. **Driver (`sukobin_partner`)** registers with their **vehicle number plate**, opens the app, and enters their route (e.g. *Haldwani → Almora*).
-4. Only parcels **matching that route's destination** are shown to the driver.
-5. The driver picks up to their **vehicle capacity** (bike = 1, car/taxi = ~5, truck = ~10).
-6. Parcel travels along the driver's existing journey and is handed to the customer.
+All four are Kotlin + XML, `minSdk 24`, sharing `android/core` for networking, session, the
+language picker and upload helpers.
+
+## 1. Customer app — `android/customer`
+
+| Feature | Why it exists |
+|---|---|
+| Browse shops and products, cart, checkout | Someone has to be sending something. The commerce side generates the parcels the carriers move. |
+| Address with a map pin | A drop point 300 m off is a driver phoning from the wrong turning. The pin is the delivery contract. |
+| Live order tracking | The parcel is on a stranger's bike. Seeing it move is the difference between trust and a support call. |
+| "Driver is near" push at 10 km | In hill villages the last call is what gets someone to the gate. Fired once, automatically, when the carrier crosses 10 km from the drop. |
+| Delivery OTP | Four digits held by the receiver. The only thing stopping a parcel being marked delivered from the road outside. |
+| 10 languages | The person receiving medicines in a Garo Hills block does not read English. |
+
+## 2. Merchant app — `android/mart`
+
+| Feature | Why it exists |
+|---|---|
+| Shop profile, product catalogue, stock | Local shops are the supply side. Without them the platform has nothing to move. |
+| Incoming orders, accept and mark ready | A shop marking an order `READY_FOR_PICKUP` is what puts it into the carrier pool. |
+| Earnings and order history | A merchant who cannot see their money does not come back. |
+| 10 languages | Same reason as everywhere else. |
+
+## 3. Driver / carrier app — `android/partner`
+
+This is the sensor network, wearing the clothes of a delivery app.
+
+| Feature | Why it exists |
+|---|---|
+| Vehicle verified against VAHAN at sign-up | Vehicle class decides capacity. Checking it *before* the OTP means a driver is never asked to verify a phone for a vehicle that will be rejected. |
+| Online / offline switch | Going online starts GPS streaming; going offline stops it and clears the job list. **A driver who is not working is not tracked** — a deliberate privacy line, not an oversight. |
+| Declare a route (from → to) | The whole premise. The driver is not asking for work, they are stating a journey they were already making. |
+| Corridor-matched job list | Only consignments lying along the declared road, in the direction of travel, within capacity. See *the matching engine* below. |
+| Trip screen — pick up, deliver against OTP | A trip is a sequence of stops in route order, so the driver never backtracks. |
+| **GPS streaming every 20 s / 40 m** | The reason the platform can see the road at all. Fixes worse than 120 m accuracy are dropped on the phone — they would drag the road's median around for nothing and waste a round trip. |
+| Speak-a-hazard reporting | A driver standing at a landslide is not going to fill in a form. They talk, in their own language, and a model classifies it. |
+| Photo attached to a report | A photograph turns one person's word into something an officer can act on. |
+| Tap-a-category report form | For a driver who would rather not talk, or where speech recognition will not work. |
+
+## 4. Officer app — `android/officer`
+
+| Feature | Why it exists |
+|---|---|
+| Jurisdiction-scoped view (block / district / state / region) | A block officer should not be paging through Mizoram. Scope is enforced server-side, not just hidden in the UI. |
+| Road list with live status and 3-day forecast | The working screen. Status now, risk next. |
+| Weak-point ranking with reasons | Not just *which* road, but *why it scored* — so an officer can disagree with the model rather than obey it. |
+| Verify queue | Driver and junior-officer reports land here. Confirming one turns a report into a road status the routing engine will act on. |
+| Set road status manually | The model is not always right, and an officer standing on the road is. Manual status wins. |
+| Photo capture, and viewing driver photos | Evidence, in both directions. |
+| Speak-a-report in 10 languages | Same reason as the driver app. |
+| Offline report queue | Hill districts drop off the network. Reports queue under a client ID and sync later; the server rejects duplicates so nothing is filed twice. |
+| In-app notification inbox | Officers get alerts without needing a push token or a working connection at the moment of firing. |
 
 ---
 
-## 🛠️ Tech Stack
+# The control dashboard — `dashboard/`
 
-**Backend** (`backend/`)
-- Node.js + **Express 5** (ES Modules, `"type": "module"`)
-- **MongoDB** via **Mongoose** (geospatial `2dsphere` indexes for location matching)
-- **JWT** auth (`jsonwebtoken`), `bcrypt` available
-- **Cloudinary** for product/shop image uploads (`multer` for multipart)
-- **Firebase Admin** + **expo-server-sdk** for push notifications
-- **Razorpay** SDK present (payments not yet wired)
-- `helmet`, `cors`, `morgan` middleware
+React + Vite + MapLibre GL. Read-only by design: officers act from the app, where they have GPS
+and a camera.
 
-**All three mobile apps** (Expo SDK 54)
-- **React Native 0.81** + **Expo Router** (file-based routing)
-- **NativeWind / TailwindCSS** for styling
-- **Firebase Auth** (phone OTP on the client side)
-- `expo-notifications` for push
-- `AsyncStorage` for token persistence
+| Panel | Why it exists |
+|---|---|
+| **Network status tiles** | Segments, km, districts, chokepoints, blocked now, open incidents, vehicles online, consignments moving. The one-glance state of the region. |
+| **Accessibility + risk distributions** | How much of the network is open, and how much is predicted to be in trouble. |
+| **"What we can see" coverage bar** | % of roads with known status, with live vehicle data, with a forecast. **A map that is mostly grey should say why rather than look broken.** This panel is the platform admitting what it does not know. |
+| **Map — three colouring modes** | *Status* is what the roads are doing now (from driver speed). *Risk now* is the current hazard score. *3-day forecast* is the model's outlook. Same geometry, three questions. |
+| **Chokepoint overlay** | Dashed white on stretches with few alternatives — the ones where a closure isolates people. |
+| **Alerts** | Live, in whichever of the 10 languages is selected. The server renders the text, so it is never English inside an Assamese screen. |
+| **Weak points** | Bottlenecks ranked by exposure, with the reasons each scored. Problem statement clause (g). |
+| **Forecast** | 24 / 48 / 72 h closure probability per road, plus the model card — training size, AUC, Brier, held-out date, and what the model weighs. **The numbers are shown so they can be judged, not just believed.** |
+| **Route planner** | A→B with distance, normal time, condition-adjusted ETA and the delay. If nothing is passable it says which segment blocked it. |
+| **Supplies** | Consignments in transit, with essential goods flagged. |
+| **Emergency** | Regions at risk of isolation, and lifeline corridor status. |
+| **Language picker** | The dashboard speaks the same 10 languages as the apps, remembered per browser. |
 
 ---
 
-## 📂 Backend Layout (`backend/src/`)
+# The backend engines — `backend/`
 
-```
-backend/
-├── server.js                  # App entry: middleware, route mounting, error handlers
-├── src/
-│   ├── config/firebaseAdmin.js
-│   ├── db/index.js            # Mongoose connection
-│   ├── middleware/
-│   │   ├── protect.js         # protect (User JWT) + merchantProtect (Merchant JWT)
-│   │   └── multer.js          # File upload handling
-│   ├── models/
-│   │   ├── user.model.js      # Customer (phone, address, geo location)
-│   │   ├── merchant.model.js  # Mart owner (KYC: aadhaar/pan/gst, wallet)
-│   │   ├── shop.model.js      # Shop (geo location, products[], ratings)
-│   │   ├── product.model.js   # Product (price, stock, images)
-│   │   ├── cart.models.js     # One cart per user, single-shop enforced
-│   │   └── order.model.js     # Order (status machine, geo, delivery address)
-│   ├── controller/            # authController, cartController, merchantController,
-│   │                          # productController, shopController, orderController,
-│   │                          # notificationController
-│   ├── routes/                # authRoutes, merchantRoutes, shopRoutes, productRoutes,
-│   │                          # userProductRoutes, cartRoutes, orderRoutes
-│   └── utils/
-│       ├── calculation.js     # Haversine distance + delivery-fee tiers
-│       ├── cloudinary.js
-│       └── notification.js    # Expo push helper
-```
+## Probe sensing — *how a road knows it is blocked*
 
-### API Surface (current)
+`src/utils/probes.js` · `src/utils/probeIngest.js`
 
-| Base | Routes | Auth |
+Every `PATCH /api/partner/location` does four things in one call:
+
+1. Updates the driver's live position (for customer tracking and the dashboard map).
+2. Fires a "driver is near" push if within 10 km of an undelivered drop.
+3. Map-matches the fix to a road within 600 m and stores a `LocationPing`.
+4. Answers with that road's name and status **on the same response**.
+
+> **Why one call?** A connection in the hills may not give you a second round trip. The call that
+> senses the road also tells the driver what it just learned about it.
+
+Every five minutes per road, the pings are rolled up:
+
+| Speed ÷ baseline | Status | Confidence |
 |---|---|---|
-| `/api/user` | `POST /registration`, `POST /login`, `POST /complete-registration`, `POST /verify`, `POST /notify`, `POST /hello` | mixed |
-| `/api/user/product` | `GET /search`, `/categories`, `/all`, `/category/:category`, `/:id`, `/shop/:shopId` | open |
-| `/api/cart` | `GET /`, `POST /add`, `PUT /update/:productId`, `DELETE /remove/:productId`, `DELETE /clear`, `GET /summary` | user |
-| `/api/merchant` | `POST /register`, `POST /login`, `GET /getme`, `POST /notify`, `GET /verify` | mixed |
-| `/api/shop` | `POST /create`, `PUT /edit/:id`, `DELETE /delete/:id`, `GET /get` | merchant |
-| `/api/product` | `GET /my-products`, `GET /search`, `GET /:id`, `POST /`, `PUT /edit/:id`, `DELETE /delete/:id`, `PATCH /toggle/:id`, `PATCH /toggle-bulk` | merchant |
-| `/api/order` | `POST /check-out`, `POST /edit-address` | user |
+| ≤ 0.15 | `BLOCKED` | 0.80 |
+| ≤ 0.35 | `RESTRICTED` | 0.70 |
+| ≤ 0.60 | `SLOW` | 0.60 |
+| > 0.60 | `OPEN` | 0.50 |
+
+> **Why a median and not a mean?** One vehicle stopped for chai would drag a mean down. A median
+> ignores it.
+
+> **Why the trust rule?** A reading needs **≥ 4 samples from ≥ 2 distinct vehicles**, or it is
+> discarded and the road keeps its previous status. Without it, one driver parked for lunch closes
+> a national highway. Readings older than three hours are treated as no reading at all.
+
+## The matching engine — *what "on my way" actually means*
+
+`src/utils/matching.js` — five gates, in order:
+
+1. **Coarse fetch** — bounding box around the route polyline, padded by the larger city radius.
+2. **Corridor or city membership** — pickup and drop within 10 km of the road line, *or* inside the origin/destination city, which is treated as an area (15 km for a big city, 8 km for a town).
+3. **Detour cap** — only mid-route deviation counts; a city pickup is free. Over 24 km total, rejected.
+4. **Direction** — projected onto the line: driver before pickup, pickup before drop.
+5. **Score and order.**
+
+```
+score = 1.0 × fee − 8.0 × offRouteKm − 0.15 × ageMinutes
+```
+
+> **Why weight detour at 8?** A kilometre sideways costs the same as ₹8 of fee, so the ranking
+> will not send a driver 5 km off-route for ₹30.
+
+> **Why an age term?** Without it an awkward parcel sits in the pool forever. Every hour it waits,
+> it climbs 9 points.
+
+> **Why does direction matter so much?** A parcel behind the driver is not on their way. Offering
+> it would be the entire idea failing. The suggested pickup order comes from position along the
+> line, so a route never doubles back.
+
+> **Why is a stale GPS fix distrusted?** A last-known position left in another state still projects
+> *somewhere* onto the polyline — usually just past the origin — and the direction rule would then
+> silently empty the list. A fix is only trusted if it is under two hours old and within 25 km of
+> the declared route; otherwise the route's start is the honest assumption.
+
+## The forecast model
+
+`src/ml/` — pure JavaScript, no Python runtime in production.
+
+| | |
+|---|---|
+| Model | Logistic regression (mini-batch GD, L2, early stopping), benchmarked against gradient-boosted decision stumps |
+| Features | 18 — antecedent rain 24 h / 72 h, rain in the horizon, burst intensity, snow, freeze hours, slope, elevation, landslide / flood / snow proneness, historic failure rate, terrain, monsoon weight, and three interaction terms |
+| Training data | 109,116 road-days — 42 stretches × 877 days of **observed** Open-Meteo weather |
+| Split | Date-based; everything after 2026-03-01 held out |
+| Scores | **AUC 0.883 · Brier 0.092 · log-loss 0.308** |
+| Output | Closure probability at 24 / 48 / 72 h, with signed per-feature contributions |
+
+> **Why logistic regression and not something bigger?** It is calibrated, it is auditable, and
+> every prediction decomposes into which feature pushed it. On a screen where an officer has to
+> decide whether to trust the number, "69% because of three-day rainfall on a landslide-prone
+> slope" beats a better AUC with no explanation. The gradient-boosted model is trained alongside
+> and only chosen if it wins on held-out data.
+
+> **Why is the heaviest feature *burst* rainfall rather than total?** 80 mm in one hour brings a
+> slope down; 80 mm over three days soaks in. In the hills intensity matters more than total, and
+> the model learned that — it is the single largest weight.
+
+> ### The honest part
+> There is no public register of past NER road closures. Historical labels are **Bernoulli draws
+> from a rainfall-threshold hazard function** (antecedent wetness × triggering intensity ×
+> susceptibility), not observed closures. Two things stop this being circular: the label uses a
+> seven-day antecedent window and multiplicative terms the feature vector never sees, and the
+> label is a draw, not the probability itself. **Verified field reports override the drawn label.**
+> The dashboard states this on screen; so does the deck.
+
+## Risk scoring vs forecasting
+
+`src/utils/risk.js` scores a road's hazard **right now** from current weather, recent incidents
+and probe speed. The ML model predicts **what will happen**. They are separate systems and meet
+only in the status resolver.
+
+> **Why two?** "It is raining hard on a landslide-prone slope right now" and "this road has a 41%
+> chance of closing within three days" are different questions, asked at different moments.
+
+## Status resolution
+
+`src/utils/accessibility.js` — one road can carry a probe reading, an officer's manual status, a
+verified incident and a weather advisory all at once.
+
+> **Why a resolver?** Sources disagree. The rule: an officer's manual status wins, then a verified
+> incident, then a probe reading, then weather. An **unverified driver report is capped at
+> `RESTRICTED`** — it can slow a road but never close one. That cap is the whole trust model in one
+> line.
+
+## Alert engine
+
+`src/utils/alertEngine.js` — seven kinds: `ROAD_BLOCKED`, `ROAD_RESTRICTED`, `ROAD_REOPENED`,
+`FORECAST_RISK`, `LIFELINE_CUT`, `INCIDENT_VERIFIED`, `VERIFY_REQUEST`.
+
+| Mechanism | Why |
+|---|---|
+| `dedupeKey` + `supersedeIf` | The same road blocking twice in an hour is one alert, not two. A reopening supersedes the closure. |
+| TTL expiry | An alert nobody retired should not still be shouting next week. |
+| Per-audience delivery | Officers get an inbox row; drivers get a push. Different people, different urgency. |
+| Rendered per language | Text is generated server-side in the recipient's language, so an Assamese officer never gets an English alert. |
+| `LIFELINE_CUT` | Fires when a *state* loses its last open road. The alert that actually matters. |
+
+## Voice reporting
+
+`src/utils/voiceReport.js` — two steps. `POST /report/understand` sends the transcript and returns
+a structured reading (type, severity, blocks traffic, clearance hours) with a plain-language
+summary for the reporter to confirm. `POST /report/voice` submits it with photos as multipart.
+
+> **Why two steps?** The model can be wrong. Showing the reporter *"I understood: landslide, road
+> impassable, 6 hours to clear"* before anything is filed means a misread is caught by the one
+> person who was actually there.
+
+> **Why guardrails in the prompt?** Real corrections from real misreads: a vehicle that has
+> overturned is an `ACCIDENT`, however completely it blocks the road — `BLOCKADE` means people
+> deliberately blocking it. Rocks coming down is `LANDSLIDE`, not `ROAD_DAMAGE`. And "0 hours to
+> clear" reads as "already clear", so an unknown clearance is stored as unknown, not zero.
+
+## Routing
+
+`src/utils/routePlanner.js` — fetches up to three OSRM alternatives, checks each for closures,
+picks the first passable one, and reports *why* the others were rejected.
+
+> **Why real road geometry and not a straight line?** A straight Dimapur–Imphal line crosses
+> ridges. The road wraps via Kohima and Senapati. If the corridor does not follow the road, "on my
+> way" means nothing.
+
+> **Condition-adjusted ETA** re-times each leg at its observed speed rather than a nominal one, so
+> a delay reflects the road as it is today.
 
 ---
 
-## 📱 App Layouts
+# Multilingual — 10 languages, everywhere
 
-### Customer app — `sukobin/`
-```
-app/
-├── (auth)/    welcome, login, register, otp-login, otp-register, complete-profile
-├── (tabs)/    home, orders, history, parcel, profile
-├── cart/[id]      product/[id]      shop/[id]
-_components/   ProductCard, Categories, Cart-Index, addToCart, cartContext,
-               FloatingCart, Header, NotificationListener
-utils/         api.ts (fetch wrapper), authState.ts, firebase.js, notificationService.tsx
-```
-> `parcel.tsx` is a UI mockup of "Send Parcel" (pickup, destination, type, weight, ₹ estimate) — **not yet wired to the backend.**
+`en · हिन्दी · অসমীয়া · বাংলা · नेपाली · Meiteilon · Khasi · Mizo · Nagamese · Kokborok`
 
-### Mart admin app — `sukobin_mart/`
-```
-app/
-├── (auth)/    welcome, login, login-otp, register, register-otp
-├── (tabs)/    home, products, orders, analytics, profile
-├── add-product, edit-product, product-detail, create-shop, manage-shop
-service/       api.ts
-```
+| | Coverage |
+|---|---|
+| Four Android apps | **7,155 units · 0 English fallbacks** |
+| Dashboard | 141 strings × 9 languages = **1,269 units · 100%** |
+| Server-side alert and driver-advisory text | All 10 |
+| Voice reporting | All 10, with a spoken fallback where the device has no TTS voice |
 
-### Partner / driver app — `sukobin_partner/`
-```
-app/   index.tsx (boilerplate "Welcome to Expo + NativeWind"), _layout.tsx
-```
-> 🔴 **Effectively empty** — the entire driver experience (registration with number plate, route entry, route-matched parcel feed, capacity-limited acceptance) still needs to be built. This is the heart of Sukobin and is the biggest gap.
+> **Why these ten?** Four of them — Khasi, Mizo, Nagamese, Kokborok — have almost no other software
+> support. An officer in West Garo Hills or a driver in Kolasib is exactly the user this problem
+> statement is about.
+
+> **Why is the language picker written in each language's own script?** Someone hunting for their
+> language in a list they cannot read is looking for the shape of their own name.
+
+Tooling: `android/tools/translateStrings.js` and `dashboard/tools/translateUi.mjs` fill
+translations through a model; `android/tools/checkTranslations.js` audits every unit and **fails on
+a changed format specifier, a missing plural quantity or an unescaped apostrophe** — because a
+translation that drops `%1$s` renders a hole in the sentence.
 
 ---
 
-## 🏛️ Full Architecture (Deep Dive)
+# Offline support
 
-This section documents **how the whole system is wired together today** — every layer, from a tap in the mobile app down to a MongoDB write and back, plus the security model.
+The officer app queues reports on the phone under a client-generated ID, retries on reconnect, and
+the server rejects duplicate client IDs.
 
-### 1. System Topology
+> **Why a client ID and not a timestamp?** A phone that syncs twice — app restart, flaky connection
+> — must not file the same landslide twice. The ID makes the submission idempotent.
 
-```
-┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐
-│  sukobin        │   │  sukobin_mart   │   │ sukobin_partner │
-│  (Customer app) │   │  (Mart admin)   │   │  (Driver app)   │
-│  Expo / RN      │   │  Expo / RN      │   │  Expo / RN      │
-└────────┬────────┘   └────────┬────────┘   └────────┬────────┘
-         │ HTTPS + Bearer JWT   │                     │ (not built)
-         │                      │                     │
-         └──────────────┬───────┴─────────────────────┘
-                        ▼
-         ┌──────────────────────────────────┐
-         │   Express 5 API (backend/)        │
-         │   helmet → cors → morgan → json   │   ← global middleware chain
-         │   ┌──────────────────────────┐    │
-         │   │ Route → protect/merchant  │    │   ← auth middleware
-         │   │      → controller         │    │   ← business logic
-         │   │      → Mongoose model     │    │   ← data access
-         │   └──────────────────────────┘    │
-         └───────┬───────────────┬───────────┘
-                 │               │
-                 ▼               ▼
-        ┌────────────────┐  ┌──────────────────────────┐
-        │  MongoDB Atlas │  │  External services        │
-        │  (Mongoose)    │  │  • Cloudinary (images)    │
-        │  2dsphere geo  │  │  • Firebase (OTP/admin)   │
-        └────────────────┘  │  • Expo Push (notifs)     │
-                            │  • Razorpay (planned)     │
-                            └──────────────────────────┘
-```
-
-The three apps are **thin clients**: all business logic, validation, and persistence live in the backend. Each app talks to the same REST API over HTTPS, authenticating with a Bearer JWT stored in `AsyncStorage`.
+> **Honest status:** the offline queue is currently **officer-app only**. Partner, customer and
+> merchant have none yet.
 
 ---
 
-### 2. Backend Request Lifecycle (the pipeline)
+# Running it
 
-Every request flows through the same ordered pipeline, defined in `server.js`:
-
-```
-Incoming HTTP request
-   │
-   ├─ 1. helmet()                 → sets secure HTTP headers
-   ├─ 2. cors()                   → (currently open to all origins)
-   ├─ 3. morgan('dev')            → request logging
-   ├─ 4. express.json({10mb})     → parse JSON body
-   ├─ 5. express.urlencoded       → parse form bodies
-   │
-   ├─ 6. Route match  e.g.  app.use('/api/cart', cartRoutes)
-   │        │
-   │        ├─ 6a. AUTH middleware   protect  /  merchantProtect
-   │        │        → verify JWT, load User/Merchant, attach to req
-   │        │
-   │        ├─ 6b. (optional) multer  → parse multipart file uploads
-   │        │
-   │        └─ 6c. CONTROLLER          → business logic + Mongoose calls
-   │                    │
-   │                    └─ returns { success, message, data }
-   │
-   ├─ 7. 404 handler  → if no route matched
-   └─ 8. error handler (err, req, res, next) → 500 + console.error(stack)
-```
-
-**Response envelope** is consistent across the API:
-```json
-{ "success": true,  "message": "…", "data": { … } }
-{ "success": false, "message": "…", "error": "(dev only)" }
-```
-
-Startup order (`startServer()` in `server.js`): `connectDB()` (Mongoose connect) **must succeed first**, then `app.listen(PORT)`. A DB failure calls `process.exit(1)` — the server never serves traffic without a database.
-
----
-
-### 3. Authentication & Authorization
-
-There are **two independent identities**, each with its own JWT issuance and guard middleware, but both signed with the **same `JWT_SECRET`**.
-
-#### 3a. Customer auth (`protect`)
-```
-Client (sukobin)                Backend
-──────────────                  ───────
-Firebase phone OTP  ──────────► (verified ONLY on client today)
-  │
-  │ POST /api/user/registration { phone }
-  ▼
-                                authController.registerWithPhone
-                                  → User.create({ phone, isVerified:false })
-                                  → jwt.sign({ id }, SECRET, 1300d)
-  ◄──────────────────────────── { token, user }
-  │
-  │ store token in AsyncStorage ('userToken')
-  │
-  │ POST /api/user/complete-registration  (Bearer token)
-  ▼
-                                protect middleware:
-                                  Bearer → jwt.verify → User.findById(decoded.id)
-                                  → req.user = user
-                                authController.completeRegistration
-                                  → fills name/address/location, isVerified:true
-```
-
-- **`login`** looks up the user by phone; if the profile is incomplete it **deletes the user** and tells the client to re-register; otherwise it issues a fresh 1300-day token.
-- **`protect`** (`middleware/protect.js`): reads `Authorization: Bearer <token>`, `jwt.verify(token, JWT_SECRET)`, loads `User.findById(decoded.id)`, attaches `req.user`. Any failure → `401`.
-
-#### 3b. Merchant auth (`merchantProtect`)
-```
-POST /api/merchant/register { name, phone, email, businessName, aadhaar, pan, gst }
-  → Merchant.create(...)               → jwt.sign({ id }, SECRET, 7d)
-POST /api/merchant/login    { phone }  → Merchant.findOne → token (7d)
-
-merchantProtect middleware:
-  Bearer → jwt.verify → Merchant.findById(decoded.id) → req.merchant
-```
-
-#### 3c. How the two stay separated
-The JWT payload is just `{ id }`. The **guard decides the identity type** by which collection it queries:
-- `protect` → `User.findById(decoded.id)` → only resolves user tokens.
-- `merchantProtect` → `Merchant.findById(decoded.id)` → only resolves merchant tokens.
-
-A merchant token presented to a user route fails because that id isn't in the `User` collection (and vice-versa). ⚠️ This works by accident of disjoint IDs, not by an explicit `role`/`audience` claim — see the Security section for why that should be tightened.
-
-#### 3d. Token lifetimes
-| Identity | Expiry | Where set |
-|---|---|---|
-| Customer | `1300d` (~3.5 yrs) | `authController` |
-| Merchant | `7d` | `merchantController.generateToken` |
-
----
-
-### 4. Data Model & Relationships (ERD)
-
-```
-            ┌──────────┐         owner          ┌──────────┐
-            │ Merchant │ 1 ────────────────── * │   Shop   │
-            └────┬─────┘  shops[]                └────┬─────┘
-                 │                                products[] │ 1
-                 │ merchant                            │
-                 │                                     * ▼
-                 │                                ┌──────────┐
-                 │                                │ Product  │
-                 │                                └────┬─────┘
-                 │                                     │ ref (in items)
-   ┌──────────┐  │  user                              │
-   │   User   │ 1│ ───────────────────┐               │
-   └────┬─────┘  │                    │ 1             │
-        │ 1      │              ┌──────▼──────┐        │
-        │        │              │    Cart     │ items[]┘  (one open cart per user)
-        │ 1      │              └─────────────┘
-        ▼        ▼
-   ┌─────────────────┐
-   │      Order      │  references User + Shop + Merchant, embeds items[]
-   └─────────────────┘
-```
-
-| Model | Key fields | Notes |
-|---|---|---|
-| **User** | `phone` (unique), `name`, `address{}`, `location{Point}`, `expoPushToken`, `isVerified` | `2dsphere` index on `location` for geo matching |
-| **Merchant** | `phone` (unique), `businessName`, KYC (`aadhaarNumber/panNumber/gstNumber`), `kycVerified`, `shops[]`, `walletBalance`, `isBlocked` | wallet/KYC fields defined but not yet driven |
-| **Shop** | `shopName`, `shopSlug` (unique), `owner→Merchant`, `category`, `location{Point}` (required), `products[]`, `ratings`, `isActive` | `2dsphere` index; one shop per merchant enforced in controller |
-| **Product** | `productName`, `shop→Shop`, `category`, `images[]`, `price`, `stock`, `isAvailable`, `isActive` | soft-delete via `isActive=false` |
-| **Cart** | `user→User` (unique), `shop→Shop`, `items[{product,name,image,price,qty,totalPrice}]`, `subtotal`, `totalItems` | **one cart per user**, **single-shop** rule |
-| **Order** | `orderId` (unique), `user`, `shop`, `merchant`, `items[]`, `subtotal/deliveryFee/platformFee/totalAmount`, `paymentStatus`, `orderStatus`, `deliveryAddress{}`, `location{Point}` | full status machine (below); **currently never written** |
-
-**Order status machine** (defined on the model, not yet driven by any controller):
-```
-PLACED → ACCEPTED → PREPARING → READY_FOR_PICKUP → PICKED → ON_THE_WAY → DELIVERED
-                                                       └──────────────► CANCELLED
-paymentStatus: PENDING → PAID → FAILED / REFUNDED
-```
-This status machine is exactly where the **driver/parcel pipeline will plug in** (`READY_FOR_PICKUP` = the 1-hour pool; `PICKED`/`ON_THE_WAY` = driver in transit).
-
----
-
-### 5. Controller Responsibilities
-
-| Controller | Guards | Does |
-|---|---|---|
-| `authController` | `protect` (some open) | customer register/login/verify, profile completion, **public catalog reads** (search, categories, product details, shop detail, all-products via `$sample`) |
-| `merchantController` | `merchantProtect` | merchant register/login, `getMe`, save expo token, verify |
-| `shopController` | `merchantProtect` + multer | create/edit/delete shop, image upload, one-shop-per-merchant rule, `shopSlug` generation |
-| `productController` | `merchantProtect` + multer | merchant CRUD on own products, availability toggles, bulk toggle, scoped search — all scoped via `findShopByOwner()` |
-| `cartController` | `protect` | add/update/remove/clear, summary, **stock & price re-validation on every read**, single-shop enforcement, qty caps (10/item, 20 items) |
-| `orderController` | `protect` | `checkout` (quote only) + `editCheckoutDetails` |
-| `notificationController` | `protect` / open | save expo token, send test push |
-
-**Ownership scoping pattern** (the merchant-side authorization model): every merchant product/shop action calls `findShopByOwner(merchant._id)` or filters `{ _id, shop: shop._id }`, so a merchant can **only ever touch their own shop's data** — the database query itself is the access-control boundary.
-
----
-
-### 6. End-to-End Flows
-
-#### A. Customer browse → cart → checkout
-```
-home.tsx ──GET /api/user/product/all───────► getAllProducts ($sample aggregate)
-product/[id] ─GET /api/user/product/:id────► getProductDetails (+related/shop)
-addToCart ───POST /api/cart/add────────────► validateProduct(stock/active)
-                                              → single-shop check
-                                              → upsert item, recalc totals
-cart/[id] ───GET /api/cart─────────────────► getCart: re-validate every item
-                                              (drop inactive, sync price, clamp qty)
-checkout ────POST /api/order/check-out─────► Haversine(user↔shop)
-                                              → tiered deliveryFee + ₹2 platform
-                                              → returns a QUOTE (no Order saved)
-```
-
-#### B. Merchant onboarding → selling
-```
-register ──POST /api/merchant/register────► Merchant.create → 7d JWT
-create-shop ─POST /api/shop/create─────────► multer(logo,banner)→Cloudinary
-            (multipart)                       → Shop.create, push to merchant.shops[]
-add-product ─POST /api/product─────────────► multer(productImages[10])→Cloudinary
-            (multipart)                       → Product.create, push to shop.products[]
-toggle ─────PATCH /api/product/toggle/:id──► flip isAvailable
-```
-
-#### C. Image upload pipeline
-```
-RN app (multipart/form-data)
-   → multer middleware (middleware/multer.js) writes temp file
-   → cloudinary.uploader.upload(file.path, { folder: 'sukobin/...' })
-   → secure_url saved on the Mongo document
-   → deleteImages() strips publicId from URL to destroy on edit/remove
-```
-
-#### D. Push-notification pipeline
-```
-App registers for push  → expo push token
-   → POST /api/user/notify  (or /api/merchant/notify)
-   → token stored on User.expoPushToken / Merchant.expoPushToken
-Backend sends  → expo-server-sdk → Expo.isExpoPushToken() guard
-   → chunkPushNotifications → sendPushNotificationsAsync → tickets
-```
-
----
-
-### 7. Mobile App Internal Architecture
-
-All three apps share the same Expo Router + NativeWind shape:
-
-```
-app/_layout.tsx        → root stack, providers, auth gate
-app/index.tsx          → entry redirect (checks AsyncStorage token)
-app/(auth)/*           → unauthenticated stack (welcome/login/otp/register)
-app/(tabs)/*           → authenticated tab navigator
-utils|service/api.ts   → fetch wrapper: injects Bearer token from AsyncStorage
-```
-
-- **`api.ts`** (customer app) is a tiny `fetch` wrapper exposing `get/post/put/delete`, each pulling `userToken` from `AsyncStorage` and setting the `Authorization` header. `API_BASE_URL` points at the deployed Render backend.
-- **Auth state** is "token present in AsyncStorage" — the root layout redirects between the `(auth)` and `(tabs)` groups based on it.
-- **Context**: the customer app uses `cartContext.tsx` to keep a live cart/badge (`FloatingCart`, `Cart-Index`) and `NotificationListener.tsx` to react to incoming push notifications.
-- **`sukobin_partner`** has none of this yet — only the boilerplate screen.
-
----
-
-### 8. Security Architecture (current posture)
-
-Defense layers that **exist today**:
-```
-helmet()        → secure headers
-JWT bearer      → stateless identity on every protected route
-ownership scope → merchant queries always filtered by owner/shop id
-input guards    → required-field checks, qty caps, price≥0, stock checks
-soft deletes    → isActive flags instead of hard deletes (products/shops)
-secret config   → JWT_SECRET / DB / Cloudinary via .env
-```
-
-Gaps (full list with severity and fixes in the **🔐 Security** section above). The most load-bearing ones for this architecture:
-- **OTP is never verified server-side** — the auth boundary is currently bypassable.
-- **One shared `JWT_SECRET` with no role claim** — identity separation relies on disjoint IDs, not an explicit `aud`/`role`.
-- **No transactions** — once orders are persisted, concurrent checkouts can oversell stock.
-
----
-
-## ⚙️ Getting Started (Local Dev)
-
-Each folder is an independent project. Run them separately.
-
-### 1. Backend
+### Backend
 ```bash
 cd backend
 npm install
-# create a .env file (see below)
-npx nodemon server.js     # or: node server.js
+cp .env.example .env        # then fill it in (see Configuration)
+node server.js              # http://127.0.0.1:5055
 ```
 
-`.env` (backend) — **do not commit this**:
-```env
-PORT=5000
-MONGODB_URI=mongodb+srv://...
-JWT_SECRET=your-long-random-secret
-CLOUDINARY_CLOUD_NAME=...
-CLOUDINARY_API_KEY=...
-CLOUDINARY_API_SECRET=...
-NODE_ENV=development
-```
-You also need `serviceAccountKey.json` (Firebase Admin) at `backend/`.
-
-### 2. Any mobile app
+### Dashboard
 ```bash
-cd sukobin            # or sukobin_mart / sukobin_partner
+cd dashboard
 npm install
-npx expo start
+SUKOBIN_API=http://127.0.0.1:5055 npx vite --port 5173
 ```
-The customer app points at the deployed API (`https://sukobin-v2.onrender.com`) in `sukobin/utils/api.ts` — change this to your local IP (e.g. `http://192.168.x.x:5000`) for local testing.
+
+### Android
+No Gradle wrapper is committed — use a local Gradle 8.5 with JDK 17:
+```bash
+cd android
+gradle :customer:assembleDebug
+gradle :mart:assembleDebug
+gradle :partner:assembleDebug
+gradle :officer:assembleDebug
+```
+
+### Seeding a working demo
+```bash
+cd backend
+node scripts/seedNetwork.js       # 42 road segments with real OSRM geometry
+node scripts/seedOfficers.js      # officers at block / district / state / region scope
+node scripts/seedParcels.js       # 25 pooled parcels on the real corridors
+node scripts/simulateTraffic.js   # simulated vehicles, so the map has something to sense
+node scripts/trainRiskModel.js    # retrain the forecast model
+```
+
+`simulateTraffic.js --slow "NH2-DIMAPUR-IMPHAL::DIMAPUR-KOHIMA"` grinds one stretch to 12% of
+normal so you can watch the map turn. `--clear` removes everything it created.
+
+> **Note on `seedParcels.js`:** parcels are pooled for `PARCEL_POOL_TTL_MIN` (2 h by default) and
+> matching only returns unexpired ones, so a database seeded last week shows a driver nothing at
+> all. Re-run it and the shelf is stocked.
 
 ---
 
-## ✅ What's Built Today
+# Tests
 
-- ✅ Customer + Merchant phone-based auth (JWT) and profile completion
-- ✅ Shops with geolocation, products with images (Cloudinary), categories & search
-- ✅ Full cart lifecycle (single-shop enforcement, stock/price re-validation)
-- ✅ Checkout **price calculation** (Haversine distance → tiered delivery fee + ₹2 platform fee)
-- ✅ Expo push-notification plumbing (token save + send)
-- ✅ Customer & Mart app UIs mostly implemented
+18 suites under `backend/scripts/`. They run against a live server and real data, not mocks.
 
-## 🚧 What's Missing / Next (the roadmap to "best")
+```bash
+node scripts/checkOfficerApi.js        # 38 checks — auth, scope, status, verification
+node scripts/checkOfficerInbox.js      # 18 — notification inbox, no duplicates
+node scripts/checkOfficerPhotos.js     # 11 — officer uploads, and sees driver photos
+node scripts/checkDashboardApi.js      # 25 — every dashboard endpoint
+node scripts/checkDriverSensing.js     # 17 — GPS → status, trust rule, driver advisories
+node scripts/checkDriverFlows.js       # 14 — claim, pick up, deliver
+node scripts/checkVoiceReport.js       # 28 — understanding across languages
+node scripts/checkVoiceMultipart.js    # 12 — the multipart path the app actually uses
+node scripts/checkCustomerFlow.js      # 15 — cart → checkout → payment → order
+node scripts/checkRouteMatching.js     # 17 — corridor, direction, closure, offline
+```
 
-These are the gaps between the current code and the product vision above.
+**195 / 195 passing** across those ten. The rest cover the risk engine, forecast, probe sensing,
+alerts, incident AI and the parcel pipeline.
 
-### 🔴 Core logistics engine (highest priority — this *is* Sukobin)
-- [ ] **Persist orders.** `POST /check-out` only *computes* a quote; there is no endpoint that actually saves an `Order`, decrements stock, or pushes it to the Mart. The `Order` model exists but is never written.
-- [ ] **Parcel / pickup pool** with the **1-hour visibility window** (TTL or `expiresAt` field + index).
-- [ ] **Partner model + app**: register with **vehicle number plate**, vehicle type, and live route.
-- [ ] **Route matching**: given a driver's `from → to`, surface only parcels whose destination lies along that route (use the existing `2dsphere` geo indexes + a route corridor / destination-town match).
-- [ ] **Vehicle capacity rules**: bike = 1, car/taxi ≈ 5, truck ≈ 10 — enforce on accept.
-- [ ] **Driver accept → pickup → delivered** state transitions wired into `orderStatus`.
-
-### 🟡 Payments & money
-- [ ] Wire up **Razorpay** (dependency already installed) for `paymentMethod: "UPI"`.
-- [ ] Driver payout / merchant wallet settlement (`walletBalance` exists but is never updated).
-
-### 🟡 Feature completeness
-- [ ] Order history / live tracking screens (customer `orders.tsx` / `history.tsx`).
-- [ ] Mart analytics backed by real data.
-- [ ] Ratings & reviews (fields exist on models, no write path).
-- [ ] KYC verification flow for merchants & drivers (fields exist, unused).
+> **Why test against a live server?** Every bug worth catching here was in a seam — a `lng/lat` swap
+> in multipart, a Mongoose hook that silently never ran, a distance measured to a road's first
+> vertex instead of the road itself, an autocomplete that cleared the town you had just picked.
+> Mocks would have passed all of them.
 
 ---
 
-## 🔐 Security — Known Gaps & Hardening Plan
+# Configuration
 
-The current code prioritises getting the flow working; several things **must be fixed before production**. Listed roughly by severity:
+Required:
 
-### Critical
-1. **No real OTP verification on the backend.** `registration` / `login` trust whatever `phone` is sent and immediately issue a JWT. Firebase OTP happens only on the client and can be bypassed by calling the API directly. → **Verify the Firebase ID token (or a server-issued OTP) on the backend before issuing a JWT.**
-2. **Absurd JWT lifetime.** User tokens expire in **`1300d`** (~3.5 years). → Use short-lived access tokens (e.g. 15–60 min) + refresh tokens; allow revocation.
-3. **Secrets in the repo.** `backend/serviceAccountKey.json`, `backend/.env`, and `sukobin/sukobin-37444-*.json` (a Firebase service-account key) are present. → Remove from git history, rotate the keys, and load via environment/secret manager. (`.gitignore` covers `serviceAccountKey.json` but **not** the frontend service-account JSON.)
+```
+MONGODB_URI          MongoDB Atlas connection string
+JWT_SECRET           token signing
+CLOUDINARY_*         photo storage (cloud name, key, secret)
+```
 
-### High
-4. **Wide-open CORS** (`app.use(cors())`). → Restrict to known app origins.
-5. **No rate limiting** anywhere → brute-force / spam on auth and OTP endpoints. → Add `express-rate-limit`.
-6. **Unsanitised regex search.** User input is passed straight into `$regex` (`searchProducts`, etc.) → ReDoS and query-injection risk. → Escape input or use a text index.
-7. **No input validation layer.** → Add `zod` / `express-validator` on every body & query.
-8. **`editCheckoutDetails` lets a user overwrite their own `phone`** to an arbitrary value with no verification → account-collision / hijack risk. → Don't allow phone changes without OTP.
+Useful:
 
-### Medium
-9. **Destructive login side-effect:** `login` *deletes* the user document when the profile is incomplete. → Replace with a non-destructive "needs onboarding" flag.
-10. **Error leakage:** many handlers return raw `error.message` to the client. → Log server-side, return generic messages in production.
-11. **Shared `JWT_SECRET` for users and merchants** with role baked only into which collection is queried. → Add an explicit `role`/`aud` claim and separate concerns.
-12. **No stock decrement / transaction** on order placement → oversell race conditions once orders are persisted. → Use Mongoose transactions.
+```
+ALLOW_DEV_OTP=true         returns the OTP in the response — without it nobody can sign in
+                           to the officer or partner apps during a demo
+DEMO_PAYMENT=true          bypasses Razorpay so checkout completes
+OLLAMA_API_KEY             voice-report understanding, and the translation tooling
+FIREBASE_SERVICE_ACCOUNT   push notifications
+VAHAN_API_KEY              real registration lookup; falls back to a mock without it
+```
+
+Every threshold quoted in this README is an environment variable — `PROBE_MIN_VEHICLES`,
+`MATCH_W_DETOUR`, `PARCEL_POOL_TTL_MIN`, `DRIVER_NEAR_KM` and about eighty more — so the platform
+can be tuned per state without a code change.
+
+> ⚠️ `ALLOW_DEV_OTP=true` means anyone who knows a registered phone number can sign in as that
+> officer. Fine for a demo, **must be off before real use.**
 
 ---
 
-## 🎯 Complete System Blueprint (Target Design)
+# What is not built yet
 
-> This is the **full architecture to build Sukobin end-to-end** — every screen, every function, every model, the matching engine, the APIs, the background jobs, payments, real-time tracking and security. The current code (documented above) is the foundation; this is the destination.
+Stated plainly, because a README that only lists wins is not much use.
 
-### 0. Design Principles
-
-1. **Thin clients, fat backend.** Apps render and capture intent; all rules, pricing, matching and state transitions live server-side.
-2. **One unified delivery pool.** Both **commerce orders** (from marts) and **P2P parcels** (customer-sent) become the same `Delivery` object that drivers pick up. One engine serves both.
-3. **Existing journeys, not a fleet.** The matching engine optimizes for *minimal detour* on a driver's already-planned route.
-4. **Time-boxed pickup pool.** A packed parcel is visible to drivers for ~1 hour; if unclaimed it escalates (re-broadcast → dedicated rider → reschedule).
-5. **Proof at every handoff.** Pickup OTP (mart→driver) and delivery OTP (driver→customer) make custody auditable.
-6. **Money is event-sourced.** Every rupee movement is a ledger entry; wallets are derived, never edited directly.
-7. **Offline-tolerant.** Drivers lose signal in the hills — queue location pings and actions, sync on reconnect.
-
----
-
-### 1. Actors & Roles
-
-| Actor | App | Core job |
-|---|---|---|
-| **Customer** | `sukobin` | Buy products from marts; send P2P parcels; track delivery |
-| **Merchant / Mart** | `sukobin_mart` | List products; receive, accept & pack orders; hand parcels to drivers |
-| **Driver / Partner** | `sukobin_partner` | Register a vehicle; set a route; accept route-matched parcels; deliver |
-| **Platform / Admin** | (web, future) | KYC approval, disputes, settlement, pricing config, analytics |
-
----
-
-### 2. The Three Apps — Full Screen Maps
-
-Legend: each screen lists the **functions/actions** it performs and the **API calls** behind them.
-
-#### 2A. `sukobin` — Customer App
-
-```
-(auth)/
-  splash            → check AsyncStorage token → route to (tabs) or welcome
-  welcome           → onboarding carousel, "Get started"
-  login             → enter phone → request OTP            [POST /auth/otp/request]
-  otp-verify        → 6-digit OTP → verify                 [POST /auth/otp/verify]
-  register          → new user basic info
-  complete-profile  → name + address + pin location on map [POST /auth/complete-profile]
-
-(tabs)/
-  home              → location header, search, categories grid, nearby shops,
-                      featured products, active-order banner
-                      [GET /catalog/home?lat&lng] [GET /orders/active]
-  explore           → all categories, filter, sort         [GET /catalog/search]
-  orders            → tabs: Active | Past; live status      [GET /orders] [GET /orders/active]
-  parcel            → P2P "Send a parcel" entry point
-  profile           → user info, addresses, wallet, settings, logout
-
-product/[id]        → gallery, price, stock, add-to-cart, related, shop link
-                      [GET /catalog/product/:id] [POST /cart/add]
-shop/[id]           → banner, info, ratings, product list   [GET /catalog/shop/:id]
-cart                → items, qty edit, remove, subtotal, "Checkout"
-                      [GET /cart] [PUT /cart/update/:id] [DELETE /cart/remove/:id]
-checkout            → address picker, delivery quote, slot, payment method
-                      [POST /orders/quote] [POST /orders/place]
-payment             → Razorpay sheet                        [POST /payments/create] + webhook
-order/[id]/track    → live map (driver pin), status timeline, ETA, delivery OTP, call driver
-                      [GET /orders/:id] + socket: order:<id>
-order/[id]          → receipt, items, support, reorder, rate
-send-parcel/
-  details           → pickup addr, drop addr, type, weight, photos
-  quote             → fare estimate                          [POST /parcels/quote]
-  payment           → pay                                     [POST /parcels/create]
-  track             → same live-tracking screen
-addresses          → CRUD address book                       [GET/POST/PUT/DELETE /addresses]
-wallet             → balance, transactions, add money        [GET /wallet] [GET /wallet/txns]
-notifications      → in-app inbox                             [GET /notifications]
-rate/[id]          → rate shop + driver                       [POST /reviews]
-support            → tickets / FAQ / chat
-settings           → language, push prefs, edit profile, delete account
-```
-
-**Customer-side functions:** location detection & reverse-geocode, geofenced shop discovery, cart with single-shop rule, dynamic delivery quote, dual order types (commerce + parcel), live tracking, delivery-OTP reveal, reorder, ratings, wallet.
-
-#### 2B. `sukobin_mart` — Merchant / Mart App
-
-```
-(auth)/
-  splash / welcome
-  login / login-otp                                       [POST /auth/merchant/otp/*]
-  register          → owner + business name
-  kyc               → Aadhaar / PAN / GST + docs upload   [POST /merchant/kyc]
-  create-shop       → name, category, location, logo, banner, hours
-                      [POST /shop/create]  (multipart)
-
-(tabs)/
-  dashboard (home)  → today's orders, revenue, pending count, ready-to-handoff,
-                      low-stock alerts                       [GET /merchant/dashboard]
-  products          → list, search, availability toggle, stock edit
-                      [GET /product/my-products] [PATCH /product/toggle/:id]
-  orders            → tabs: New | Preparing | Ready | Picked | Completed
-                      [GET /merchant/orders?status=]
-  analytics         → sales trend, top products, ratings    [GET /merchant/analytics]
-  profile           → shop, wallet/payouts, KYC, settings
-
-add-product         → name, category, price, stock, images  [POST /product] (multipart)
-edit-product        → update / delete                        [PUT /product/edit/:id]
-product-detail      → views, stock, sales of one product
-order-detail        → accept / reject, mark PREPARING, mark READY → enters pickup pool
-                      [PATCH /merchant/orders/:id/accept|reject|prepare|ready]
-handoff/[id]        → driver arrives → verify pickup OTP / scan → mark PICKED_UP
-                      [POST /deliveries/:id/pickup-verify]
-manage-shop         → edit shop, hours, delivery radius, on/off
-wallet              → earnings ledger, settlement schedule, bank account, withdraw
-                      [GET /merchant/wallet] [POST /merchant/payout]
-reviews             → shop & product reviews, reply
-notifications       → new-order push inbox
-```
-
-**Mart-side functions:** product CRUD with images, real-time new-order alerts, accept/reject SLA, packing workflow, **"mark ready" pushes the order into the 1-hour driver pool**, pickup-OTP handoff, payouts/settlement, analytics, reviews.
-
-#### 2C. `sukobin_partner` — Driver / Partner App  *(currently empty — full design below)*
-
-```
-(auth)/
-  splash / welcome
-  login / otp                                              [POST /auth/partner/otp/*]
-  register-personal → name, phone, photo/selfie
-  register-vehicle  → vehicle type, NUMBER PLATE, RC, model, capacity (auto-set)
-  register-docs     → driving licence, insurance, RC upload [POST /partner/kyc]
-  verification-pending → "Under review" until admin approves
-
-(tabs)/
-  home              → GO ONLINE/OFFLINE toggle, today's earnings, active trip card
-                      [POST /partner/presence] [GET /partner/trip/active]
-  trip              → set route: Origin → Destination, departure time, see match count
-                      [POST /trips] → [GET /trips/:id/matches]
-  deliveries        → accepted parcels in route order (pickup→drop sequence)
-                      [GET /partner/deliveries/active]
-  earnings          → per-trip, daily, weekly, wallet, withdraw
-                      [GET /partner/earnings] [POST /partner/payout]
-  profile           → vehicle, documents, ratings, settings
-
-available-parcels   → live feed of route-matched parcels within remaining capacity,
-                      sorted by detour cost + fee; pull-to-refresh + socket push
-                      [GET /trips/:id/matches] + socket: partner:<id>:feed
-parcel-detail/[id]  → pickup shop, drop area, fee, distance, detour, weight → ACCEPT
-                      [POST /deliveries/:id/accept]   (atomic, capacity-guarded)
-navigate/[id]       → turn-by-turn to next stop (pickup or drop), call contact
-pickup/[id]         → at shop: enter/scan pickup OTP → confirm load [POST .../pickup-verify]
-deliver/[id]        → at customer: enter delivery OTP → mark DELIVERED [POST .../deliver-verify]
-trip-summary/[id]   → completed trip: stops, distance, total earnings
-history             → past trips & deliveries
-documents           → re-upload / expiry reminders
-ratings             → customer ratings of driver
-```
-
-**Driver-side functions:** vehicle/number-plate registration + KYC, online/offline presence, **route entry → corridor matching**, capacity-limited acceptance, multi-stop sequencing, GPS navigation, dual-OTP handoff, live location broadcast, earnings & payouts, ratings.
-
-**Vehicle → capacity table** (drives the matching filter):
-
-| Vehicle | Capacity (parcels) |
+| Gap | Where it stands |
 |---|---|
-| Bike / Scooter | 1 |
-| Auto / E-rickshaw | 3 |
-| Car / Taxi | 5 |
-| Mini-truck / Pickup | 8 |
-| Truck | 10 |
+| **Drivers are never warned about a road ahead** | `GET /api/partner/road-conditions` is finished and tested — it returns ranked warnings in the driver's language, with a spoken version — but **no screen calls it**. The driver only sees the road they are currently on. |
+| **No mid-trip re-route** | The corridor is checked for closures when the route is declared. A road that shuts an hour into the drive does not reach the driver. |
+| **Delayed-delivery alerts do not fire** | `DELAY_ALERT_MIN` and `shouldAlert` are computed in `routePlanner.js` and nothing consumes them. Problem statement clause (e) names delayed deliveries. |
+| **No live ETA to the customer** | `conditionAdjustedEta` exists; only the dashboard calls it. |
+| **Bridges are modelled but not seeded** | The segment schema treats `BRIDGE`, `PASS`, `CULVERT`, `TUNNEL` and `FERRY` as first-class kinds, but all 42 seeded segments are `ROAD`. Clause (a) names bridges. |
+| **Offline queue is officer-only** | Partner, customer and merchant have none. |
+| **No real government system integration** | VAHAN is integrated, with a mock fallback. No other government monitoring system is connected. |
 
 ---
 
-### 3. Complete Data Model (all collections)
+# The numbers, as verified
 
-Existing (built): `User`, `Merchant`, `Shop`, `Product`, `Cart`, `Order`.
-New collections to add:
-
-```
-Partner          driver identity + vehicle
-  { name, phone(unique), photo, kyc{licence,rc,insurance,status},
-    vehicle{ type, numberPlate(unique), model, capacity },
-    isOnline, currentLocation{Point}, currentTrip→Trip,
-    rating, totalTrips, walletBalance, isBlocked }
-
-Trip             a driver's planned journey (the supply side)
-  { partner→Partner, origin{Point}, destination{Point},
-    routePolyline, corridorBuffer(km), departureAt,
-    capacityTotal, capacityUsed,
-    status: DRAFT|ACTIVE|IN_PROGRESS|COMPLETED|CANCELLED,
-    deliveries[→Delivery] }
-
-Delivery         the UNIFIED parcel (demand side) — from an Order OR a P2P parcel
-  { type: ORDER|PARCEL, refOrder→Order?, customer→User,
-    pickup{ location{Point}, address, contact, shop→Shop? },
-    drop{ location{Point}, address, contact },
-    package{ type, weightKg, photos[] },
-    assignedTrip→Trip?, assignedPartner→Partner?,
-    pickupOtp, deliveryOtp,
-    fee, driverPayout, platformCommission,
-    status: CREATED|READY_FOR_PICKUP|POOLED|ASSIGNED|PICKED_UP|
-            IN_TRANSIT|DELIVERED|EXPIRED|CANCELLED,
-    poolExpiresAt(Date),   // readyAt + 1h
-    timeline[ {status, at, by} ] }
-
-Payment          { ref(Order|Delivery), amount, method, razorpayOrderId,
-                   razorpayPaymentId, status, breakdown{ goods, delivery, platform } }
-
-LedgerEntry      { account(User|Merchant|Partner|Platform), refId, type:CREDIT|DEBIT,
-                   amount, reason, balanceAfter, settledAt }
-
-Review           { from→User, targetType:SHOP|PRODUCT|PARTNER, targetId, rating, comment }
-
-Notification     { recipient, role, type, title, body, data, read, sentAt }
-
-OtpRequest       { phone, role, codeHash, expiresAt, attempts, verified }  // if not using Firebase
-
-AddressBook      { user→User, label, address{}, location{Point}, isDefault }
-
-PricingConfig    { baseFare, perKm tiers, weightSurcharge, vehicleMultiplier,
-                   platformCommissionPct, surgeRules }   // admin-editable, no redeploy
-```
-
-All location fields use GeoJSON `Point` + `2dsphere` indexes (already the pattern on `User/Shop/Order`).
+| | |
+|---|---|
+| Road network | 42 stretches · 3,567 km · 12 corridors · 82 districts · 8 states |
+| Geometry | Real OSRM, not straight lines |
+| Model | 109,116 road-days · AUC 0.883 · Brier 0.092 |
+| Coverage | 100% status known · 100% live vehicle data · 100% forecast |
+| Endpoints | 118 |
+| Apps | 4 Android + 1 web dashboard |
+| Languages | 10 · 8,424 translated units · 0 English fallbacks |
+| Tests | 195 / 195 across 10 suites |
 
 ---
 
-### 4. The Matching Engine (the heart of Sukobin)
+## Conventions
 
-```
-                 SUPPLY                         DEMAND
-        Driver sets a Trip            Mart marks order READY  /  Customer sends parcel
-        O → D, departAt, vehicle               │
-               │                               ▼
-               │                        Delivery → status POOLED
-               │                        poolExpiresAt = now + 1h
-               ▼                               │
-        ┌──────────────────── MATCH ───────────┴───────────┐
-        │ 1. Build corridor: route polyline O→D, buffer Rkm │
-        │    (MVP: destination-town == drop-town + origin   │
-        │     proximity; v2: OSRM/Directions polyline)      │
-        │ 2. Candidate deliveries where:                    │
-        │      pickup ∈ corridor  AND  drop ∈ corridor      │
-        │      AND drop is "ahead" of pickup along route    │
-        │      AND status == POOLED AND not expired         │
-        │      AND package fits remaining capacity          │
-        │ 3. Score by detourCost(extra km) ↑ , fee ↓        │
-        │ 4. Return ranked feed to driver (live via socket) │
-        └───────────────────────────────────────────────────┘
-               │
-               ▼
-        Driver ACCEPTs a parcel
-               │
-        ┌──────┴───────────────────────────────────────────┐
-        │ ATOMIC claim (findOneAndUpdate guarded):          │
-        │   Delivery.status POOLED → ASSIGNED               │
-        │   set assignedTrip/Partner                        │
-        │   Trip.capacityUsed += 1   (reject if full)       │
-        │  → prevents two drivers claiming the same parcel  │
-        └───────────────────────────────────────────────────┘
-               │
-               ▼
-        Multi-stop sequencing: order this trip's deliveries
-        by position along the route → pickup1,pickup2,drop1,…
-```
-
-**Escalation when the 1-hour pool expires unclaimed:**
-```
-POOLED ──(timeout job)──► re-broadcast to wider radius
-                         └─► assign dedicated on-demand rider
-                         └─► offer customer reschedule / refund → EXPIRED
-```
-
-**Key engine functions (backend `services/matching.js`):**
-- `buildCorridor(trip)` → polyline + buffered geo-query shape
-- `findMatches(trip)` → ranked `Delivery[]`
-- `scoreDelivery(trip, delivery)` → detour km + payout
-- `claimDelivery(partner, deliveryId)` → atomic assign (transaction)
-- `sequenceStops(trip)` → ordered pickup/drop list
-- `onPoolExpire(delivery)` → escalation pipeline
+- **Backend** — ES modules, controller / route / model separation, `{ success, message, data }` JSON envelope.
+- **Android** — ViewBinding, Retrofit + Gson, Coil, Material 3. `android.nonTransitiveRClass=true`, so shared resources are referenced as `com.sukobin.core.R`.
+- **Strings** — nothing user-facing is written in Kotlin or JSX. It goes in `strings.xml` or `strings.en.js` and through the translator.
+- **Chips and filters match on id, never on label text** — a filter compared against a translated label silently stops working the moment someone switches language.
 
 ---
 
-### 5. Unified Lifecycle State Machine
+## Licence
 
-```
-COMMERCE ORDER                         P2P PARCEL
-  PLACED                                 CREATED
-   │ mart accepts                          │ paid
-   ▼                                       ▼
-  ACCEPTED → PREPARING                   (skip)            ── both converge ──┐
-   │ mart "mark ready"                     │                                  │
-   ▼                                       ▼                                  ▼
-  READY_FOR_PICKUP ───────────────────► Delivery POOLED  (visible 1h) ◄───────┘
-   │ driver accepts (atomic)
-   ▼
-  ASSIGNED → PICKED_UP (pickup OTP) → IN_TRANSIT → DELIVERED (delivery OTP)
-   │
-   └─► CANCELLED / EXPIRED / RETURNED  (with refund + ledger reversal)
-
-TRIP:    DRAFT → ACTIVE(accepting) → IN_PROGRESS(started) → COMPLETED
-PAYMENT: PENDING → PAID → (SETTLED | REFUNDED | FAILED)
-```
-
----
-
-### 6. Complete API Specification (by domain)
-
-```
-AUTH (shared, role-aware)
-  POST /auth/otp/request            { phone, role }       → send OTP (server-side)
-  POST /auth/otp/verify             { phone, code, role } → access + refresh tokens
-  POST /auth/refresh                { refreshToken }
-  POST /auth/logout
-  POST /auth/complete-profile       (customer onboarding)
-
-CATALOG (customer, mostly public)
-  GET  /catalog/home?lat&lng        nearby shops + featured
-  GET  /catalog/search?q&cat&...    products
-  GET  /catalog/categories
-  GET  /catalog/product/:id
-  GET  /catalog/shop/:id
-
-CART (customer)
-  GET /cart  · POST /cart/add · PUT /cart/update/:id · DELETE /cart/remove/:id
-  DELETE /cart/clear · GET /cart/summary
-
-ORDERS (customer)
-  POST /orders/quote                delivery fee + ETA (Haversine/route)
-  POST /orders/place                persist Order + Payment + decrement stock (TXN)
-  GET  /orders · GET /orders/active · GET /orders/:id
-  POST /orders/:id/cancel
-
-PARCELS (customer P2P)
-  POST /parcels/quote · POST /parcels/create · GET /parcels/:id · POST /parcels/:id/cancel
-
-MERCHANT
-  POST /merchant/kyc · GET /merchant/dashboard · GET /merchant/analytics
-  GET  /merchant/orders?status=
-  PATCH /merchant/orders/:id/accept|reject|prepare|ready
-  GET  /merchant/wallet · POST /merchant/payout
-  (existing) /shop/* · /product/*
-
-PARTNER
-  POST /partner/kyc · POST /partner/presence (online/offline + location)
-  POST /trips                        create trip (route + departure)
-  GET  /trips/:id/matches            ranked parcel feed
-  POST /deliveries/:id/accept        atomic claim
-  GET  /partner/deliveries/active    sequenced stops
-  POST /deliveries/:id/pickup-verify { otp }
-  POST /deliveries/:id/deliver-verify{ otp }
-  GET  /partner/earnings · POST /partner/payout
-
-PAYMENTS
-  POST /payments/create              → razorpay order
-  POST /payments/webhook             ← razorpay (signature-verified)
-  POST /payments/:id/refund
-
-SHARED
-  CRUD /addresses · GET /wallet · GET /wallet/txns
-  POST /reviews · GET /reviews/:targetId
-  GET  /notifications · POST /notifications/register-token · PATCH /notifications/:id/read
-```
-
----
-
-### 7. Services & Background Jobs (backend `services/` + `jobs/`)
-
-```
-services/
-  auth.js          OTP gen/verify (Firebase Admin or SMS), JWT access+refresh
-  matching.js      corridor build, find/score/claim, sequencing  (Section 4)
-  pricing.js       delivery fee, parcel fare, surge, commission split
-  payments.js      razorpay create/verify/refund, payout
-  ledger.js        double-entry wallet postings, balance derivation
-  notifications.js expo push + in-app inbox fan-out
-  geo.js           reverse-geocode, distance, route polyline (OSRM/Directions)
-
-jobs/  (cron / queue workers — e.g. BullMQ + Redis)
-  expirePool          every 1 min: POOLED past poolExpiresAt → escalate/EXPIRED
-  rebroadcast         widen radius / ping more drivers for stale parcels
-  settlement          batch payouts to merchants & drivers
-  presenceReaper      mark drivers offline after missed heartbeats
-  kycReminder         document-expiry reminders
-  cleanupOnboarding   delete stale incomplete registrations (non-destructively flagged)
-```
-
----
-
-### 8. Real-time Layer (Socket.IO)
-
-```
-Namespace / rooms
-  order:<orderId>      customer + driver        → live driver location, status changes
-  partner:<id>:feed    driver                   → new route-matched parcels pushed live
-  merchant:<shopId>    mart                     → new order alerts, handoff updates
-
-Events
-  driver →  location:update {lat,lng}           (throttled, queued offline)
-  server →  delivery:matched / delivery:claimed  (feed updates, prevent stale accepts)
-  server →  order:status {status, eta}
-  server →  handoff:otp-verified
-```
-Auth on socket handshake reuses the JWT. Location pings are buffered client-side when offline and flushed on reconnect.
-
----
-
-### 9. Payments & Settlement
-
-```
-Customer pays totalAmount  ──Razorpay──►  webhook (verify signature) → Payment PAID
-   │
-   └─ split via ledger.js (double-entry):
-        goods price        → Merchant wallet (CREDIT)
-        delivery fee        → Partner wallet (CREDIT)  minus platform commission
-        platform fee + cut  → Platform account (CREDIT)
-   │
-   settlement job → payouts (RazorpayX / manual) → LedgerEntry DEBIT + SETTLED
-   refunds → reverse all related ledger entries, Payment REFUNDED
-```
-Wallet balances are **derived from the ledger**, never written directly — guarantees auditability.
-
----
-
-### 10. Notifications Matrix
-
-| Event | Customer | Mart | Driver |
-|---|---|---|---|
-| Order placed | ✓ confirm | ✓ NEW ORDER | – |
-| Mart accepted / ready | ✓ status | ✓ | – (enters pool) |
-| Parcel matched | – | – | ✓ feed + push |
-| Driver accepted | ✓ "driver assigned" | ✓ "driver incoming" | ✓ |
-| Picked up | ✓ OTP-verified | ✓ | ✓ |
-| Out for delivery / ETA | ✓ live | – | ✓ |
-| Delivered | ✓ rate now | ✓ payout | ✓ earnings |
-| Pool expiring | ✓ delay notice | ✓ | broadcast |
-
-Channels: **Expo push** (built) + **in-app inbox** (`Notification` collection) + SMS for OTP/critical.
-
----
-
-### 11. Security & Auth (target hardening)
-
-```
-Identity        server-side OTP verification (Firebase verifyIdToken or own SMS OTP)
-Tokens          short-lived ACCESS (15m) + ROTATING REFRESH; role + aud claims;
-                separate guards: requireCustomer / requireMerchant / requirePartner / requireAdmin
-Transport       enforce HTTPS, HSTS via helmet; restrict CORS to known app origins
-Abuse           express-rate-limit on OTP/auth; per-IP + per-phone throttles; captcha on repeat
-Validation      zod schema on every body/query/param; sanitize → no $regex injection / ReDoS
-Files           signed/direct Cloudinary uploads, type+size limits, AV scan; KYC docs encrypted at rest
-Money           Razorpay webhook signature verification; idempotency keys; ledger as source of truth
-Data            stock decrement & order placement in Mongo TRANSACTIONS (no oversell/double-claim)
-Secrets         all keys in env/secret manager; rotate leaked service-account JSONs; never in git
-Privacy         mask phone numbers between parties (proxy calling); KYC access role-gated + audited
-Logging         structured logs, no raw error.message to clients in prod; audit trail on money & status
-```
-
----
-
-### 12. Tech & Infrastructure (recommended)
-
-```
-Mobile     Expo SDK 54 · expo-router · NativeWind · expo-notifications · react-native-maps
-Backend    Express 5 (ESM) · Mongoose · Socket.IO · BullMQ + Redis (jobs/queues)
-Data       MongoDB Atlas (2dsphere geo) · Redis (presence, queues, rate-limit)
-Maps/Geo   OSRM (self-host) or Google Directions/Geocoding for routes & ETAs
-Media      Cloudinary (signed uploads)
-Auth/OTP   Firebase Auth (phone) verified server-side, or MSG91/Twilio SMS
-Payments   Razorpay (orders + webhooks) · RazorpayX (payouts)
-Infra      API on Render/Railway/Fly · Redis managed · CI build via EAS for apps
-Observability  structured logging, Sentry (crash), uptime + queue dashboards
-```
-
----
-
-### 13. Build Roadmap (phased)
-
-```
-Phase 1 — Commerce MVP (closest to done)
-  □ Server-side OTP + refresh tokens + role guards
-  □ POST /orders/place: persist Order, decrement stock (TXN), Razorpay
-  □ Mart order screens: accept → prepare → ready
-  □ Customer order tracking (status timeline)
-
-Phase 2 — The Parcel Engine (the differentiator)
-  □ Partner app: registration + vehicle/number-plate + KYC
-  □ Trip creation (route + departure)
-  □ Delivery pool + 1-hour window + expire job
-  □ Matching engine (MVP: town-match → v2: route corridor)
-  □ Atomic claim + capacity rules + stop sequencing
-  □ Dual-OTP handoff
-
-Phase 3 — Real-time & Trust
-  □ Socket.IO live tracking (driver pin, ETA)
-  □ Ratings & reviews (all directions)
-  □ In-app notification inbox
-  □ P2P "send parcel" end-to-end
-
-Phase 4 — Money & Scale
-  □ Ledger + wallets + settlement + payouts
-  □ Surge/dynamic pricing config (admin)
-  □ Admin web: KYC approval, disputes, analytics
-  □ Offline queueing, observability, hardening pass
-```
-
----
-
-## 🤝 Conventions
-
-- Backend: ES modules, controller/route/model separation, `{ success, message, data }` JSON envelope.
-- Mobile: Expo Router file-based routing, NativeWind classes, `AsyncStorage` token under `userToken`.
-- Brand colors: deep green `#1A3B32` / `#0C831F`, mint `#DDFBE6`, off-white `#F9F8F4`.
-
----
-
-*Generated as a structural overview of the Sukobin codebase. Update this README as the parcel-matching engine and partner app come online.*
+Not yet licensed. All rights reserved pending a decision.
