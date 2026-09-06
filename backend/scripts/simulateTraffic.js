@@ -117,6 +117,7 @@ async function main() {
 
   const now = Date.now();
   const docs = [];
+  const lastSeen = new Map();
 
   for (const seg of segments) {
     const line = seg.geometry?.coordinates || [];
@@ -138,22 +139,39 @@ async function main() {
           ? base * SLOW_FACTOR * (0.7 + Math.random() * 0.6)
           : base * (0.82 + Math.random() * 0.36);
 
+        const at = new Date(now - (PINGS_PER_VEHICLE - p) * 3 * 60000);
+        const coordinates = [lng + jitter(25), lat + jitter(25)];
+
         docs.push({
           partner: partner._id,
           vehicleType: partner.vehicleType,
-          location: { type: "Point", coordinates: [lng + jitter(25), lat + jitter(25)] },
+          location: { type: "Point", coordinates },
           speedKmph: +speed.toFixed(1),
           accuracyM: 8 + Math.random() * 20,
           onTrip: true,
-          at: new Date(now - (PINGS_PER_VEHICLE - p) * 3 * 60000),
+          at,
           segmentId: seg.segmentId,
         });
+
+        // The dashboard draws vehicles from Partner.currentLocation, not from
+        // the ping trail, so a simulator that only wrote pings sensed every
+        // road correctly and still left the map's vehicle layer empty.
+        const seen = lastSeen.get(String(partner._id));
+        if (!seen || at > seen.at) lastSeen.set(String(partner._id), { coordinates, at });
       }
     }
   }
 
   await LocationPing.insertMany(docs, { ordered: false });
   console.log(`  wrote ${docs.length} pings`);
+
+  for (const [id, seen] of lastSeen) {
+    await Partner.updateOne(
+      { _id: id },
+      { $set: { currentLocation: { type: "Point", coordinates: seen.coordinates }, lastActive: seen.at } }
+    );
+  }
+  console.log(`  placed ${lastSeen.size} vehicles on the map`);
 
   console.log("\n  recomputing accessibility from what the vehicles saw");
   const changes = [];
