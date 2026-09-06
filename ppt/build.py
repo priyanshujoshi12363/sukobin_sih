@@ -298,39 +298,52 @@ def build_idea(slide):
 
     # ── pointer 1 ──
     y = pointer(slide, LEFT, TOP, lw, "Detailed explanation of the proposed solution")
-    _, tf = textbox(slide, LEFT, y, lw, 1.72)
-    rich(tf, [("Sukobin ", True, NAVY),
-              ("combines GPS from registered transporters, field reports, weather "
-               "and road-network data to understand how accessible a route is. "
-               "Instead of costly roadside sensors, it turns vehicles already "
-               "travelling the region into mobile road probes.", False, INK)],
-         size=11, first=True, line=1.0)
+    _, tf = textbox(slide, LEFT, y, lw, 1.30)
     rich(tf, [("Nobody drives for us. ", True, NAVY),
-              ("A driver declares a journey they were making anyway and is offered "
-               "only the consignments lying along that road, within capacity.",
-               False, INK)],
-         size=11, space_before=7, line=1.0)
+              ("A driver declares a journey they were making anyway, and is offered "
+               "only the consignments lying along that road, within capacity. "
+               "Instead of costly roadside sensors, vehicles already travelling the "
+               "region become mobile road probes.", False, INK)],
+         size=10.5, first=True, line=1.0)
     rich(tf, [("Their movement is the measurement. ", True, NAVY),
               ("Median speed against each road's baseline gives live accessibility; "
-               "AI turns it into risk, forecasts and alternate routes.", False, INK)],
-         size=11, space_before=7, line=1.0)
-    y += 1.80
+               "AI turns it into risk scores, 72-hour forecasts, alerts and "
+               "alternate routes.", False, INK)],
+         size=10.5, space_before=7, line=1.0)
+    y += 1.38
 
     # ── pointer 3 ──
     y = pointer(slide, LEFT, y, lw, "Innovation and uniqueness of the solution")
-    card = band(slide, LEFT, y, lw, 1.18)
-    tf = card.text_frame
-    for i, (lead, rest) in enumerate([
-        ("The carrier network IS the sensing network — ",
-         "one journey delivers goods and reads the road."),
-        ("No hardware, no dedicated fleet — ",
-         "nothing to install, power or maintain anywhere."),
-        ("Self-improving — ",
-         "every new carrier adds sensing density at zero marginal cost."),
-    ]):
-        rich(tf, [("\u2022  " + lead, True, NAVY), (rest, False, INK)],
-             size=10.5, first=(i == 0), space_before=7, line=1.0)
-    y += 1.30
+    novel = [
+        ("Carriers ARE the sensors",
+         "one journey delivers goods and reads the road"),
+        ("No hardware, no fleet",
+         "nothing to install, power or maintain"),
+        ("Voice reporting, 10 languages",
+         "speak it; the model classifies and reads it back"),
+        ("Offline-first field reports",
+         "queue on the phone, sync later, never filed twice"),
+        ("Explainable forecasts",
+         "every number decomposes into the feature that drove it"),
+        ("A trust ladder",
+         "an unverified report can slow a road, never close one"),
+        ("Photo + GPS evidence",
+         "every incident carries proof, not a phone call"),
+        ("It admits what it cannot see",
+         "coverage is published, so grey never looks like broken"),
+    ]
+    nw = (lw - 0.14) / 2
+    nh = 0.40
+    for i, (title, detail) in enumerate(novel):
+        nx = LEFT + (i % 2) * (nw + 0.14)
+        ny = y + (i // 2) * (nh + 0.06)
+        b = band(slide, nx, ny, nw, nh)
+        tf = b.text_frame
+        tf.margin_top = Inches(0.03)
+        tf.margin_bottom = Inches(0.03)
+        para(tf, title, size=9, bold=True, color=NAVY, first=True, line=0.92)
+        para(tf, detail, size=7.5, color=MUTED, space_before=1, line=0.92)
+    y += 4 * (nh + 0.06) + 0.10
 
     # ── right: how it addresses the problem, drawn ──
     yy = label(slide, rx, TOP + 0.30, rw, "One trip, two products")
@@ -341,7 +354,7 @@ def build_idea(slide):
         ("Median speed vs baseline \u2192 road status", True),
         ("Alerts \u00b7 forecast \u00b7 re-route \u00b7 dashboard", False),
     ]
-    h, gap = 0.48, 0.15
+    h, gap = 0.52, 0.17
     for i, (text, strong) in enumerate(steps):
         sp = band(slide, rx, yy, rw, h,
                   fill=WHITE if strong else PAPER,
@@ -376,7 +389,7 @@ def build_idea(slide):
         ("h", "Multilingual + offline", "10 languages, sync when the signal returns"),
     ]
     cw = (FULL - 3 * 0.12) / 4
-    ch = 0.58
+    ch = 0.55
     for i, (letter, title, detail) in enumerate(clauses):
         cx = LEFT + (i % 4) * (cw + 0.12)
         cy = y + (i // 4) * (ch + 0.08)
