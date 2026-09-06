@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Manipuri (Meiteilon). Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language mni.
+-->
+<resources>
+    <string name="app_name">Sukobin অফিসার</string>
+    <string name="splash_tagline">পথের প্রবেশ, মাটিতে দেখা</string>
+    <string name="splash_status_verify">সাইন‑ইন যাচাই করা হচ্ছে</string>
+    <string name="splash_status_offline">কনেকশন নই - অফলাইন তৌরি</string>
+    <string name="splash_status_syncing">সংরক্ষিত রিপোর্ট পাঠানো হচ্ছে</string>
+    <string name="login_title">ফিল্ড অফিসার সাইন‑ইন</string>
+    <string name="login_sub">বিভাগের রেজিস্টার্ড মোবাইল নম্বর ব্যবহার করুন।</string>
+    <string name="login_phone_hint">১০ অংকের মোবাইল নম্বর</string>
+    <string name="login_continue">চালাও</string>
+    <string name="login_footnote">শুধু PWD, দুর্যোগ ব্যবস্থাপনা, জেলা প্রশাসন, BRO এবং NHIDCL এর রেজিস্টার্ড অফিসারগণ সাইন‑ইন করতে পারবেন।</string>
+    <string name="otp_title">কোডটি লিখুন</string>
+    <string name="otp_verify">শোইদোক</string>
+    <string name="register_title">অফিসার হিসেবে রেজিস্টার করুন</string>
+    <string name="register_sub">আপনি কোন পথের দায়িত্বে, তা জানান, যাতে কেবল আপনার পথই দেখেন।</string>
+    <string name="register_name">পূর্ণ নাম</string>
+    <string name="register_employee">কর্মচারী আইডি (ঐচ্ছিক)</string>
+    <string name="register_designation">পদবী (ঐচ্ছিক)</string>
+    <string name="register_department">বিভাগ</string>
+    <string name="register_level">আপনি কভার করেন</string>
+    <string name="register_district">জেলা</string>
+    <string name="register_state">রাজ্য</string>
+    <string name="register_language">সতর্কতার ভাষা</string>
+    <string name="register_submit">একাউন্ট তৈরি করো</string>
+    <string name="tab_home">সারাংশ</string>
+    <string name="tab_roads">পথ</string>
+    <string name="tab_forecast">পূর্বাভাস</string>
+    <string name="tab_profile">আপনি</string>
+    <string name="report_road">রিপোর্ট</string>
+    <string name="home_alerts">দৃষ্টি প্রয়োজন</string>
+    <string name="home_no_alerts">এখন কোনো দৃষ্টি প্রয়োজন নেই।</string>
+    <string name="roads_search">পথ অনুসন্ধান</string>
+    <string name="roads_empty">এই ফিল্টারে কোনো পথ নেই।</string>
+    <string name="forecast_empty">আগা তিন দিনত কিবা বন্ধ হইবগী সম্ভাবনা নই।</string>
+    <string name="forecast_model">ই ফোরকাস্ট অমা মখা হৌই।</string>
+    <string name="profile_reports">নিংগী রিপোর্ট</string>
+    <string name="profile_no_reports">নিংগী রিপোর্ট হৌদে নি।</string>
+    <string name="profile_sign_out">বাহির হৌ</string>
+    <string name="profile_sync">হৌরো</string>
+    <string name="report_title">মাঠদা রিপোর্ট</string>
+    <string name="report_finding_location">নিংগী লোকেশন ফিন্ড তৌরি…</string>
+    <string name="report_update_location">লোকেশন আপডেট তৌ</string>
+    <string name="report_try_again">আবার তৌ</string>
+    <string name="report_looking_for_roads">নিংগী নিকটদা রোড ফিন্ড তৌরি…</string>
+    <string name="report_no_roads_near">৩০ কিমি মধে মাপদা রোড নই। রিপোর্ট সংরক্ষণ তৌই।</string>
+    <string name="report_offline_road_hint">সিগন্যাল নই। রোড সেণ্ড তৌরগী মতমা হৌই।</string>
+    <string name="report_road_distance">%1$s নিংগী থৌরগী হৌরিবদা</string>
+    <string name="report_which_road">কোন রোড</string>
+    <string name="report_what_happened">কী হৌই</string>
+    <string name="report_how_bad">কী মশা হৌই</string>
+    <string name="report_describe">নিংগী হৌরিবদা তুংগা বর্ণনা তৌ</string>
+    <string name="report_describe_helper">হিন্দি, ইংরেজি নথবা মিক্স তুংগা লিখি। সিস্টেম পইদে হৌই অমসুং ট্রাফিকগী প্রভাব মখা হৌই।</string>
+    <string name="report_describe_error">দয়া চা নিংগী দিসি বর্ণনা তৌ</string>
+    <string name="report_blocks">ট্রাফিক একদম পার হৌদে নাপা</string>
+    <string name="report_clearance">ক্লিয়ার তৌবগী ঘণ্টা (নিংগী জানি)</string>
+    <string name="report_save">রিপোর্ট সেভ তৌ</string>
+    <string name="report_save_hint">ই ফোনদা সেভ তৌই, সিগন্যাল থোকলে সেণ্ড তৌই।</string>
+    <string name="report_need_location">GPS সিগন্যাল অইদা</string>
+    <string name="report_sent">রিপোর্ট সেণ্ড তৌই</string>
+    <string name="report_saved_offline">সেভ তৌই। সিগন্যাল থোকলে সেণ্ড তৌই।</string>
+    <string name="verify_title">নিশ্চিত করিবগী রিপোর্ট</string>
+    <string name="verify_empty">আপনগী কিবা নত্তে।</string>
+    <string name="verify_confirm">নিশ্চিত</string>
+    <string name="verify_reject">বাতিল</string>
+    <string name="common_retry">আবার চেষ্টা</string>
+    <string name="common_back">ফেরৎ</string>
+    <string name="notif_title">নোটিফিকেশন</string>
+    <string name="notif_mark_all">সব পঢ়া হৌরিব</string>
+    <string name="notif_show_unread">শুধু না পঢ়া</string>
+    <string name="notif_show_all">সব দেখু</string>
+    <string name="notif_all_read">আপনগী আপডেট অইচে</string>
+    <string name="notif_showing">%1$d দেখোই</string>
+    <string name="notif_empty">এতক্কদা কিবা নত্তে।</string>
+    <string name="notif_empty_unread">আপনগী সব পঢ়া অইচে।</string>
+    <string name="notif_open">নোটিফিকেশন</string>
+    <string name="voice_speak_report">টাইপ তৌদা না, রিপোর্ট হৌইবু</string>
+    <string name="voice_speak_hint">%1$s-দা হৌইবু। ট্যাপ তৌই, হৌরিবগী বর্ণনা তৌ।</string>
+    <string name="voice_speak_fallback">এহান ফোনদা %1$s-দা ভয়েস নাপা। %2$s-দা শোনবু।</string>
+    <string name="voice_unavailable">এহান ফোনদা ভয়েস ইনপুট নাপা</string>
+    <string name="voice_prompt">দেখি থিবা বর্ণনা তৌ</string>
+    <string name="voice_nothing_heard">কোনবু শোনবা নাপা। অমুক থোকপা।</string>
+    <string name="voice_read_aloud">উচ্চে পঢ়ু</string>
+    <string name="voice_stop_reading">থমবা</string>
+    <string name="voice_no_tts">এহান ফোন %1$s উচ্চে পঢ়বু নাপা</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d না পঢ়া</item>
+        <item quantity="other">%1$d না পঢ়া</item>
+    </plurals>
+</resources>

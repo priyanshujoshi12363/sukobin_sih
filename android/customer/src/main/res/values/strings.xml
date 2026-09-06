@@ -188,4 +188,5 @@ We will match a partner travelling your route.</string>
     <string name="demo_pay_confirm">Confirm payment</string>
     <string name="demo_pay_notice">Demo mode - no money is transferred</string>
     <string name="demo_pay_select_method">Pick a payment method</string>
+    <string name="settings_language">Language</string>
 </resources>

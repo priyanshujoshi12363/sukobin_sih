@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Khasi. Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language kha.
+-->
+<resources>
+    <string name="app_name">Sukobin Officer</string>
+    <string name="splash_tagline">Ka jingdon ka sngap, iathuh ha khmat</string>
+    <string name="splash_status_verify">Iathuh login jong phi</string>
+    <string name="splash_status_offline">Um pat - offline</string>
+    <string name="splash_status_syncing">Iathuh ki report ba la kynthup</string>
+    <string name="login_title">Login officer</string>
+    <string name="login_sub">Pynïaid number mobile ba la kynthup ha department</string>
+    <string name="login_phone_hint">Number mobile 10-digit</string>
+    <string name="login_continue">Jait</string>
+    <string name="login_footnote">Only officers ba la kynthup na PWD, Disaster Management, District Administration, BRO bad NHIDCL iathuh</string>
+    <string name="otp_title">Pynïaid ka code</string>
+    <string name="otp_verify">Thoh</string>
+    <string name="register_title">Kynthup kum officer</string>
+    <string name="register_sub">Pynïaid jingbatai ban iathuh ki sngap ba phi iathuh</string>
+    <string name="register_name">Mynshong</string>
+    <string name="register_employee">Employee ID (optional)</string>
+    <string name="register_designation">Designation (optional)</string>
+    <string name="register_department">Department</string>
+    <string name="register_level">Phi iathuh</string>
+    <string name="register_district">Ka ri</string>
+    <string name="register_state">Ka jylla</string>
+    <string name="register_language">Ktiñ iathuh</string>
+    <string name="register_submit">Create account</string>
+    <string name="tab_home">Jingkren</string>
+    <string name="tab_roads">Sngap</string>
+    <string name="tab_forecast">Pynshai</string>
+    <string name="tab_profile">Phi</string>
+    <string name="report_road">Report</string>
+    <string name="home_alerts">Jingdon iathuh</string>
+    <string name="home_no_alerts">Um don jingdon ba dei iathuh</string>
+    <string name="roads_search">Pynïaid sngap</string>
+    <string name="roads_empty">Um don sngap ba iadei ha filter.</string>
+    <string name="forecast_empty">Um don jingkren ba kin iathuh ha trei sngi</string>
+    <string name="forecast_model">Kumno iathuh ka dei</string>
+    <string name="profile_reports">Ki report jong phi</string>
+    <string name="profile_no_reports">Kum lah ban iathuh report shimet</string>
+    <string name="profile_sign_out">Logout</string>
+    <string name="profile_sync">Iathuh mynta</string>
+    <string name="report_title">Report na ka jingdon</string>
+    <string name="report_finding_location">Iathuh jingdon jong phi…</string>
+    <string name="report_update_location">Hynrei jingdon</string>
+    <string name="report_try_again">Iathuh shimet</string>
+    <string name="report_looking_for_roads">Iathuh lane shakhmat ha phi…</string>
+    <string name="report_no_roads_near">Um don lane ba iathuh ha 30 km. Ka report kin iathuh.</string>
+    <string name="report_offline_road_hint">Um don signal. Ka lane kin iathuh ha ka por ba iathuh.</string>
+    <string name="report_road_distance">%1$s na ka jingdon jong phi</string>
+    <string name="report_which_road">Lane ba?</string>
+    <string name="report_what_happened">Mei ka jingwan?</string>
+    <string name="report_how_bad">Ka jingkren ba kongsan?</string>
+    <string name="report_describe">Kita iathuh ha ka jingkren jong phi</string>
+    <string name="report_describe_helper">Iathuh ha Hindi, English ne ka jingkren. System iathuh bad iwei ka jingdon traffic.</string>
+    <string name="report_describe_error">Sngewbha iathuh jingkren ba phi iathuh</string>
+    <string name="report_blocks">Traffic ym dei ban iathuh</string>
+    <string name="report_clearance">Seng iathuh (lah ban iathuh)</string>
+    <string name="report_save">Seng report</string>
+    <string name="report_save_hint">Seng ha phone shimet, katba iathuh signal.</string>
+    <string name="report_need_location">Iathuh GPS</string>
+    <string name="report_sent">Report iathuh</string>
+    <string name="report_saved_offline">Seng. Kin iathuh ha ka por ba iathuh signal.</string>
+    <string name="verify_title">Report ban kynthup</string>
+    <string name="verify_empty">Um don jingkylli</string>
+    <string name="verify_confirm">Kynthup</string>
+    <string name="verify_reject">Pynshai</string>
+    <string name="common_retry">Pynshai shimet</string>
+    <string name="common_back">Kynduh</string>
+    <string name="notif_title">Jingpynshai</string>
+    <string name="notif_mark_all">Mark baroh kum i read</string>
+    <string name="notif_show_unread">Um jingpynshai</string>
+    <string name="notif_show_all">Pynshai baroh</string>
+    <string name="notif_all_read">Phi iathuh</string>
+    <string name="notif_showing">%1$d i pynshai</string>
+    <string name="notif_empty">Um don jingpynshai</string>
+    <string name="notif_empty_unread">Phi i read baroh</string>
+    <string name="notif_open">Jingpynshai</string>
+    <string name="voice_speak_report">Kren jingthoh bad ym don typing</string>
+    <string name="voice_speak_hint">Kren ha %1$s. Tap bad iathuh.</string>
+    <string name="voice_speak_fallback">Um jingkren ha %1$s ha kane ka phone. Ka iathuh ha %2$s.</string>
+    <string name="voice_unavailable">Jingkren um don ha kane ka phone</string>
+    <string name="voice_prompt">Iathuh kiba phi iathuh</string>
+    <string name="voice_nothing_heard">Um dei jingkren. Thoh shimet.</string>
+    <string name="voice_read_aloud">Iathuh ha thma</string>
+    <string name="voice_stop_reading">Tham</string>
+    <string name="voice_no_tts">Kane ka phone um lah iathuh %1$s ha thma</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d um</item>
+        <item quantity="other">%1$d um</item>
+    </plurals>
+</resources>

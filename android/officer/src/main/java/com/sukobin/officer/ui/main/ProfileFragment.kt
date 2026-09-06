@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +18,7 @@ import com.sukobin.core.net.arr
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
+import com.sukobin.core.ui.LanguagePicker
 import com.sukobin.officer.data.OfficerSession
 import com.sukobin.officer.data.ReportQueue
 import com.sukobin.officer.databinding.FragmentProfileBinding
@@ -34,18 +33,6 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
 
     private val pending = PendingAdapter()
 
-    private val languages = listOf(
-        "en" to "English",
-        "hi" to "हिन्दी",
-        "as" to "অসমীয়া",
-        "bn" to "বাংলা",
-        "mni" to "Meiteilon",
-        "kha" to "Khasi",
-        "lus" to "Mizo",
-        "nag" to "Nagamese",
-        "ne" to "नेपाली",
-        "kok" to "Kokborok"
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -167,7 +154,7 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
 
         b.scopeValue.text = OfficerSession.scopeLabel
         b.levelValue.text = OfficerSession.level.lowercase().replaceFirstChar { it.uppercase() }
-        b.languageValue.text = languages.firstOrNull { it.first == OfficerSession.language }?.second ?: "English"
+        b.languageValue.text = LanguagePicker.nameOf(OfficerSession.language)
 
         b.rowVerifyQueue.visibility = if (OfficerSession.canVerify) View.VISIBLE else View.GONE
         b.permissionValue.text = if (OfficerSession.canVerify) {
@@ -188,41 +175,17 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
         b.statVerified.text = (stats?.get("incidentsVerified")?.asInt ?: 0).toString()
     }
 
+    /**
+     * All nine languages now have a full UI, so the picker is the shared one
+     * and the old four-language special case is gone.
+     */
     private fun pickLanguage() {
-        val names = languages.map { it.second }.toTypedArray()
-        val current = languages.indexOfFirst { it.first == OfficerSession.language }
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Alert language")
-            .setSingleChoiceItems(names, current) { dialog, which ->
-                val code = languages[which].first
-                OfficerSession.language = code
-                renderLocal()
-                dialog.dismiss()
-
-                lifecycleScope.launch {
-                    apiCall { officerUpdateProfile(jsonOf("preferredLanguage" to code)) }
-                }
-
-                // Alerts already arrive in this language. Switch the app's own
-                // chrome too, for the four languages we ship a UI for; the rest
-                // keep English chrome and translated alerts.
-                AppCompatDelegate.setApplicationLocales(
-                    LocaleListCompat.forLanguageTags(uiLocaleFor(code))
-                )
+        LanguagePicker.show(requireContext(), OfficerSession.language) { code ->
+            OfficerSession.language = code
+            lifecycleScope.launch {
+                apiCall { officerUpdateProfile(jsonOf("preferredLanguage" to code)) }
             }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
-    // Only these four have a checked UI translation. Anything else keeps
-    // English chrome rather than showing a half-translated screen.
-    private fun uiLocaleFor(code: String) = when (code) {
-        "hi" -> "hi"
-        "bn" -> "bn"
-        "as" -> "as"
-        "ne" -> "ne"
-        else -> "en"
+        }
     }
 
     private fun syncNow() {

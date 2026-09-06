@@ -66,6 +66,9 @@ async function main() {
 
   console.log("\nSPEAK A REPORT IN YOUR OWN LANGUAGE\n");
   console.log("  model available:", llmAvailable() ? "yes" : "NO - keyword fallback only");
+  console.log("  note: this suite asserts on live model output, so one");
+  console.log("        classification can differ between runs. A repeated");
+  console.log("        failure on the same phrase is a real regression.");
 
   const phone = "9876500044";
   await Partner.deleteOne({ phone });

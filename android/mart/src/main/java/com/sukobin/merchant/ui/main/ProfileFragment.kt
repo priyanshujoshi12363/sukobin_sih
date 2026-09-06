@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.sukobin.core.net.ApiResult
+import com.sukobin.core.ui.LanguagePicker
 import com.sukobin.core.net.Merchant
 import com.sukobin.core.net.Session
 import com.sukobin.core.net.Shop
@@ -45,6 +46,13 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
         b.rowShop.setOnClickListener(openShop)
         b.rowShopEdit.setOnClickListener(openShop)
         b.shopEditValue.setText(R.string.profile_edit)
+        b.languageValue.text = LanguagePicker.nameOf(Session.language)
+        b.rowLanguage.setOnClickListener {
+            // Applying the locale recreates the activity, so this is
+            // the last thing that runs on this instance.
+            LanguagePicker.show(requireContext())
+        }
+
         b.rowSignOut.setOnClickListener { confirmSignOut() }
         refresh()
     }

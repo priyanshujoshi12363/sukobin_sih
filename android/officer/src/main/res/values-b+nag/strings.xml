@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nagamese. Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language nag.
+-->
+<resources>
+    <string name="app_name">Sukobin Officer</string>
+    <string name="splash_tagline">Road access, ground pora dekha</string>
+    <string name="splash_status_verify">Apnar sign-in check korise</string>
+    <string name="splash_status_offline">Connection nai - offline kaam korise</string>
+    <string name="splash_status_syncing">Saved report send korise</string>
+    <string name="login_title">Field officer sign-in</string>
+    <string name="login_sub">Department logot register kora mobile number use koren</string>
+    <string name="login_phone_hint">10-digit mobile number</string>
+    <string name="login_continue">Aage</string>
+    <string name="login_footnote">Only PWD, Disaster Management, District Administration, BRO, NHIDCL logot register kora officer sign-in koribo pare</string>
+    <string name="otp_title">Code diben</string>
+    <string name="otp_verify">Check</string>
+    <string name="register_title">Officer hisabe register koren</string>
+    <string name="register_sub">Apni ki area cover koren, amake bolen, tai matro apnar road dekhen</string>
+    <string name="register_name">Full name</string>
+    <string name="register_employee">Employee ID (optional)</string>
+    <string name="register_designation">Designation (optional)</string>
+    <string name="register_department">Department</string>
+    <string name="register_level">Apni cover koren ek</string>
+    <string name="register_district">District</string>
+    <string name="register_state">State</string>
+    <string name="register_language">Alert language</string>
+    <string name="register_submit">Account bana</string>
+    <string name="tab_home">Overview</string>
+    <string name="tab_roads">Roads</string>
+    <string name="tab_forecast">Forecast</string>
+    <string name="tab_profile">Apni</string>
+    <string name="report_road">Report</string>
+    <string name="home_alerts">Ki attention lagibo</string>
+    <string name="home_no_alerts">Ekhon kono attention lagibo na</string>
+    <string name="roads_search">Road search koren</string>
+    <string name="roads_empty">Ei filter logot kono road nai</string>
+    <string name="forecast_empty">Agnor 3 dinot kunu bandha nai.</string>
+    <string name="forecast_model">Forecast kenekoi banai</string>
+    <string name="profile_reports">Tumor report</string>
+    <string name="profile_no_reports">Tumhi report nai dise.</string>
+    <string name="profile_sign_out">Logout</string>
+    <string name="profile_sync">Ekhon send kor</string>
+    <string name="report_title">Field report</string>
+    <string name="report_finding_location">Location dhundhise…</string>
+    <string name="report_update_location">Location update kor</string>
+    <string name="report_try_again">Aru try kor</string>
+    <string name="report_looking_for_roads">Najik road dhundhise…</string>
+    <string name="report_no_roads_near">30 km bhitor road nai. Report save hoibo.</string>
+    <string name="report_offline_road_hint">Signal nai. Road pora send korle bujhaibo.</string>
+    <string name="report_road_distance">%1$s tumar thikhanot</string>
+    <string name="report_which_road">Kon road?</string>
+    <string name="report_what_happened">Ki hoise?</string>
+    <string name="report_how_bad">Kiman kharap?</string>
+    <string name="report_describe">Tumor kotha likho</string>
+    <string name="report_describe_helper">Hindi, English ba mix likho. System bujhe traffic effect.</string>
+    <string name="report_describe_error">Dekhata likho</string>
+    <string name="report_blocks">Traffic pura block</string>
+    <string name="report_clearance">Koto ghonta lagibo (jodi janen)</string>
+    <string name="report_save">Report save kor</string>
+    <string name="report_save_hint">Phoneot save hoise, signal aise send koribo.</string>
+    <string name="report_need_location">GPS fix lagibo wait kor</string>
+    <string name="report_sent">Report send hoise</string>
+    <string name="report_saved_offline">Save hoise. Signal aise send koribo.</string>
+    <string name="verify_title">Confirm report</string>
+    <string name="verify_empty">Kuno wait nai.</string>
+    <string name="verify_confirm">Confirm</string>
+    <string name="verify_reject">Reject</string>
+    <string name="common_retry">Firi try kor</string>
+    <string name="common_back">Firi</string>
+    <string name="notif_title">Notification</string>
+    <string name="notif_mark_all">Sab read mark kor</string>
+    <string name="notif_show_unread">Unread matro</string>
+    <string name="notif_show_all">Sab dekha</string>
+    <string name="notif_all_read">Sab update ase</string>
+    <string name="notif_showing">%1$d dekha</string>
+    <string name="notif_empty">Kuno nai ahise.</string>
+    <string name="notif_empty_unread">Sab read korise.</string>
+    <string name="notif_open">Notification</string>
+    <string name="voice_speak_report">Report kotha koi, type na kor</string>
+    <string name="voice_speak_hint">%1$s ot kotha koi. Tap kori ki dekho likho.</string>
+    <string name="voice_speak_fallback">Ei phone ot %1$s voice nai. %2$s ot sunibo.</string>
+    <string name="voice_unavailable">Ei phone ot voice input nai</string>
+    <string name="voice_prompt">Ki dekho, likho</string>
+    <string name="voice_nothing_heard">Kichu sun nai. Firi try kor.</string>
+    <string name="voice_read_aloud">Utha porho</string>
+    <string name="voice_stop_reading">Rok</string>
+    <string name="voice_no_tts">Ei phone %1$s utha poribo nai</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d unread</item>
+        <item quantity="other">%1$d unread</item>
+    </plurals>
+</resources>

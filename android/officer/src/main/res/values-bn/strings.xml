@@ -1,51 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bengali. Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language bn.
+-->
 <resources>
-    <string name="app_name">সুকোবিন অফিসার</string>
-    <string name="login_title">ফিল্ড অফিসার সাইন-ইন</string>
-    <string name="login_sub">আপনার দপ্তরে নথিভুক্ত মোবাইল নম্বর ব্যবহার করুন।</string>
-    <string name="login_phone_hint">১০ সংখ্যার মোবাইল নম্বর</string>
-    <string name="login_continue">এগিয়ে যান</string>
-    <string name="otp_title">কোড দিন</string>
+    <string name="app_name">Sukobin Officer</string>
+    <string name="splash_tagline">রাস্তার প্রবেশ, মাটির দৃষ্টিতে</string>
+    <string name="splash_status_verify">আপনার সাইন‑ইন যাচাই করা হচ্ছে</string>
+    <string name="splash_status_offline">কোনো সংযোগ নেই - অফলাইন কাজ চলছে</string>
+    <string name="splash_status_syncing">রিপোর্ট পাঠানো হচ্ছে</string>
+    <string name="login_title">ফিল্ড অফিসার সাইন‑ইন</string>
+    <string name="login_sub">আপনার বিভাগের রেজিস্টার্ড মোবাইল নম্বর ব্যবহার করুন।</string>
+    <string name="login_phone_hint">১০ অঙ্কের মোবাইল নম্বর</string>
+    <string name="login_continue">চালিয়ে যান</string>
+    <string name="login_footnote">শুধু PWD, দুর্যোগ ব্যবস্থাপনা, জেলা প্রশাসন, BRO ও NHIDCL এর রেজিস্টার্ড অফিসারই লগইন করতে পারবেন।</string>
+    <string name="otp_title">কোড লিখুন</string>
     <string name="otp_verify">যাচাই করুন</string>
-    <string name="tab_home">সারসংক্ষেপ</string>
+    <string name="register_title">অফিসার হিসেবে রেজিস্টার করুন</string>
+    <string name="register_sub">আপনি কোন রোড কভার করেন তা জানান, যাতে আপনি কেবল আপনার দায়িত্বের রোডই দেখেন।</string>
+    <string name="register_name">পূর্ণ নাম</string>
+    <string name="register_employee">কর্মচারী আইডি (ঐচ্ছিক)</string>
+    <string name="register_designation">পদবী (ঐচ্ছিক)</string>
+    <string name="register_department">বিভাগ</string>
+    <string name="register_level">আপনি কভার করেন</string>
+    <string name="register_district">জেলা</string>
+    <string name="register_state">রাজ্য</string>
+    <string name="register_language">সতর্কতার ভাষা</string>
+    <string name="register_submit">অ্যাকাউন্ট তৈরি</string>
+    <string name="tab_home">সামগ্রিক</string>
     <string name="tab_roads">রাস্তা</string>
     <string name="tab_forecast">পূর্বাভাস</string>
     <string name="tab_profile">আপনি</string>
     <string name="report_road">রিপোর্ট</string>
-    <string name="home_alerts">যা নজর দেওয়া দরকার</string>
-    <string name="home_no_alerts">এখন কিছুতেই নজর দেওয়ার দরকার নেই।</string>
-    <string name="roads_search">রাস্তা খুঁজুন</string>
+    <string name="home_alerts">যা দৃষ্টি প্রয়োজন</string>
+    <string name="home_no_alerts">এখন কোনো দৃষ্টি প্রয়োজন নেই।</string>
+    <string name="roads_search">রাস্তা অনুসন্ধান</string>
     <string name="roads_empty">এই ফিল্টারে কোনো রাস্তা নেই।</string>
-    <string name="forecast_empty">আগামী তিন দিনে কোনো রাস্তা বন্ধ হওয়ার সম্ভাবনা নেই।</string>
-    <string name="forecast_model">এই পূর্বাভাস কীভাবে তৈরি হয়</string>
-    <string name="profile_reports">আপনার রিপোর্ট</string>
+    <string name="forecast_empty">আগামী তিন দিনে কোনো বন্ধের সম্ভাবনা নেই।</string>
+    <string name="forecast_model">এই পূর্বাভাস কীভাবে তৈরি হয়</string>
+    <string name="profile_reports">আপনার রিপোর্টগুলো</string>
     <string name="profile_no_reports">আপনি এখনো কোনো রিপোর্ট পাঠাননি।</string>
     <string name="profile_sign_out">সাইন আউট</string>
-    <string name="profile_sync">এখনই পাঠান</string>
-    <string name="report_title">ঘটনাস্থল থেকে রিপোর্ট</string>
+    <string name="profile_sync">এখন পাঠান</string>
+    <string name="report_title">মাঠ থেকে রিপোর্ট</string>
+    <string name="report_finding_location">আপনার অবস্থান খুঁজছে…</string>
+    <string name="report_update_location">অবস্থান আপডেট করুন</string>
+    <string name="report_try_again">আবার চেষ্টা করুন</string>
+    <string name="report_looking_for_roads">আপনার কাছের রাস্তা খুঁজছে…</string>
+    <string name="report_no_roads_near">৩০ কিমি মধ্যে কোনো মানচিত্রিত রাস্তা নেই। রিপোর্ট এখনও সংরক্ষিত হবে।</string>
+    <string name="report_offline_road_hint">সিগন্যাল নেই। পাঠানোর পর রাস্তা নির্ধারিত হবে।</string>
+    <string name="report_road_distance">%1$s আপনার দাঁড়ানো জায়গা থেকে</string>
     <string name="report_which_road">কোন রাস্তা</string>
-    <string name="report_what_happened">কী ঘটেছে</string>
-    <string name="report_how_bad">কতটা গুরুতর</string>
-    <string name="report_describe">নিজের ভাষায় লিখুন</string>
-    <string name="report_describe_helper">বাংলা, ইংরেজি বা মিশিয়ে লিখুন। সিস্টেম পড়ে প্রভাব বুঝে নেয়।</string>
-    <string name="report_blocks">কোনো গাড়ি যেতে পারছে না</string>
-    <string name="report_save">রিপোর্ট সংরক্ষণ</string>
-    <string name="report_save_hint">আগে এই ফোনে সংরক্ষিত হয়, নেটওয়ার্ক এলে পাঠানো হয়।</string>
-    <string name="report_sent">রিপোর্ট পাঠানো হয়েছে</string>
-    <string name="report_saved_offline">সংরক্ষিত। নেটওয়ার্ক এলে পাঠানো হবে।</string>
-    <string name="verify_title">যাচাইয়ের জন্য রিপোর্ট</string>
-    <string name="verify_empty">আপনার জন্য কিছু অপেক্ষায় নেই।</string>
+    <string name="report_what_happened">কি ঘটেছে</string>
+    <string name="report_how_bad">কতটা খারাপ</string>
+    <string name="report_describe">আপনার কথায় বর্ণনা করুন</string>
+    <string name="report_describe_helper">হিন্দি, ইংরেজি বা মিশ্রে লিখুন। সিস্টেম পড়বে এবং ট্র্যাফিকের প্রভাব জানাবে।</string>
+    <string name="report_describe_error">দেখা বিষয়টি বর্ণনা করুন</string>
+    <string name="report_blocks">ট্র্যাফিক একদম পার হতে পারে না</string>
+    <string name="report_clearance">মুক্তির সময় (ঘণ্টা, জানলে লিখুন)</string>
+    <string name="report_save">রিপোর্ট সংরক্ষণ করুন</string>
+    <string name="report_save_hint">প্রথমে ফোনে সংরক্ষণ, সিগন্যালে পাঠানো হবে।</string>
+    <string name="report_need_location">GPS সিগন্যালের জন্য অপেক্ষা</string>
+    <string name="report_sent">রিপোর্ট পাঠানো হয়েছে</string>
+    <string name="report_saved_offline">সংরক্ষিত। সিগন্যালে পাঠানো হবে।</string>
+    <string name="verify_title">রিপোর্ট নিশ্চিত</string>
+    <string name="verify_empty">কিছুই অপেক্ষা করছে না।</string>
     <string name="verify_confirm">নিশ্চিত করুন</string>
     <string name="verify_reject">বাতিল করুন</string>
-    <string name="notif_title">বিজ্ঞপ্তি</string>
-    <string name="notif_mark_all">সব পড়া হয়েছে</string>
-    <string name="notif_show_unread">শুধু অপঠিত</string>
-    <string name="notif_show_all">সব দেখান</string>
-    <string name="notif_all_read">আপনি হালনাগাদ</string>
-    <string name="notif_empty">এখনো কিছু আসেনি।</string>
-    <string name="voice_speak_report">টাইপ না করে বলে দিন</string>
-    <string name="voice_prompt">যা দেখছেন বলুন</string>
-    <string name="voice_nothing_heard">কিছু শোনা যায়নি। আবার চেষ্টা করুন।</string>
     <string name="common_retry">আবার চেষ্টা করুন</string>
-    <string name="common_back">পিছনে</string>
+    <string name="common_back">ফিরে</string>
+    <string name="notif_title">বিজ্ঞপ্তি</string>
+    <string name="notif_mark_all">সব পড়া চিহ্নিত</string>
+    <string name="notif_show_unread">শুধু না পড়া</string>
+    <string name="notif_show_all">সব দেখাও</string>
+    <string name="notif_all_read">আপনি হালনাগাদ</string>
+    <string name="notif_showing">%1$d দেখানো</string>
+    <string name="notif_empty">কিছুই আসেনি।</string>
+    <string name="notif_empty_unread">সব পড়েছেন।</string>
+    <string name="notif_open">বিজ্ঞপ্তি</string>
+    <string name="voice_speak_report">টাইপের বদলে রিপোর্ট বলুন</string>
+    <string name="voice_speak_hint">%1$s-এ বলুন। ট্যাপ করে যা দেখছেন তা বর্ণনা করুন।</string>
+    <string name="voice_speak_fallback">এই ফোনে %1$s এর ভয়েস নেই। এটি %2$s-এ শোনাবে।</string>
+    <string name="voice_unavailable">এই ফোনে ভয়েস ইনপুট নেই</string>
+    <string name="voice_prompt">আপনি যা দেখছেন তা বর্ণনা করুন</string>
+    <string name="voice_nothing_heard">কিছু শোনা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="voice_read_aloud">শোনিয়ে পড়ুন</string>
+    <string name="voice_stop_reading">থামুন</string>
+    <string name="voice_no_tts">এই ফোনে %1$s শোনিয়ে পড়া যায় না</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d না পড়া</item>
+        <item quantity="other">%1$d না পড়া</item>
+    </plurals>
 </resources>

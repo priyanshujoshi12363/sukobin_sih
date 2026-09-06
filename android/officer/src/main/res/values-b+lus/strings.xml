@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Mizo (Lushai). Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language lus.
+-->
+<resources>
+    <string name="app_name">Sukobin Officer</string>
+    <string name="splash_tagline">Thlâ hriatna, thiltih a hriat</string>
+    <string name="splash_status_verify">I hming a hriat a</string>
+    <string name="splash_status_offline">Hriatna lo awm - offline a hman</string>
+    <string name="splash_status_syncing">Thuchhawn a thawn</string>
+    <string name="login_title">Thlâ hming a hriat</string>
+    <string name="login_sub">Department-ah register a ni mobile number hmang.</string>
+    <string name="login_phone_hint">10 hming mobile number</string>
+    <string name="login_continue">Hriat</string>
+    <string name="login_footnote">PWD, Disaster Management, District Administration, BRO leh NHIDCL-a register a ni officer ten hi hming a hriat a.</string>
+    <string name="otp_title">Code a lo hmu</string>
+    <string name="otp_verify">Hriat</string>
+    <string name="register_title">Officer a ni tur a register</string>
+    <string name="register_sub">I hriat tur thlâ i hriat a, a thlâ hi i hriat a.</string>
+    <string name="register_name">Hming zawk</string>
+    <string name="register_employee">Employee ID (optional)</string>
+    <string name="register_designation">Designation (optional)</string>
+    <string name="register_department">Department</string>
+    <string name="register_level">I hriat tur a</string>
+    <string name="register_district">District</string>
+    <string name="register_state">State</string>
+    <string name="register_language">Alert hriatna hming</string>
+    <string name="register_submit">Account siam</string>
+    <string name="tab_home">Hriatna</string>
+    <string name="tab_roads">Thlâ</string>
+    <string name="tab_forecast">Hriatna</string>
+    <string name="tab_profile">I</string>
+    <string name="report_road">Thuchhawn</string>
+    <string name="home_alerts">Hriatna a ngai</string>
+    <string name="home_no_alerts">Hriatna a ngai lo.</string>
+    <string name="roads_search">Thlâ hriat</string>
+    <string name="roads_empty">He filter-a thlâ awm lo.</string>
+    <string name="forecast_empty">Tla thum thum a, a hriat lo.</string>
+    <string name="forecast_model">He forecast a hman a ni.</string>
+    <string name="profile_reports">I report</string>
+    <string name="profile_no_reports">I report a awm lo.</string>
+    <string name="profile_sign_out">Log out</string>
+    <string name="profile_sync">Hun thawn</string>
+    <string name="report_title">Thil hriatna</string>
+    <string name="report_finding_location">I hriatna hriat a...</string>
+    <string name="report_update_location">Hriatna thlar</string>
+    <string name="report_try_again">Hriatna hmu</string>
+    <string name="report_looking_for_roads">I hmar hriat a...</string>
+    <string name="report_no_roads_near">30 km a hmar a awm lo. Report a hriat a awm ang.</string>
+    <string name="report_offline_road_hint">Signal awm lo. Hmar a hriat a, thawn a ni tawh a.</string>
+    <string name="report_road_distance">%1$s i hriatna hnenah</string>
+    <string name="report_which_road">Hmar hi?</string>
+    <string name="report_what_happened">I tih tawh?</string>
+    <string name="report_how_bad">I hriatna a hriat lo?</string>
+    <string name="report_describe">I hriatna a hriatna</string>
+    <string name="report_describe_helper">Hindi, English emaw mix a lo thawn. System chu a hriat a, traffic a hriatna a hriat a.</string>
+    <string name="report_describe_error">I hriat a ni tawh a, i hriatna a lo thawn.</string>
+    <string name="report_blocks">Traffic a hriat lo.</string>
+    <string name="report_clearance">Hriatna a hriat (i hriat chuan)</string>
+    <string name="report_save">Report a hriat</string>
+    <string name="report_save_hint">Phone a hriat a, signal a awm chuan thawn a ni.</string>
+    <string name="report_need_location">GPS a thleng</string>
+    <string name="report_sent">Report thawn</string>
+    <string name="report_saved_offline">Hriat a. Signal a awm chuan thawn a ni.</string>
+    <string name="verify_title">Chhawpui hriat tur</string>
+    <string name="verify_empty">Kan lo hriat lo</string>
+    <string name="verify_confirm">Hriat</string>
+    <string name="verify_reject">Thil tih lo</string>
+    <string name="common_retry">Hman hnu</string>
+    <string name="common_back">Zawng</string>
+    <string name="notif_title">Hriatna</string>
+    <string name="notif_mark_all">Zirlaite hriat tur</string>
+    <string name="notif_show_unread">Hriat lohna</string>
+    <string name="notif_show_all">Zirlaite hriat</string>
+    <string name="notif_all_read">Hriat a awm</string>
+    <string name="notif_showing">%1$d hriat</string>
+    <string name="notif_empty">Kan lo hriat lo</string>
+    <string name="notif_empty_unread">Zawng zawk hriat</string>
+    <string name="notif_open">Hriatna</string>
+    <string name="voice_speak_report">Report tihna hman a, thawn a tih</string>
+    <string name="voice_speak_hint">%1$s ah tih. Tap a, i hriat tur a thlir.</string>
+    <string name="voice_speak_fallback">%1$s hian voice lo. %2$s ah hriat a ni.</string>
+    <string name="voice_unavailable">Phone hi voice input lo</string>
+    <string name="voice_prompt">I hriat tur a thlir</string>
+    <string name="voice_nothing_heard">Zawng a hriat lo. Hriat tur a daw.</string>
+    <string name="voice_read_aloud">Thlir a hriat</string>
+    <string name="voice_stop_reading">Thiam</string>
+    <string name="voice_no_tts">Phone hi %1$s a thlir a hriat lo</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d hriat lo</item>
+        <item quantity="other">%1$d hriat lo</item>
+    </plurals>
+</resources>

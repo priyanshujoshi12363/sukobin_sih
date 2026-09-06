@@ -265,4 +265,5 @@ You carry parcels along the road you were already travelling. While you drive, y
     <string name="home_speak_sub">Photo and a few words in your own language</string>
     <string name="home_report_form">Or fill in the form instead</string>
     <string name="speak_waiting_location">Waiting for a GPS fix.</string>
+    <string name="settings_language">Language</string>
 </resources>

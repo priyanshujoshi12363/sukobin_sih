@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Kokborok. Machine translated, then checked for safe format
+  specifiers and valid XML. Needs a native speaker's review before this
+  ships to real officers and drivers.
+
+  84 of 84 strings translated; the rest fall
+  back to English rather than showing a bad guess.
+
+  Regenerate with tools/translateStrings.js, app officer, language kok.
+-->
+<resources>
+    <string name="app_name">Sukobin Officer</string>
+    <string name="splash_tagline">Road access, seen from the ground</string>
+    <string name="splash_status_verify">Checking your sign-in</string>
+    <string name="splash_status_offline">Connection nai, offline</string>
+    <string name="splash_status_syncing">Sending saved reports</string>
+    <string name="login_title">Field officer sign-in</string>
+    <string name="login_sub">Use the mobile number registered with your department.</string>
+    <string name="login_phone_hint">10-digit mobile number</string>
+    <string name="login_continue">Bwrwi</string>
+    <string name="login_footnote">Only registered officers of PWD, Disaster Management, District Administration, BRO and NHIDCL can sign in.</string>
+    <string name="otp_title">Enter the code</string>
+    <string name="otp_verify">Phaywi</string>
+    <string name="register_title">Register as an officer</string>
+    <string name="register_sub">Tell us what you cover so you only see the roads you are responsible for.</string>
+    <string name="register_name">Mwsak</string>
+    <string name="register_employee">Employee ID (optional)</string>
+    <string name="register_designation">Designation (optional)</string>
+    <string name="register_department">Department</string>
+    <string name="register_level">You cover a</string>
+    <string name="register_district">District</string>
+    <string name="register_state">State</string>
+    <string name="register_language">Language for alerts</string>
+    <string name="register_submit">Account create</string>
+    <string name="tab_home">Overview</string>
+    <string name="tab_roads">Roads</string>
+    <string name="tab_forecast">Forecast</string>
+    <string name="tab_profile">You</string>
+    <string name="report_road">Report</string>
+    <string name="home_alerts">What needs attention</string>
+    <string name="home_no_alerts">Nothing needs your attention right now.</string>
+    <string name="roads_search">Search a road</string>
+    <string name="roads_empty">No roads match this filter.</string>
+    <string name="forecast_empty">Mwswi thangwi 3 dinwi khangwi nwi.</string>
+    <string name="forecast_model">Mwswi thangwi kothoma bangwi.</string>
+    <string name="profile_reports">Nangni report</string>
+    <string name="profile_no_reports">Nangni report thangwi nwi.</string>
+    <string name="profile_sign_out">Logout</string>
+    <string name="profile_sync">Bisi thangwi</string>
+    <string name="report_title">Fieldni report</string>
+    <string name="report_finding_location">Nangni location thangwi…</string>
+    <string name="report_update_location">Location thangwi</string>
+    <string name="report_try_again">Bisi thangwi</string>
+    <string name="report_looking_for_roads">Road thangwi nangni…</string>
+    <string name="report_no_roads_near">30 kmwi road nwi. Report save bangwi.</string>
+    <string name="report_offline_road_hint">Signal nwi. Road send thangwi bangwi.</string>
+    <string name="report_road_distance">%1$s nangni thangwi</string>
+    <string name="report_which_road">Road thang?</string>
+    <string name="report_what_happened">Mwswi thangwi?</string>
+    <string name="report_how_bad">Kothoma khangwi?</string>
+    <string name="report_describe">Nangni bisi thangwi.</string>
+    <string name="report_describe_helper">Hindi, English ba mixwi likha. System read bangwi traffic effect thangwi.</string>
+    <string name="report_describe_error">Bisi thangwi mwswi nangni thangwi.</string>
+    <string name="report_blocks">Traffic thangwi nwi.</string>
+    <string name="report_clearance">Khangwi hour (nangni thangwi).</string>
+    <string name="report_save">Report save</string>
+    <string name="report_save_hint">Phonewi save bangwi, signal thangwi send bangwi.</string>
+    <string name="report_need_location">GPS fix barwra</string>
+    <string name="report_sent">Report send</string>
+    <string name="report_saved_offline">Save bangwi. Signal thangwi send bangwi.</string>
+    <string name="verify_title">Rokh bwrwi</string>
+    <string name="verify_empty">Mwswi nwi nang.</string>
+    <string name="verify_confirm">Bwrwi</string>
+    <string name="verify_reject">Nai</string>
+    <string name="common_retry">Bwrwi thang</string>
+    <string name="common_back">Bai</string>
+    <string name="notif_title">Bwrwi</string>
+    <string name="notif_mark_all">Bwrwi thangwi</string>
+    <string name="notif_show_unread">Nai bwrwi</string>
+    <string name="notif_show_all">Bwrwi thangwi</string>
+    <string name="notif_all_read">Nang bwrwi thang</string>
+    <string name="notif_showing">%1$d shown</string>
+    <string name="notif_empty">Mwswi nwi.</string>
+    <string name="notif_empty_unread">Nang bwrwi thangwi.</string>
+    <string name="notif_open">Bwrwi</string>
+    <string name="voice_speak_report">Report thangwi kothoma thangwi</string>
+    <string name="voice_speak_hint">%1$s ha kothoma. Tap ha bisi bwrwi.</string>
+    <string name="voice_speak_fallback">%1$s phone bwkha voice no. %2$s ha listen.</string>
+    <string name="voice_unavailable">Phone bwkha voice input no.</string>
+    <string name="voice_prompt">Bisi bwrwi.</string>
+    <string name="voice_nothing_heard">Kothoma no. Bwrwi.</string>
+    <string name="voice_read_aloud">Read aloud</string>
+    <string name="voice_stop_reading">Stop</string>
+    <string name="voice_no_tts">Phone %1$s thangwi read no.</string>
+    <plurals name="notif_unread">
+        <item quantity="one">%1$d nai bwrwi</item>
+        <item quantity="other">%1$d nai bwrwi</item>
+    </plurals>
+</resources>

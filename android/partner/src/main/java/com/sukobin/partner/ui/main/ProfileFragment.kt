@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.sukobin.core.net.ApiResult
+import com.sukobin.core.ui.LanguagePicker
 import com.sukobin.core.net.Partner
 import com.sukobin.core.net.Session
 import com.sukobin.core.net.apiCall
@@ -58,6 +59,13 @@ class ProfileFragment : Fragment() {
         b.rowSafety.setOnClickListener { showSafety() }
         b.rowHelp.setOnClickListener { showHelp() }
         b.rowAbout.setOnClickListener { showAbout() }
+        b.languageValue.text = LanguagePicker.nameOf(Session.language)
+        b.rowLanguage.setOnClickListener {
+            // Applying the locale recreates the activity, so this is
+            // the last thing that runs on this instance.
+            LanguagePicker.show(requireContext())
+        }
+
         b.rowSignOut.setOnClickListener { confirmSignOut() }
 
         b.historyValue.setText(R.string.profile_history_value)

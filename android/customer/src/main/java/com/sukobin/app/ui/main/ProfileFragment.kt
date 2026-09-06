@@ -12,6 +12,7 @@ import com.sukobin.app.R
 import com.sukobin.app.databinding.FragmentProfileBinding
 import com.sukobin.app.ui.auth.WelcomeActivity
 import com.sukobin.core.net.ApiResult
+import com.sukobin.core.ui.LanguagePicker
 import com.sukobin.core.net.Session
 import com.sukobin.core.net.UserProfile
 import com.sukobin.core.net.apiCall
@@ -43,6 +44,13 @@ class ProfileFragment : Fragment() {
         b.rowParcels.setOnClickListener {
             (activity as? MainActivity)?.selectTab(R.id.tab_parcel)
         }
+        b.languageValue.text = LanguagePicker.nameOf(Session.language)
+        b.rowLanguage.setOnClickListener {
+            // Applying the locale recreates the activity, so this is
+            // the last thing that runs on this instance.
+            LanguagePicker.show(requireContext())
+        }
+
         b.rowSignOut.setOnClickListener { confirmSignOut() }
 
         loadProfile()
