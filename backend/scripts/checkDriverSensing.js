@@ -124,8 +124,8 @@ async function main() {
   if (cond.data?.warnings?.length) {
     console.log("\n  what the driver would see");
     for (const w of cond.data.warnings.slice(0, 4)) {
-      console.log(`    [${w.level.padEnd(7)}] ${w.title}`);
-      console.log(`              ${w.detail}`);
+      console.log(`    [${w.level.padEnd(7)}] ${w.road}`);
+      console.log(`              ${w.text}`);
     }
   }
 

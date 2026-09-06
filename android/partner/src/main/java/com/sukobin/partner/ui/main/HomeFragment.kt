@@ -55,7 +55,6 @@ class HomeFragment : Fragment() {
     private val selected = linkedSetOf<String>()
     private var jobs: List<DeliveryJob> = emptyList()
 
-    private var suggestJob: Job? = null
     private var busy = false
 
     // Built eagerly: registerForActivityResult throws if it is created after
@@ -255,17 +254,42 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * Tapping a town from the dropdown used to clear the town that had just been
+     * tapped. AutoCompleteTextView writes the chosen label into the field itself
+     * before it calls the click listener, and that write runs the TextWatcher,
+     * which cleared the pick. Then this listener set the same text again and ran
+     * the watcher a second time, clearing it again for good. The field showed
+     * the right town while fromTown and toTown were both null, so Find parcels
+     * kept answering "pick both a start and a destination".
+     *
+     * The watcher now only forgets a town when the driver has actually changed
+     * the text away from it, and typing a town's full name works without ever
+     * opening the dropdown.
+     */
     private fun wireAutocomplete(view: AutoCompleteTextView, onPick: (Town?) -> Unit) {
         val towns = mutableListOf<Town>()
         val listAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line)
         view.setAdapter(listAdapter)
 
+        var picked: Town? = null
+        var suggest: Job? = null
+
+        fun keep(town: Town?) {
+            picked = town
+            onPick(town)
+        }
+
         view.setOnItemClickListener { _, _, position, _ ->
-            towns.getOrNull(position)?.let {
-                onPick(it)
-                view.setText(it.label)
-                view.dismissDropDown()
-            }
+            val town = towns.getOrNull(position) ?: return@setOnItemClickListener
+            keep(town)
+            // The field already holds the label; writing it again would only
+            // fire the watcher a second time.
+            if (view.text.toString() != town.label) view.setText(town.label)
+            view.setSelection(view.text.length)
+            // The write that preceded this listener started a fresh lookup.
+            suggest?.cancel()
+            view.dismissDropDown()
         }
 
         view.addTextChangedListener(object : TextWatcher {
@@ -273,11 +297,13 @@ class HomeFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, a: Int, c: Int, d: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val q = s?.toString()?.trim().orEmpty()
-                onPick(null)
+
+                if (picked != null && picked?.label == q) return
+                if (picked != null) keep(null)
                 if (q.length < 2) return
 
-                suggestJob?.cancel()
-                suggestJob = viewLifecycleOwner.lifecycleScope.launch {
+                suggest?.cancel()
+                suggest = viewLifecycleOwner.lifecycleScope.launch {
                     delay(220)
                     when (val r = apiCall { partnerPlaces(q) }) {
                         is ApiResult.Ok -> {
@@ -292,6 +318,15 @@ class HomeFragment : Fragment() {
                             listAdapter.clear()
                             listAdapter.addAll(towns.map { it.label })
                             listAdapter.notifyDataSetChanged()
+
+                            // Typed the name in full? Take it, no tap needed.
+                            val exact = towns.firstOrNull { it.label.equals(q, ignoreCase = true) }
+                            if (exact != null) {
+                                keep(exact)
+                                view.dismissDropDown()
+                                return@launch
+                            }
+
                             if (towns.isNotEmpty() && view.hasFocus()) view.showDropDown()
                         }
 
