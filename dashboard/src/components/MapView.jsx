@@ -97,6 +97,13 @@ export default function MapView({
   const map = useRef(null);
   const ready = useRef(false);
 
+  // The map's load event waits on the basemap coming over the network, while
+  // the API answers in milliseconds. Everything that arrived in that window
+  // used to be dropped on the floor, leaving an empty map until the 60-second
+  // poll happened to fire again. Hold it here instead and flush it on load.
+  const pending = useRef(new Map());
+  const colorRef = useRef(colorBy);
+
   useEffect(() => {
     if (map.current) return;
 
@@ -211,6 +218,17 @@ export default function MapView({
 
       ready.current = true;
 
+      // Reachable from the console during development, for checking what the
+      // map actually holds when the screen and the data disagree.
+      if (import.meta.env.DEV) window.__sukobinMap = m;
+
+      for (const [id, data] of pending.current) m.getSource(id)?.setData(data);
+      pending.current.clear();
+
+      const expr = paintFor(colorRef.current);
+      m.setPaintProperty("segments-line", "line-color", expr);
+      m.setPaintProperty("segments-glow", "line-color", expr);
+
       m.on("click", "segments-line", (e) => {
         const f = e.features?.[0];
         if (!f) return;
@@ -314,24 +332,30 @@ export default function MapView({
   }, [routeLine]);
 
   useEffect(() => {
+    colorRef.current = colorBy;
     if (!ready.current || !map.current) return;
-    const expr =
-      colorBy === "risk"
-        ? riskExpression
-        : colorBy === "forecast"
-        ? forecastExpression
-        : statusExpression;
+    const expr = paintFor(colorBy);
     map.current.setPaintProperty("segments-line", "line-color", expr);
     map.current.setPaintProperty("segments-glow", "line-color", expr);
   }, [colorBy]);
 
   function apply(id, data) {
-    if (!ready.current || !map.current) return;
+    const payload = data || empty();
+    if (!ready.current || !map.current) {
+      pending.current.set(id, payload);
+      return;
+    }
     const src = map.current.getSource(id);
-    if (src) src.setData(data || empty());
+    if (src) src.setData(payload);
   }
 
   return <div className="map" ref={container} />;
+}
+
+function paintFor(mode) {
+  if (mode === "risk") return riskExpression;
+  if (mode === "forecast") return forecastExpression;
+  return statusExpression;
 }
 
 function empty() {
