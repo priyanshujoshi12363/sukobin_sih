@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language lus.
@@ -34,7 +34,7 @@
     <string name="login_sub">Mobile number a hriatna a lo login</string>
     <string name="login_phone_label">Mobile Number</string>
     <string name="login_phone_hint">Mobile number i tih</string>
-    <string name="login_cta">OTP a thlawn</string>
+    <string name="login_cta">OTP thawn</string>
     <string name="login_no_account">Driver thar?</string>
     <string name="login_register_link">Register</string>
     <string name="login_error_phone">10-digit phone number i tih</string>
@@ -103,9 +103,9 @@
     <string name="profile_capacity">Hriatna</string>
     <string name="profile_sign_out">Log out</string>
     <string name="profile_sign_out_confirm">Sukobin Partner in a hriat lo?</string>
-    <string name="history_title">Hriatna thilri</string>
+    <string name="history_title">Delivery hriatna</string>
     <string name="history_empty">Hriatna awm lo</string>
-    <string name="hazard_title">Hazard a report</string>
+    <string name="hazard_title">Hazard report</string>
     <string name="hazard_back">Zawng</string>
     <string name="hazard_where">IN HENNA</string>
     <string name="hazard_what">I hriat a ni?</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS hriat lo</string>
     <string name="hazard_need_location">Report tur hian thil hming permission a ngai</string>
     <string name="hazard_refresh">Thlawn</string>
-    <string name="hazard_matching_road">Road a hmu a…</string>
+    <string name="hazard_matching_road">Road a hmu…</string>
     <string name="hazard_road_unknown">Road a hriat lo</string>
     <string name="hazard_road_offline">Signal lo - road a hmu a ni a, report thawn a ni</string>
     <string name="home_report_hazard">Road ah hazard report</string>
@@ -236,6 +236,19 @@ I parcel a hriat a, road a hriat a. I drive a, phone hi platform a hriatna road 
     <string name="home_speak_sub">Photo leh thil tih</string>
     <string name="home_report_form">Form a fill</string>
     <string name="speak_waiting_location">GPS a thleng</string>
+    <string name="settings_language">Zawng</string>
+    <string name="hazard_chip_landslide">Landslide</string>
+    <string name="hazard_chip_flood">Thla</string>
+    <string name="hazard_chip_tree">Thlawn thleng</string>
+    <string name="hazard_chip_damage">Hlawh a tlu</string>
+    <string name="hazard_chip_snow">Thlawn/Thla</string>
+    <string name="hazard_chip_accident">Accident</string>
+    <string name="trip_stat_earned">THLUN</string>
+    <string name="trip_stat_stops_left">THLA THLENG</string>
+    <string name="trip_stat_delivered">THLUN</string>
+    <string name="trip_pickup_fallback">Pickup point</string>
+    <string name="trip_drop_fallback">Drop point</string>
+    <string name="route_slow_going">Slow a ni %1$s</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d stop a hmel</item>
         <item quantity="other">%1$d stop a hmel</item>

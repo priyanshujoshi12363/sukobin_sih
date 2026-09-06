@@ -266,4 +266,20 @@ You carry parcels along the road you were already travelling. While you drive, y
     <string name="home_report_form">Or fill in the form instead</string>
     <string name="speak_waiting_location">Waiting for a GPS fix.</string>
     <string name="settings_language">Language</string>
+
+    <string name="hazard_chip_landslide">Landslide</string>
+    <string name="hazard_chip_flood">Flooding</string>
+    <string name="hazard_chip_tree">Tree down</string>
+    <string name="hazard_chip_damage">Road broken</string>
+    <string name="hazard_chip_snow">Snow or ice</string>
+    <string name="hazard_chip_accident">Accident</string>
+
+    <string name="trip_stat_earned">EARNED</string>
+    <string name="trip_stat_stops_left">STOPS LEFT</string>
+    <string name="trip_stat_delivered">DELIVERED</string>
+
+    <string name="trip_pickup_fallback">Pickup point</string>
+    <string name="trip_drop_fallback">Drop point</string>
+
+    <string name="route_slow_going">Slow going on %1$s</string>
 </resources>

@@ -81,11 +81,20 @@ export function pct(v) {
   return v === null || v === undefined ? "-" : `${Math.round(v * 100)}%`;
 }
 
-export function timeAgo(iso) {
+// `t` is optional so a caller without a translator still gets English rather
+// than a crash; every screen that shows this passes one.
+export function timeAgo(iso, t) {
   if (!iso) return "";
+  const say = t || ((k, v) => ({
+    time_just_now: "just now",
+    time_min_ago: `${v?.n}m ago`,
+    time_hour_ago: `${v?.n}h ago`,
+    time_day_ago: `${v?.n}d ago`,
+  })[k]);
+
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return "just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
+  if (s < 60) return say("time_just_now");
+  if (s < 3600) return say("time_min_ago", { n: Math.floor(s / 60) });
+  if (s < 86400) return say("time_hour_ago", { n: Math.floor(s / 3600) });
+  return say("time_day_ago", { n: Math.floor(s / 86400) });
 }

@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language as.
@@ -21,7 +21,7 @@
     <string name="welcome_feature_parcel">পাৰ্সেল পঠাওক</string>
     <string name="welcome_feature_track">লাইভ ট্ৰেকিং</string>
     <string name="welcome_feature_eco">ইকো-বন্ধু</string>
-    <string name="welcome_create_account">একাউণ্ট বনাওক</string>
+    <string name="welcome_create_account">একাউণ্ট সৃষ্টি</string>
     <string name="welcome_login">লগইন</string>
     <string name="welcome_terms_prefix">অগ্ৰসর হ\'লে, আপুনি আমাৰ</string>
     <string name="welcome_terms_link">চেবাৰ শর্ত আৰু গোপনীয়তা নীতি</string>
@@ -115,11 +115,11 @@
     <string name="cart_clear_confirm">কাৰ্টৰ সকলো বস্তু আঁতৰাব নেকি?</string>
     <string name="checkout_title">চেকআউট</string>
     <string name="checkout_deliver_to">ডেলিভাৰী স্থান</string>
-    <string name="checkout_change">পৰিবৰ্তন</string>
+    <string name="checkout_change">বদল</string>
     <string name="checkout_items">অর্ডাৰ আইটেম</string>
     <string name="checkout_platform_fee">প্লেটফৰ্ম ফী</string>
     <string name="checkout_payable">মুঠ পেমেন্ট</string>
-    <string name="checkout_pay">UPIৰে পেমেন্ট</string>
+    <string name="checkout_pay">UPIৰে পেমেন্ট কৰক</string>
     <string name="checkout_upi">UPI, কাৰ্ড আৰু ৱালেট</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm আৰু যিকোনো UPI এপ</string>
     <string name="pay_cancelled">পেমেন্ট বাতিল। পুনৰ চেষ্টা কৰিব পাৰে।</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">গ্ৰাহকৰ নাম আৰু ফোন যোগ কৰক।</string>
     <string name="parcel_created">পাৰ্সেল অনুৰোধ কৰা হল</string>
     <string name="parcel_created_body">%1$s
-মুঠ %2$s, উঠা সময় দিয়া।
+মুঠ %2$s, ল\'ডত দিয়া।
 
-আপোনাৰ পথত যাত্ৰা কৰা অংশীদাৰক মেলাম।</string>
+আপোনাৰ পথত যাত্ৰা কৰা অংশীদাৰ লগত মিলাম।</string>
     <string name="parcel_done">সম্পূৰ্ণ</string>
     <string name="pick_title">স্থান বাছনি</string>
     <string name="pick_my_location">মোৰ স্থান</string>
@@ -188,4 +188,5 @@
     <string name="demo_pay_confirm">পেমেন্ট নিশ্চিত কৰক</string>
     <string name="demo_pay_notice">ডেমো মোড - ধন স্থানান্তৰ নহয়</string>
     <string name="demo_pay_select_method">পেমেন্ট পদ্ধতি বাছনি কৰক</string>
+    <string name="settings_language">ভাষা</string>
 </resources>

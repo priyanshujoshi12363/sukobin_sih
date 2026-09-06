@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language lus.
@@ -72,7 +72,7 @@
     <string name="home_search_hint">Product hriat</string>
     <string name="home_categories">Categories</string>
     <string name="home_all_products">Product zawng</string>
-    <string name="home_deliver_to">Deliver to</string>
+    <string name="home_deliver_to">Thlawnna hnenah</string>
     <string name="home_set_location">Thiltih a hman</string>
     <string name="cart_title">Cart</string>
     <string name="cart_empty">Cart awm lo</string>
@@ -90,7 +90,7 @@
     <string name="profile_verified">Account hriat</string>
     <string name="profile_saved_address">Address a chhuak</string>
     <string name="profile_my_orders">Ka order</string>
-    <string name="profile_my_parcels">Ka parcel</string>
+    <string name="profile_my_parcels">Ka parcels</string>
     <string name="profile_sign_out">Log out</string>
     <string name="profile_sign_out_confirm">Sukobin atangin log out?</string>
     <string name="profile_no_address">Delivery address a hriat</string>
@@ -115,11 +115,11 @@
     <string name="cart_clear_confirm">Cart atang zawng zawng a lo thlang?</string>
     <string name="checkout_title">Thlung</string>
     <string name="checkout_deliver_to">Thlawnna hnenah</string>
-    <string name="checkout_change">Hlawh</string>
+    <string name="checkout_change">Hman</string>
     <string name="checkout_items">Order thu</string>
     <string name="checkout_platform_fee">Platform fee</string>
     <string name="checkout_payable">Zawng a hriat</string>
-    <string name="checkout_pay">UPI in hriat</string>
+    <string name="checkout_pay">UPI hnenah a hriat</string>
     <string name="checkout_upi">UPI, card leh wallet</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm leh UPI app</string>
     <string name="pay_cancelled">Payment a thleng. Hriat turin hriat theih ang.</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">Receiver hming leh phone a add rawh.</string>
     <string name="parcel_created">Parcel a hmu</string>
     <string name="parcel_created_body">%1$s
-Zawng %2$s, pickup-ah a hriat.
+Total %2$s, pick-up-ah hriat tur.
 
-Kan route a hriat tur partner a hmu thei ang.</string>
+Kan route-a thleng partner a hmu thei ang.</string>
     <string name="parcel_done">Hmu</string>
     <string name="pick_title">Hmun a thlir</string>
     <string name="pick_my_location">Ka hmun</string>
@@ -188,4 +188,5 @@ Kan route a hriat tur partner a hmu thei ang.</string>
     <string name="demo_pay_confirm">Payment a hriat</string>
     <string name="demo_pay_notice">Demo mode - ngaihnawm a awm lo</string>
     <string name="demo_pay_select_method">Payment method a thlir</string>
+    <string name="settings_language">Zawng</string>
 </resources>

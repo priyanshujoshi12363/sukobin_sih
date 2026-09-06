@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language kok.
@@ -34,7 +34,7 @@
     <string name="login_sub">Nangni register mobile number-rok login phra</string>
     <string name="login_phone_label">Mobile number</string>
     <string name="login_phone_hint">Mobile number likha</string>
-    <string name="login_cta">Send OTP</string>
+    <string name="login_cta">OTP phay</string>
     <string name="login_no_account">New driver?</string>
     <string name="login_register_link">Register</string>
     <string name="login_error_phone">Valid 10-digit phone number likha</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS location haijak no.</string>
     <string name="hazard_need_location">Report bwkha location permission dwi.</string>
     <string name="hazard_refresh">Refresh</string>
-    <string name="hazard_matching_road">Road haijak…</string>
+    <string name="hazard_matching_road">Road find bwla…</string>
     <string name="hazard_road_unknown">Road bwkha thangwi no.</string>
     <string name="hazard_road_offline">Signal no - road thangwi sendwi haijak</string>
     <string name="home_report_hazard">Road hazard report phra</string>
@@ -230,6 +230,19 @@
     <string name="home_speak_sub">Photo arwi kothoma</string>
     <string name="home_report_form">Form barwra</string>
     <string name="speak_waiting_location">GPS fix barwra</string>
+    <string name="settings_language">Bwkha</string>
+    <string name="hazard_chip_landslide">Landslide</string>
+    <string name="hazard_chip_flood">Flood</string>
+    <string name="hazard_chip_tree">Tree down</string>
+    <string name="hazard_chip_damage">Road broken</string>
+    <string name="hazard_chip_snow">Snow or ice</string>
+    <string name="hazard_chip_accident">Accident</string>
+    <string name="trip_stat_earned">EARNED</string>
+    <string name="trip_stat_stops_left">STOPS LEFT</string>
+    <string name="trip_stat_delivered">DELIVERED</string>
+    <string name="trip_pickup_fallback">Pickup point</string>
+    <string name="trip_drop_fallback">Drop point</string>
+    <string name="route_slow_going">Slow going on %1$s</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d stop left</item>
         <item quantity="other">%1$d stops left</item>

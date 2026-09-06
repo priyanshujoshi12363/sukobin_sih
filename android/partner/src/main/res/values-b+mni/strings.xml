@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language mni.
@@ -103,9 +103,9 @@
     <string name="profile_capacity">ক্ষমতা</string>
     <string name="profile_sign_out">বাহির হৌ</string>
     <string name="profile_sign_out_confirm">Sukobin পার্টনারদা সাইন আউট তৌবা?</string>
-    <string name="history_title">ডেলিভারী হিস্টরি</string>
+    <string name="history_title">ডেলিভারি ইতিহাস</string>
     <string name="history_empty">ডেলিভারী নথিংদা নই</string>
-    <string name="hazard_title">হ্যাজার্ড রিপোর্ট তৌ</string>
+    <string name="hazard_title">হ্যাজার্ড রিপোর্ট</string>
     <string name="hazard_back">ফেরৎ</string>
     <string name="hazard_where">নুংগা থৌরিবগী জায়গা</string>
     <string name="hazard_what">নুংগা মখা হৌরিব?</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS লোকে ঠিক তৌবা নাপা</string>
     <string name="hazard_need_location">রিপোর্ট তৌবগী লোকে পারমিশন দরকার</string>
     <string name="hazard_refresh">রিফ্রেশ</string>
-    <string name="hazard_matching_road">রোড স্যাঁই…</string>
+    <string name="hazard_matching_road">রোড তৌই…</string>
     <string name="hazard_road_unknown">রোড চেনা নাপা</string>
     <string name="hazard_road_offline">সিগনাল নাপা - পাঠা হৌরিবগী রোড পরবগী</string>
     <string name="home_report_hazard">রোডগী হ্যাজার্ড রিপোর্ট তৌ</string>
@@ -236,6 +236,19 @@
     <string name="home_speak_sub">ফটো আর কিচু শব্দ নিনগা লোই</string>
     <string name="home_report_form">অথবা ফর্ম তৌ</string>
     <string name="speak_waiting_location">GPS সিগন্যাল অইদা</string>
+    <string name="settings_language">ইলং</string>
+    <string name="hazard_chip_landslide">ল্যান্ডস্লাইড</string>
+    <string name="hazard_chip_flood">বন্যা</string>
+    <string name="hazard_chip_tree">গাছ থমক্লে</string>
+    <string name="hazard_chip_damage">রোড ভাঙল</string>
+    <string name="hazard_chip_snow">বরফ নো হিম</string>
+    <string name="hazard_chip_accident">দুর্ঘটনা</string>
+    <string name="trip_stat_earned">আর্নড</string>
+    <string name="trip_stat_stops_left">বাকি থাম্বা</string>
+    <string name="trip_stat_delivered">ডেলিভারড</string>
+    <string name="trip_pickup_fallback">উঠা স্থান</string>
+    <string name="trip_drop_fallback">ড্রপ পয়েন্ট</string>
+    <string name="route_slow_going">%1$s-এ ধীর গতি</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d স্টপ থৌবা</item>
         <item quantity="other">%1$d স্টপ থৌবা</item>

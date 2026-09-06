@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  160 of 160 strings translated; the rest fall
+  161 of 161 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app mart, language mni.
@@ -63,7 +63,7 @@
     <string name="home_my_products">মোর পণ্য</string>
     <string name="home_no_products">পণ্য লিস্ট নই</string>
     <string name="home_stock">স্টক %1$d</string>
-    <string name="home_qty_sold">%1$d বিক্রি</string>
+    <string name="home_qty_sold">%1$d বিক্রি তৌরে</string>
     <string name="common_retry">পুনরায় চেষ্টা</string>
     <string name="common_error">কিছু ভুল হইল</string>
     <string name="common_signout">বাহির হৌ</string>
@@ -77,9 +77,9 @@
     <string name="home_new_orders">মঞ্জুরি তৌবগি হৌরোই</string>
     <string name="home_see_orders">দেখো</string>
     <string name="home_recent_orders">সাম্পল অর্ডার</string>
-    <string name="home_no_orders">অর্ডার নই.</string>
+    <string name="home_no_orders">অর্ডার নত্তে।</string>
     <string name="home_add_product">পণ্য তৌ</string>
-    <string name="home_manage_shop">আপনাক্কু শপ</string>
+    <string name="home_manage_shop">নিংদা দোকান</string>
     <string name="orders_empty">কিছু নই.</string>
     <string name="products_search">পণ্য সর্চ</string>
     <string name="products_out_of_stock">স্টক নই</string>
@@ -123,7 +123,7 @@
     <string name="order_accept">অর্ডার লৌইবু</string>
     <string name="order_start_packing">প্যাকিং তৌবা</string>
     <string name="order_ready">পিকআপগী রেডি</string>
-    <string name="order_cancel">ক্যানসেল</string>
+    <string name="order_cancel">বাতিল</string>
     <string name="order_no_action">এই অর্ডার %1$s অমসু। তুংদা হৌবগী নত্তে।</string>
     <string name="order_confirm_cancel">কাস্টমারদা হৌরিবগি, পেমেন্ট রিফান্ড তৌগনি।</string>
     <string name="order_confirm_ready">এইদা গী ড্রাইভার পিকআপ তৌরিবা হৌইব।</string>
@@ -167,6 +167,7 @@
     <string name="common_cancel">বাতিল</string>
     <string name="common_save">সংরক্ষণ</string>
     <string name="common_back">ফেরৎ</string>
+    <string name="settings_language">ইলং</string>
     <plurals name="orders_count">
         <item quantity="one">%1$d অর্ডার</item>
         <item quantity="other">%1$d অর্ডার</item>

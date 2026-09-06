@@ -416,7 +416,8 @@ class HomeFragment : Fragment() {
 
         if (!degraded.isNullOrEmpty()) {
             b.routeWarning.visibility = View.VISIBLE
-            b.routeWarning.text = "Slow going on ${degraded.joinToString(", ")}"
+            b.routeWarning.text =
+                getString(R.string.route_slow_going, degraded.joinToString(", "))
         } else {
             b.routeWarning.visibility = View.GONE
         }

@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language nag.
@@ -34,7 +34,7 @@
     <string name="login_sub">Registered mobile number dia login kor</string>
     <string name="login_phone_label">Mobile Number</string>
     <string name="login_phone_hint">Mobile number dibo</string>
-    <string name="login_cta">OTP send kor</string>
+    <string name="login_cta">OTP dia</string>
     <string name="login_no_account">Nua driver?</string>
     <string name="login_register_link">Register</string>
     <string name="login_error_phone">Valid 10-digit phone number dibo</string>
@@ -105,7 +105,7 @@
     <string name="profile_sign_out_confirm">Sukobin Partner log out koribo?</string>
     <string name="history_title">Delivery history</string>
     <string name="history_empty">Kuno delivery nai</string>
-    <string name="hazard_title">Hazard report kor</string>
+    <string name="hazard_title">Report hazard</string>
     <string name="hazard_back">Firi</string>
     <string name="hazard_where">APUNI KOT ASE</string>
     <string name="hazard_what">Ki paise?</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS fix nupai</string>
     <string name="hazard_need_location">Report koribo location permission lagibo</string>
     <string name="hazard_refresh">Refresh</string>
-    <string name="hazard_matching_road">Road khojibo…</string>
+    <string name="hazard_matching_road">Road khoj ase…</string>
     <string name="hazard_road_unknown">Road identify nupai</string>
     <string name="hazard_road_offline">Signal nai - road send hoile determine hoibo</string>
     <string name="home_report_hazard">Road ot hazard report kor</string>
@@ -236,6 +236,19 @@ Apuni road te parcel dhori. Drive korar somoy phone platform ke koi road open as
     <string name="home_speak_sub">Photo aru kichu kotha tumar bhasha te</string>
     <string name="home_report_form">Naile form fill kor</string>
     <string name="speak_waiting_location">GPS fix lagibo wait kor</string>
+    <string name="settings_language">Bhasa</string>
+    <string name="hazard_chip_landslide">Landslide</string>
+    <string name="hazard_chip_flood">Flooding</string>
+    <string name="hazard_chip_tree">Gachh giri gese</string>
+    <string name="hazard_chip_damage">Road bhanga ase</string>
+    <string name="hazard_chip_snow">Snow ba baraf</string>
+    <string name="hazard_chip_accident">Accident</string>
+    <string name="trip_stat_earned">PAISA</string>
+    <string name="trip_stat_stops_left">BAKI STOP</string>
+    <string name="trip_stat_delivered">DELIVERED</string>
+    <string name="trip_pickup_fallback">Pickup point</string>
+    <string name="trip_drop_fallback">Drop point</string>
+    <string name="route_slow_going">Slow hoise %1$s</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d stop baki ase</item>
         <item quantity="other">%1$d stop baki ase</item>

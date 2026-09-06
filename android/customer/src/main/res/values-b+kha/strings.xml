@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language kha.
@@ -21,15 +21,15 @@
     <string name="welcome_feature_parcel">Shong parcels</string>
     <string name="welcome_feature_track">Live Tracking</string>
     <string name="welcome_feature_eco">Eco‑Friendly</string>
-    <string name="welcome_create_account">Shna ka account</string>
-    <string name="welcome_login">Log in</string>
+    <string name="welcome_create_account">Shna Akawnt</string>
+    <string name="welcome_login">Iaid</string>
     <string name="welcome_terms_prefix">Ha ka jing leit shakhmat, phi shim ka</string>
     <string name="welcome_terms_link">Terms of Service &amp; Privacy Policy</string>
     <string name="login_title">Kumno iathuh</string>
     <string name="login_sub">Log in ban pyrkhat Sukobin</string>
     <string name="login_phone_label">Nong phone</string>
     <string name="login_phone_hint">Iathuh nong phone</string>
-    <string name="login_cta">Log in</string>
+    <string name="login_cta">Iaid</string>
     <string name="login_no_account">Mei don account?</string>
     <string name="login_register_link">Register</string>
     <string name="login_terms">Ha ka jing leit shakhmat, phi shim ka Terms of Service bad Privacy Policy jong Sukobin</string>
@@ -72,7 +72,7 @@
     <string name="home_search_hint">Jah jingpynshai</string>
     <string name="home_categories">Kategor</string>
     <string name="home_all_products">Jingproduk ba shimet</string>
-    <string name="home_deliver_to">Syntiew sha</string>
+    <string name="home_deliver_to">Kynmaw sha</string>
     <string name="home_set_location">Set lad jong phi</string>
     <string name="cart_title">Ka jingkha</string>
     <string name="cart_empty">Ka jingkha ym don</string>
@@ -90,7 +90,7 @@
     <string name="profile_verified">Account iakren</string>
     <string name="profile_saved_address">Address kynthup</string>
     <string name="profile_my_orders">Order jong nga</string>
-    <string name="profile_my_parcels">Parcel jong nga</string>
+    <string name="profile_my_parcels">Parcels nga</string>
     <string name="profile_sign_out">Logout</string>
     <string name="profile_sign_out_confirm">Logout na Sukobin?</string>
     <string name="profile_no_address">Kynthup address</string>
@@ -119,7 +119,7 @@
     <string name="checkout_items">Ki jingkren</string>
     <string name="checkout_platform_fee">Ngiap platform</string>
     <string name="checkout_payable">Kum ba don</string>
-    <string name="checkout_pay">Pynïaid UPI</string>
+    <string name="checkout_pay">Pynïaid da UPI</string>
     <string name="checkout_upi">UPI, ki kard bad ki wallet</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm bad katto katto UPI app</string>
     <string name="pay_cancelled">Pynïaid la lah. Me sngew ban pyrkhat shimet.</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">Pynïaid kyrteng bad phone.</string>
     <string name="parcel_created">Parcel ka la kham</string>
     <string name="parcel_created_body">%1$s
-Kum total %2$s, pynïaid ha pickup.
+Kum total %2$s, iathuh ha ka jingpynshong.
 
-Ngim iathuh partner ba leit ha ka jingtrei jong phi.</string>
+Ngim iathuh partner ba leit ha ka jingthoh jong phi.</string>
     <string name="parcel_done">Shong</string>
     <string name="pick_title">Jingdon</string>
     <string name="pick_my_location">Jingdon nga</string>
@@ -188,4 +188,5 @@ Ngim iathuh partner ba leit ha ka jingtrei jong phi.</string>
     <string name="demo_pay_confirm">Thmut jingpynïaid</string>
     <string name="demo_pay_notice">Demo mode - ym don jingpynïaid</string>
     <string name="demo_pay_select_method">Pynïaid ka jingial jingpynïaid</string>
+    <string name="settings_language">Kyrkym</string>
 </resources>

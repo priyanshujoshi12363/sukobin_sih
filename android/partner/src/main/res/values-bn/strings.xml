@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language bn.
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS পাওয়া যায়নি</string>
     <string name="hazard_need_location">রিপোর্টের জন্য অবস্থান অনুমতি দরকার</string>
     <string name="hazard_refresh">রিফ্রেশ</string>
-    <string name="hazard_matching_road">রাস্তাটি খুঁজছে…</string>
+    <string name="hazard_matching_road">রাস্তাটি খুঁজছি…</string>
     <string name="hazard_road_unknown">রাস্তাটি সনাক্ত হয়নি</string>
     <string name="hazard_road_offline">সিগন্যাল নেই - পাঠানোর পর রাস্তাটি নির্ধারিত হবে</string>
     <string name="home_report_hazard">রাস্তায় বিপদ রিপোর্ট করুন</string>
@@ -236,6 +236,19 @@
     <string name="home_speak_sub">ফটো ও আপনার ভাষায় কয়েকটি শব্দ</string>
     <string name="home_report_form">অথবা ফর্মটি পূরণ করুন</string>
     <string name="speak_waiting_location">GPS সিগন্যালের জন্য অপেক্ষা</string>
+    <string name="settings_language">ভাষা</string>
+    <string name="hazard_chip_landslide">ভূমিধস</string>
+    <string name="hazard_chip_flood">বন্যা</string>
+    <string name="hazard_chip_tree">গাছ পড়ে</string>
+    <string name="hazard_chip_damage">রাস্তায় ক্ষতি</string>
+    <string name="hazard_chip_snow">বরফ বা হিম</string>
+    <string name="hazard_chip_accident">দুর্ঘটনা</string>
+    <string name="trip_stat_earned">উপার্জিত</string>
+    <string name="trip_stat_stops_left">বাকি স্টপ</string>
+    <string name="trip_stat_delivered">ডেলিভার্ড</string>
+    <string name="trip_pickup_fallback">পিকআপ পয়েন্ট</string>
+    <string name="trip_drop_fallback">ড্রপ পয়েন্ট</string>
+    <string name="route_slow_going">%1$s-এ ধীর গতি</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d স্টপ বাকি</item>
         <item quantity="other">%1$d স্টপ বাকি</item>

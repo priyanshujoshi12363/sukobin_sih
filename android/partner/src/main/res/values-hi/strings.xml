@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language hi.
@@ -236,6 +236,19 @@
     <string name="home_speak_sub">फ़ोटो और अपनी भाषा में कुछ शब्द</string>
     <string name="home_report_form">या फ़ॉर्म भरें</string>
     <string name="speak_waiting_location">GPS सिग्नल का इंतज़ार।</string>
+    <string name="settings_language">भाषा</string>
+    <string name="hazard_chip_landslide">भूस्खलन</string>
+    <string name="hazard_chip_flood">बाढ़</string>
+    <string name="hazard_chip_tree">गिरा पेड़</string>
+    <string name="hazard_chip_damage">सड़क टूटी</string>
+    <string name="hazard_chip_snow">बर्फ या बर्फ़ीला</string>
+    <string name="hazard_chip_accident">दुर्घटना</string>
+    <string name="trip_stat_earned">कमाया</string>
+    <string name="trip_stat_stops_left">बचे स्टॉप</string>
+    <string name="trip_stat_delivered">डिलीवर किया</string>
+    <string name="trip_pickup_fallback">पिकअप पॉइंट</string>
+    <string name="trip_drop_fallback">ड्रॉप पॉइंट</string>
+    <string name="route_slow_going">%1$s पर धीमा</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d स्टॉप बचा</item>
         <item quantity="other">%1$d स्टॉप बचे</item>

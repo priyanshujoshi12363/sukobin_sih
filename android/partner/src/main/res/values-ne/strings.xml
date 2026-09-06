@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language ne.
@@ -34,7 +34,7 @@
     <string name="login_sub">दर्ता मोबाइल नम्बरले लगइन गर्नुहोस्</string>
     <string name="login_phone_label">मोबाइल नम्बर</string>
     <string name="login_phone_hint">मोबाइल नम्बर टाइप गर्नुहोस्</string>
-    <string name="login_cta">OTP पठाउनुहोस्</string>
+    <string name="login_cta">OTP पठाउनु</string>
     <string name="login_no_account">नयाँ चालक?</string>
     <string name="login_register_link">दर्ता गर्नुहोस्</string>
     <string name="login_error_phone">कृपया वैध १० अङ्कको फोन नम्बर टाइप गर्नुहोस्</string>
@@ -236,6 +236,19 @@
     <string name="home_speak_sub">फोटो र केही शब्द तपाईंको भाषामा</string>
     <string name="home_report_form">वा फारम भर्नुहोस्</string>
     <string name="speak_waiting_location">GPS सिग्नलको पर्खाइमा।</string>
+    <string name="settings_language">भाषा</string>
+    <string name="hazard_chip_landslide">भूस्खलन</string>
+    <string name="hazard_chip_flood">बाढी</string>
+    <string name="hazard_chip_tree">गिरेको रूख</string>
+    <string name="hazard_chip_damage">सडक बिग्रियो</string>
+    <string name="hazard_chip_snow">हिम वा बरफ</string>
+    <string name="hazard_chip_accident">दुर्घटना</string>
+    <string name="trip_stat_earned">कमाइ</string>
+    <string name="trip_stat_stops_left">बाँकी स्टपहरू</string>
+    <string name="trip_stat_delivered">वितरित</string>
+    <string name="trip_pickup_fallback">उठाउने बिन्दु</string>
+    <string name="trip_drop_fallback">छोड्ने बिन्दु</string>
+    <string name="route_slow_going">%1$s मा धिमा</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d बिचौली बाँकी</item>
         <item quantity="other">%1$d बिचौलीहरू बाँकी</item>

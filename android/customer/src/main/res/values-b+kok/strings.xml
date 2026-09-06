@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language kok.
@@ -21,7 +21,7 @@
     <string name="welcome_feature_parcel">Parcel phairwi</string>
     <string name="welcome_feature_track">Live tracking</string>
     <string name="welcome_feature_eco">Eco-friendly</string>
-    <string name="welcome_create_account">Account create</string>
+    <string name="welcome_create_account">Account khang</string>
     <string name="welcome_login">Login</string>
     <string name="welcome_terms_prefix">Continue korla, nangra agree</string>
     <string name="welcome_terms_link">Terms of Service &amp; Privacy Policy</string>
@@ -72,7 +72,7 @@
     <string name="home_search_hint">Product bwkha search</string>
     <string name="home_categories">Categories</string>
     <string name="home_all_products">Bwkha product</string>
-    <string name="home_deliver_to">Deliver haijak</string>
+    <string name="home_deliver_to">Delivery-ani</string>
     <string name="home_set_location">Thangwi set haijak</string>
     <string name="cart_title">Nangwi cart</string>
     <string name="cart_empty">Nangwi cart khali</string>
@@ -90,7 +90,7 @@
     <string name="profile_verified">Account verify</string>
     <string name="profile_saved_address">Address save</string>
     <string name="profile_my_orders">Mwi order</string>
-    <string name="profile_my_parcels">Mwi parcel</string>
+    <string name="profile_my_parcels">Mwi parcels</string>
     <string name="profile_sign_out">Logout</string>
     <string name="profile_sign_out_confirm">Sukobin thei logout?</string>
     <string name="profile_no_address">Delivery address add</string>
@@ -115,11 +115,11 @@
     <string name="cart_clear_confirm">Cart-ani bwsak item thangwi?</string>
     <string name="checkout_title">Checkout</string>
     <string name="checkout_deliver_to">Delivery-ani</string>
-    <string name="checkout_change">Thangwi</string>
+    <string name="checkout_change">Change</string>
     <string name="checkout_items">Order item</string>
     <string name="checkout_platform_fee">Platform fee</string>
     <string name="checkout_payable">Total payable</string>
-    <string name="checkout_pay">UPI-ani pay</string>
+    <string name="checkout_pay">UPI ar pay</string>
     <string name="checkout_upi">UPI, card ar wallet</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm ar any UPI app</string>
     <string name="pay_cancelled">Payment thangwi. Nwng bisi try kor.</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">Receiver name ar phone add.</string>
     <string name="parcel_created">Parcel request ok</string>
     <string name="parcel_created_body">%1$s
-Total %2$s, pickup-a pay.
+Total %2$s, pickup-ani pay.
 
-Route-a partner match korbo.</string>
+Amra route-ani partner match koribo.</string>
     <string name="parcel_done">Bwswi</string>
     <string name="pick_title">Location pick</string>
     <string name="pick_my_location">Ang location</string>
@@ -188,4 +188,5 @@ Route-a partner match korbo.</string>
     <string name="demo_pay_confirm">Payment confirm</string>
     <string name="demo_pay_notice">Demo mode - money transfer nai</string>
     <string name="demo_pay_select_method">Payment method pick</string>
+    <string name="settings_language">Bwkha</string>
 </resources>

@@ -14,6 +14,7 @@ import {
   StatCards,
 } from "./components/Panels";
 import { api, STATUS_COLOR, RISK_COLOR, timeAgo } from "./api";
+import { LangContext, LANGS, makeT, rememberLang, storedLang } from "./i18n";
 
 const REFRESH_MS = 60_000;
 
@@ -30,6 +31,9 @@ export default function App() {
   const [bottlenecks, setBottlenecks] = useState(null);
   const [forecast, setForecast] = useState(null);
   const [coverage, setCoverage] = useState(null);
+
+  const [lang, setLang] = useState(storedLang);
+  const t = makeT(lang);
 
   const [colorBy, setColorBy] = useState("status");
   const [showVehicles, setShowVehicles] = useState(true);
@@ -52,7 +56,7 @@ export default function App() {
         api.segments(),
         api.districts(),
         api.corridors(),
-        api.liveAlerts(),
+        api.liveAlerts(lang),
         api.vehicles(),
         api.consignments(),
         api.incidents(30),
@@ -78,7 +82,7 @@ export default function App() {
     } catch (e) {
       setError(e.message);
     }
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     load();
@@ -116,11 +120,12 @@ export default function App() {
   }
 
   return (
+    <LangContext.Provider value={lang}>
     <div className="app">
       <header className="topbar">
         <div className="brand">
           <h1>Sukobin</h1>
-          <span>NER Logistics Accessibility Intelligence</span>
+          <span>{t("app_tagline")}</span>
         </div>
 
         <div className="topbar-spacer" />
@@ -133,24 +138,40 @@ export default function App() {
 
         <span className="pill">
           <span className={`dot ${lastSync ? "live" : ""}`} />
-          {lastSync ? `synced ${timeAgo(lastSync)}` : "connecting"}
+          {lastSync ? t("top_synced", { when: timeAgo(lastSync, t) }) : t("top_connecting")}
         </span>
 
+        <select
+          className="btn lang-select"
+          value={lang}
+          aria-label={t("top_language")}
+          onChange={(e) => {
+            setLang(e.target.value);
+            rememberLang(e.target.value);
+          }}
+        >
+          {LANGS.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.name}
+            </option>
+          ))}
+        </select>
+
         <button className="btn" onClick={runRefresh} disabled={refreshing}>
-          {refreshing ? "Recomputing..." : "Recompute risk"}
+          {refreshing ? t("top_recomputing") : t("top_recompute")}
         </button>
       </header>
 
       <div className="layout">
         <aside className="rail">
           <div className="section">
-            <h2>Network status</h2>
+            <h2>{t("section_network")}</h2>
             <StatCards overview={overview} />
           </div>
 
           {overview && (
             <Distribution
-              title="Accessibility"
+              title={t("section_accessibility")}
               data={overview.accessibility}
               colors={STATUS_COLOR}
             />
@@ -158,7 +179,7 @@ export default function App() {
 
           {overview && (
             <Distribution
-              title="Disruption risk (predicted)"
+              title={t("section_risk")}
               data={{
                 low: overview.risk.low,
                 moderate: overview.risk.moderate,
@@ -176,13 +197,13 @@ export default function App() {
               className={`tab ${leftTab === "districts" ? "on" : ""}`}
               onClick={() => setLeftTab("districts")}
             >
-              Districts
+              {t("tab_districts")}
             </button>
             <button
               className={`tab ${leftTab === "corridors" ? "on" : ""}`}
               onClick={() => setLeftTab("corridors")}
             >
-              Corridors
+              {t("tab_corridors")}
             </button>
           </div>
 
@@ -211,48 +232,48 @@ export default function App() {
               className={`toggle ${colorBy === "status" ? "on" : ""}`}
               onClick={() => setColorBy("status")}
             >
-              Status
+              {t("map_mode_status")}
             </button>
             <button
               className={`toggle ${colorBy === "risk" ? "on" : ""}`}
               onClick={() => setColorBy("risk")}
             >
-              Risk now
+              {t("map_mode_risk")}
             </button>
             <button
               className={`toggle ${colorBy === "forecast" ? "on" : ""}`}
               onClick={() => setColorBy("forecast")}
             >
-              3-day forecast
+              {t("map_mode_forecast")}
             </button>
             <button
               className={`toggle ${showVehicles ? "on" : ""}`}
               onClick={() => setShowVehicles((v) => !v)}
             >
-              Vehicles
+              {t("map_layer_vehicles")}
             </button>
             <button
               className={`toggle ${showIncidents ? "on" : ""}`}
               onClick={() => setShowIncidents((v) => !v)}
             >
-              Incidents
+              {t("map_layer_incidents")}
             </button>
           </div>
 
           <div className="legend">
             <h3>
               {colorBy === "risk"
-                ? "Risk right now"
+                ? t("legend_risk")
                 : colorBy === "forecast"
-                ? "Chance of closing in 3 days"
-                : "Accessibility"}
+                ? t("legend_forecast")
+                : t("legend_accessibility")}
             </h3>
             {colorBy === "forecast"
               ? [
-                  ["under 15%", "#22c55e"],
-                  ["15-35%", "#eab308"],
-                  ["35-60%", "#f97316"],
-                  ["over 60%", "#ef4444"],
+                  [t("legend_under_15"), "#22c55e"],
+                  [t("legend_15_35"), "#eab308"],
+                  [t("legend_35_60"), "#f97316"],
+                  [t("legend_over_60"), "#ef4444"],
                 ].map(([k, c]) => (
                   <div className="legend-row" key={k}>
                     <span className="legend-swatch" style={{ background: c }} />
@@ -261,10 +282,10 @@ export default function App() {
                 ))
               : colorBy === "risk"
               ? [
-                  ["Low", "#22c55e"],
-                  ["Moderate", "#eab308"],
-                  ["High", "#f97316"],
-                  ["Severe", "#ef4444"],
+                  [t("risk_low"), "#22c55e"],
+                  [t("risk_moderate"), "#eab308"],
+                  [t("risk_high"), "#f97316"],
+                  [t("risk_severe"), "#ef4444"],
                 ].map(([k, c]) => (
                   <div className="legend-row" key={k}>
                     <span className="legend-swatch" style={{ background: c }} />
@@ -274,7 +295,7 @@ export default function App() {
               : Object.entries(STATUS_COLOR).map(([k, c]) => (
                   <div className="legend-row" key={k}>
                     <span className="legend-swatch" style={{ background: c }} />
-                    {k.toLowerCase()}
+                    {t(`status_${k.toLowerCase()}`)}
                   </div>
                 ))}
             <div className="legend-row" style={{ marginTop: 7, color: "#5f7268" }}>
@@ -285,20 +306,27 @@ export default function App() {
                     "repeating-linear-gradient(90deg,#fff 0 2px,transparent 2px 6px)",
                 }}
               />
-              chokepoint
+              {t("legend_chokepoint")}
             </div>
           </div>
         </div>
 
         <aside className="rail right">
           <div className="tabs">
-            {["alerts", "weak points", "forecast", "route", "supplies", "emergency"].map((t) => (
+            {[
+              ["alerts", "tab_alerts"],
+              ["weak points", "tab_weak_points"],
+              ["forecast", "tab_forecast"],
+              ["route", "tab_route"],
+              ["supplies", "tab_supplies"],
+              ["emergency", "tab_emergency"],
+            ].map(([id, key]) => (
               <button
-                key={t}
-                className={`tab ${rightTab === t ? "on" : ""}`}
-                onClick={() => setRightTab(t)}
+                key={id}
+                className={`tab ${rightTab === id ? "on" : ""}`}
+                onClick={() => setRightTab(id)}
               >
-                {t[0].toUpperCase() + t.slice(1)}
+                {t(key)}
               </button>
             ))}
           </div>
@@ -316,5 +344,6 @@ export default function App() {
         </aside>
       </div>
     </div>
+    </LangContext.Provider>
   );
 }

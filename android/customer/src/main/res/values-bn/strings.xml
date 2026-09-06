@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language bn.
@@ -21,7 +21,7 @@
     <string name="welcome_feature_parcel">পার্সেল পাঠান</string>
     <string name="welcome_feature_track">লাইভ ট্র্যাকিং</string>
     <string name="welcome_feature_eco">পরিবেশবান্ধব</string>
-    <string name="welcome_create_account">অ্যাকাউন্ট তৈরি করুন</string>
+    <string name="welcome_create_account">অ্যাকাউন্ট তৈরি</string>
     <string name="welcome_login">লগইন</string>
     <string name="welcome_terms_prefix">চালিয়ে গেলে, আপনি আমাদের সাথে সম্মত হন</string>
     <string name="welcome_terms_link">সেবা শর্তাবলী ও গোপনীয়তা নীতি</string>
@@ -72,7 +72,7 @@
     <string name="home_search_hint">পণ্য অনুসন্ধান করুন</string>
     <string name="home_categories">শ্রেণী</string>
     <string name="home_all_products">সব পণ্য</string>
-    <string name="home_deliver_to">ডেলিভারির গন্তব্য</string>
+    <string name="home_deliver_to">ডেলিভারির ঠিকানা</string>
     <string name="home_set_location">আপনার অবস্থান সেট করুন</string>
     <string name="cart_title">আপনার কার্ট</string>
     <string name="cart_empty">কার্ট খালি</string>
@@ -115,7 +115,7 @@
     <string name="cart_clear_confirm">কার্টের সব আইটেম মুছে ফেলবেন?</string>
     <string name="checkout_title">চেকআউট</string>
     <string name="checkout_deliver_to">ডেলিভারির ঠিকানা</string>
-    <string name="checkout_change">বদলান</string>
+    <string name="checkout_change">পরিবর্তন</string>
     <string name="checkout_items">অর্ডার আইটেম</string>
     <string name="checkout_platform_fee">প্ল্যাটফর্ম ফি</string>
     <string name="checkout_payable">মোট পরিশোধযোগ্য</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">প্রাপকের নাম ও ফোন যোগ করুন।</string>
     <string name="parcel_created">পার্সেল অনুরোধ করা হল</string>
     <string name="parcel_created_body">%1$s
-মোট %2$s, পিকআপে পরিশোধ করুন।
+মোট %2$s, পিকআপে পরিশোধ করুন.
 
-আপনার রুটে যাত্রা করা পার্টনারের সাথে মিলিয়ে দেব।</string>
+আপনার রুটে যাওয়া পার্টনারের সঙ্গে মেলাবো।</string>
     <string name="parcel_done">সম্পন্ন</string>
     <string name="pick_title">স্থান নির্বাচন</string>
     <string name="pick_my_location">আমার অবস্থান</string>
@@ -188,4 +188,5 @@
     <string name="demo_pay_confirm">পেমেন্ট নিশ্চিত করুন</string>
     <string name="demo_pay_notice">ডেমো মোড - টাকা স্থানান্তর হয় না</string>
     <string name="demo_pay_select_method">পেমেন্ট পদ্ধতি নির্বাচন করুন</string>
+    <string name="settings_language">ভাষা</string>
 </resources>

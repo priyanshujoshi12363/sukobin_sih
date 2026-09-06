@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language nag.
@@ -72,7 +72,7 @@
     <string name="home_search_hint">Product khujibo</string>
     <string name="home_categories">Categories</string>
     <string name="home_all_products">Sob Product</string>
-    <string name="home_deliver_to">Deliver koribo</string>
+    <string name="home_deliver_to">Kothat deliver</string>
     <string name="home_set_location">Location set koribo</string>
     <string name="cart_title">Apunar Cart</string>
     <string name="cart_empty">Cart khali ase</string>
@@ -90,7 +90,7 @@
     <string name="profile_verified">Account verify hoise</string>
     <string name="profile_saved_address">Save kora address</string>
     <string name="profile_my_orders">Mor order</string>
-    <string name="profile_my_parcels">Mor parcel</string>
+    <string name="profile_my_parcels">Mor parcels</string>
     <string name="profile_sign_out">Logout</string>
     <string name="profile_sign_out_confirm">Sukobin theke logout koribo?</string>
     <string name="profile_no_address">Delivery address add kor</string>
@@ -115,11 +115,11 @@
     <string name="cart_clear_confirm">Cart pora sob item hataibo?</string>
     <string name="checkout_title">Check out</string>
     <string name="checkout_deliver_to">Kothat deliver</string>
-    <string name="checkout_change">Bodol</string>
+    <string name="checkout_change">Change kor</string>
     <string name="checkout_items">Order item</string>
     <string name="checkout_platform_fee">Platform fee</string>
     <string name="checkout_payable">Total payable</string>
-    <string name="checkout_pay">UPI diya</string>
+    <string name="checkout_pay">UPI logot pay kor</string>
     <string name="checkout_upi">UPI, card aru wallet</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm aru koi UPI app</string>
     <string name="pay_cancelled">Payment cancel hoise. Kuneu time try koribo.</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">Receiver name aru phone add kor.</string>
     <string name="parcel_created">Parcel request hoise</string>
     <string name="parcel_created_body">%1$s
-Total %2$s, pickup te pay kor.
+Total %2$s, pickup te pay koribo.
 
-Amra tumar route ot travel koribo partner match korim.</string>
+Amra tumar route te partner match korim.</string>
     <string name="parcel_done">Hoise</string>
     <string name="pick_title">Location select kor</string>
     <string name="pick_my_location">Mora location</string>
@@ -188,4 +188,5 @@ Amra tumar route ot travel koribo partner match korim.</string>
     <string name="demo_pay_confirm">Payment confirm kor</string>
     <string name="demo_pay_notice">Demo mode - money transfer no hoi</string>
     <string name="demo_pay_select_method">Payment method select kor</string>
+    <string name="settings_language">Bhasa</string>
 </resources>

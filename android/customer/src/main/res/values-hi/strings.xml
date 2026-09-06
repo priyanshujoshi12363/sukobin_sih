@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language hi.
@@ -72,7 +72,7 @@
     <string name="home_search_hint">उत्पाद खोजें</string>
     <string name="home_categories">श्रेणियाँ</string>
     <string name="home_all_products">सभी उत्पाद</string>
-    <string name="home_deliver_to">डिलिवर करें</string>
+    <string name="home_deliver_to">डिलीवर करें</string>
     <string name="home_set_location">स्थान सेट करें</string>
     <string name="cart_title">आपकी कार्ट</string>
     <string name="cart_empty">कार्ट खाली है</string>
@@ -119,7 +119,7 @@
     <string name="checkout_items">ऑर्डर आइटम</string>
     <string name="checkout_platform_fee">प्लेटफ़ॉर्म शुल्क</string>
     <string name="checkout_payable">कुल देय</string>
-    <string name="checkout_pay">UPI से भुगतान</string>
+    <string name="checkout_pay">UPI से भुगतान करें</string>
     <string name="checkout_upi">UPI, कार्ड और वॉलेट</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm और कोई भी UPI ऐप</string>
     <string name="pay_cancelled">भुगतान रद्द। फिर से कभी भी कोशिश करें।</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">प्राप्तकर्ता का नाम और फ़ोन जोड़ें।</string>
     <string name="parcel_created">पार्सल अनुरोधित</string>
     <string name="parcel_created_body">%1$s
-कुल %2$s, पिकअप पर भुगतान करें।
+कुल %2$s, पिकअप पर भुगतान करें.
 
-हम आपके मार्ग पर यात्रा करने वाले साथी से मिलाएंगे।</string>
+हम आपके मार्ग पर यात्रा करने वाले साथी को मिलाएंगे.</string>
     <string name="parcel_done">हो गया</string>
     <string name="pick_title">स्थान चुनें</string>
     <string name="pick_my_location">मेरी लोकेशन</string>
@@ -188,4 +188,5 @@
     <string name="demo_pay_confirm">भुगतान पुष्टि करें</string>
     <string name="demo_pay_notice">डेमो मोड - कोई पैसा नहीं भेजा जाएगा</string>
     <string name="demo_pay_select_method">भुगतान विधि चुनें</string>
+    <string name="settings_language">भाषा</string>
 </resources>

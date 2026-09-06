@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { STATUS_COLOR } from "../api";
+import { useT } from "../i18n";
 
 const NER_BOUNDS = [
   [87.5, 21.8],
@@ -93,6 +94,10 @@ export default function MapView({
   showIncidents,
   onSelectSegment,
 }) {
+  const t = useT();
+  const tRef = useRef(t);
+  tRef.current = t;
+
   const container = useRef(null);
   const map = useRef(null);
   const ready = useRef(false);
@@ -232,7 +237,7 @@ export default function MapView({
       m.on("click", "segments-line", (e) => {
         const f = e.features?.[0];
         if (!f) return;
-        showSegmentPopup(m, e.lngLat, f.properties);
+        showSegmentPopup(m, e.lngLat, f.properties, tRef.current);
         onSelectSegment?.(f.properties.segmentId);
       });
 
@@ -240,13 +245,14 @@ export default function MapView({
         const f = e.features?.[0];
         if (!f) return;
         const p = f.properties;
+        const t = tRef.current;
         new maplibregl.Popup({ closeButton: true })
           .setLngLat(e.lngLat)
           .setHTML(
             `<div class="popup-title">${esc(p.type)} - ${esc(p.severity)}</div>
-             <div class="popup-row"><span>District</span><b>${esc(p.district || "-")}</b></div>
-             <div class="popup-row"><span>Status</span><b>${esc(p.status)}</b></div>
-             <div class="popup-row"><span>Blocks traffic</span><b>${p.blocksTraffic === "true" || p.blocksTraffic === true ? "yes" : "no"}</b></div>
+             <div class="popup-row"><span>${esc(t("popup_district"))}</span><b>${esc(p.district || "-")}</b></div>
+             <div class="popup-row"><span>${esc(t("popup_status"))}</span><b>${esc(p.status)}</b></div>
+             <div class="popup-row"><span>${esc(t("popup_blocks_traffic"))}</span><b>${esc(t(p.blocksTraffic === "true" || p.blocksTraffic === true ? "popup_yes" : "popup_no"))}</b></div>
              ${p.description ? `<div style="margin-top:7px;color:#93a89b;line-height:1.4">${esc(p.description).slice(0, 180)}</div>` : ""}`
           )
           .addTo(m);
@@ -256,13 +262,14 @@ export default function MapView({
         const f = e.features?.[0];
         if (!f) return;
         const p = f.properties;
+        const t = tRef.current;
         new maplibregl.Popup({ closeButton: true })
           .setLngLat(e.lngLat)
           .setHTML(
-            `<div class="popup-title">${esc(p.vehicleNumber || "Vehicle")}</div>
-             <div class="popup-row"><span>Driver</span><b>${esc(p.name || "-")}</b></div>
-             <div class="popup-row"><span>Type</span><b>${esc(p.vehicleType || "-")}</b></div>
-             <div class="popup-row"><span>Status</span><b>${p.online === "true" || p.online === true ? "online" : "offline"}</b></div>`
+            `<div class="popup-title">${esc(p.vehicleNumber || t("popup_vehicle"))}</div>
+             <div class="popup-row"><span>${esc(t("popup_driver"))}</span><b>${esc(p.name || "-")}</b></div>
+             <div class="popup-row"><span>${esc(t("popup_type"))}</span><b>${esc(p.vehicleType || "-")}</b></div>
+             <div class="popup-row"><span>${esc(t("popup_status"))}</span><b>${esc(t(p.online === "true" || p.online === true ? "popup_online" : "popup_offline"))}</b></div>`
           )
           .addTo(m);
       });
@@ -366,7 +373,7 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 }
 
-function showSegmentPopup(m, lngLat, p) {
+function showSegmentPopup(m, lngLat, p, t) {
   const drivers = safeParse(p.riskDrivers);
   const top = drivers?.[0];
   const speed = p.observedSpeedKmph;
@@ -375,14 +382,14 @@ function showSegmentPopup(m, lngLat, p) {
     .setLngLat(lngLat)
     .setHTML(
       `<div class="popup-title">${esc(p.name)}</div>
-       <div class="popup-row"><span>Status</span><b style="color:${STATUS_COLOR[p.status] || "#64748b"}">${esc(p.status)}</b></div>
-       <div class="popup-row"><span>Risk</span><b>${esc(p.riskLevel)} (${Number(p.riskScore).toFixed(2)})</b></div>
-       <div class="popup-row"><span>Length</span><b>${Number(p.lengthKm).toFixed(1)} km</b></div>
-       <div class="popup-row"><span>Terrain</span><b>${esc(p.terrain)}</b></div>
-       <div class="popup-row"><span>Rain 72h</span><b>${Number(p.rain72hMm).toFixed(0)} mm</b></div>
-       ${speed ? `<div class="popup-row"><span>Observed</span><b>${speed} km/h vs ${p.baselineSpeedKmph}</b></div>` : ""}
+       <div class="popup-row"><span>${esc(t("popup_status"))}</span><b style="color:${STATUS_COLOR[p.status] || "#64748b"}">${esc(t(`status_${String(p.status).toLowerCase()}`))}</b></div>
+       <div class="popup-row"><span>${esc(t("popup_risk"))}</span><b>${esc(t(`risk_${String(p.riskLevel).toLowerCase()}`))} (${Number(p.riskScore).toFixed(2)})</b></div>
+       <div class="popup-row"><span>${esc(t("popup_length"))}</span><b>${esc(t("unit_km", { n: Number(p.lengthKm).toFixed(1) }))}</b></div>
+       <div class="popup-row"><span>${esc(t("popup_terrain"))}</span><b>${esc(p.terrain)}</b></div>
+       <div class="popup-row"><span>${esc(t("popup_rain_72h"))}</span><b>${esc(t("unit_mm", { n: Number(p.rain72hMm).toFixed(0) }))}</b></div>
+       ${speed ? `<div class="popup-row"><span>${esc(t("popup_observed"))}</span><b>${esc(t("popup_observed_vs", { speed, baseline: p.baselineSpeedKmph }))}</b></div>` : ""}
        ${p.forecastH72 !== undefined && p.forecastH72 !== null && p.forecastH72 !== "null"
-         ? `<div class="popup-row"><span>Closing risk</span><b>${fpc(p.forecastH24)} / ${fpc(p.forecastH48)} / ${fpc(p.forecastH72)}</b></div>`
+         ? `<div class="popup-row"><span>${esc(t("popup_closing_risk"))}</span><b>${fpc(p.forecastH24)} / ${fpc(p.forecastH48)} / ${fpc(p.forecastH72)}</b></div>`
          : ""}
        ${top ? `<div style="margin-top:7px;color:#93a89b;line-height:1.4">Top driver: ${esc(top.factor)} ${esc(top.detail || "")}</div>` : ""}
        ${p.statusNote ? `<div style="margin-top:6px;color:#93a89b;line-height:1.4">${esc(p.statusNote)}</div>` : ""}

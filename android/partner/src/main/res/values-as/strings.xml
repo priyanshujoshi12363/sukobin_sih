@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language as.
@@ -34,7 +34,7 @@
     <string name="login_sub">আপোনাৰ নিবন্ধিত ম\'বাইল নম্বৰৰে লগইন কৰক</string>
     <string name="login_phone_label">ম\'বাইল নম্বৰ</string>
     <string name="login_phone_hint">ম\'বাইল নম্বৰ লিখক</string>
-    <string name="login_cta">OTP পঠিয়াওক</string>
+    <string name="login_cta">OTP পঠাও</string>
     <string name="login_no_account">নতুন চালক?</string>
     <string name="login_register_link">নিবন্ধন কৰক</string>
     <string name="login_error_phone">দয়া কৰি বৈধ ১০-ডিজিট ম\'বাইল নম্বৰ লিখক</string>
@@ -105,7 +105,7 @@
     <string name="profile_sign_out_confirm">Sukobin Partner ৰ পৰা ছাইন আউট কৰিব নেকি?</string>
     <string name="history_title">ডেলিভাৰী ইতিহাস</string>
     <string name="history_empty">এতিয়ালৈ ডেলিভাৰী নাই</string>
-    <string name="hazard_title">বিপদ ৰিপোৰ্ট</string>
+    <string name="hazard_title">বিপদ ৰিপোৰ্ট কৰক</string>
     <string name="hazard_back">পিছলৈ</string>
     <string name="hazard_where">আপুনি ক\'ত</string>
     <string name="hazard_what">আপুনি কি পালে?</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">GPS স্থান পোৱা নগ\'ল</string>
     <string name="hazard_need_location">ৰিপোৰ্ট কৰিবলৈ স্থান অনুমতি প্ৰয়োজন</string>
     <string name="hazard_refresh">পুনৰ লোড</string>
-    <string name="hazard_matching_road">পথ বিচাৰি আছে…</string>
+    <string name="hazard_matching_road">পথ বিচাৰি আছোঁ…</string>
     <string name="hazard_road_unknown">পথ চিনাক্ত নহ\'ল</string>
     <string name="hazard_road_offline">সংকেত নাই - পঠিয়ালে পথ চিনাক্ত হ\'ব</string>
     <string name="home_report_hazard">পথত বিপদ ৰিপোৰ্ট কৰক</string>
@@ -236,6 +236,19 @@
     <string name="home_speak_sub">ফটো আৰু কিছু শব্দ আপোনাৰ ভাষাত</string>
     <string name="home_report_form">বা ফৰ্ম ভৰ্তি কৰক</string>
     <string name="speak_waiting_location">GPS সংকেতৰ বাবে অপেক্ষা</string>
+    <string name="settings_language">ভাষা</string>
+    <string name="hazard_chip_landslide">ভূমি স্লাইড</string>
+    <string name="hazard_chip_flood">বন্যা</string>
+    <string name="hazard_chip_tree">গছ পঢ়ি গ\'ল</string>
+    <string name="hazard_chip_damage">পথ ভাঙি গ\'ল</string>
+    <string name="hazard_chip_snow">হিম বা বৰফ</string>
+    <string name="hazard_chip_accident">দুৰ্ঘটনা</string>
+    <string name="trip_stat_earned">উপাৰ্জিত</string>
+    <string name="trip_stat_stops_left">বাকি থমক</string>
+    <string name="trip_stat_delivered">ডেলিভাৰ্ড</string>
+    <string name="trip_pickup_fallback">উঠা স্থান</string>
+    <string name="trip_drop_fallback">ড্রপ পইণ্ট</string>
+    <string name="route_slow_going">%1$s ত ধীৰ গতি</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d ষ্টপ বাকী</item>
         <item quantity="other">%1$d ষ্টপ বাকী</item>

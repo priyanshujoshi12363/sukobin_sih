@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language ne.
@@ -72,7 +72,7 @@
     <string name="home_search_hint">उत्पादन खोज्नुहोस्</string>
     <string name="home_categories">श्रेणीहरू</string>
     <string name="home_all_products">सबै उत्पादनहरू</string>
-    <string name="home_deliver_to">डेलिभर गर्ने ठेगाना</string>
+    <string name="home_deliver_to">डेलिभर</string>
     <string name="home_set_location">स्थान सेट गर्नुहोस्</string>
     <string name="cart_title">तपाईंको कार्ट</string>
     <string name="cart_empty">कार्ट खाली छ</string>
@@ -119,7 +119,7 @@
     <string name="checkout_items">अर्डर वस्तुहरू</string>
     <string name="checkout_platform_fee">प्लेटफर्म शुल्क</string>
     <string name="checkout_payable">कुल देय</string>
-    <string name="checkout_pay">UPI बाट तिर्नु</string>
+    <string name="checkout_pay">UPI संग तिर्नुहोस्</string>
     <string name="checkout_upi">UPI, कार्ड र वालेट</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm र कुनै पनि UPI एप</string>
     <string name="pay_cancelled">भुक्तानी रद्द। फेरि प्रयास गर्न सक्नुहुन्छ।</string>
@@ -173,7 +173,7 @@
     <string name="parcel_created_body">%1$s
 कुल %2$s, उठाउँदा तिर्नुहोस्।
 
-हामी तपाईंको मार्गमा यात्रा गर्ने साझेदारसँग मिलाउँछौं।</string>
+हामी तपाईंको मार्गमा यात्रा गर्ने साझेदार मिलाउनेछौं।</string>
     <string name="parcel_done">पूरा</string>
     <string name="pick_title">स्थान चयन गर्नुहोस्</string>
     <string name="pick_my_location">मेरो स्थान</string>
@@ -188,4 +188,5 @@
     <string name="demo_pay_confirm">भुक्तानी पुष्टि गर्नुहोस्</string>
     <string name="demo_pay_notice">डेमो मोड - पैसा स्थानान्तरण हुँदैन</string>
     <string name="demo_pay_select_method">भुक्तानी विधि चयन गर्नुहोस्</string>
+    <string name="settings_language">भाषा</string>
 </resources>

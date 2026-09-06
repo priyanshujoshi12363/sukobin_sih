@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  223 of 223 strings translated; the rest fall
+  236 of 236 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app partner, language kha.
@@ -34,7 +34,7 @@
     <string name="login_sub">Log in da ka number mobile ba la register</string>
     <string name="login_phone_label">Nong phone</string>
     <string name="login_phone_hint">Iathuh nong phone</string>
-    <string name="login_cta">Thoh OTP</string>
+    <string name="login_cta">Thuh OTP</string>
     <string name="login_no_account">Driver thymmai?</string>
     <string name="login_register_link">Register</string>
     <string name="login_error_phone">Iathuh nong phone 10‑digit ba sah</string>
@@ -103,9 +103,9 @@
     <string name="profile_capacity">Kum</string>
     <string name="profile_sign_out">Logout</string>
     <string name="profile_sign_out_confirm">Logout na Sukobin Partner?</string>
-    <string name="history_title">Jial jingmut</string>
+    <string name="history_title">Jingmyntoi</string>
     <string name="history_empty">Um jial yet</string>
-    <string name="hazard_title">Pynïaid kyrmen</string>
+    <string name="hazard_title">Pynïaid hazard</string>
     <string name="hazard_back">Kynduh</string>
     <string name="hazard_where">HAI KA JAIT</string>
     <string name="hazard_what">Mei ka jingphah?</string>
@@ -120,7 +120,7 @@
     <string name="hazard_no_fix">Um lah iathuh GPS</string>
     <string name="hazard_need_location">Kaei jingkyrmen jingdon ban thuh jingthoh</string>
     <string name="hazard_refresh">Thaw</string>
-    <string name="hazard_matching_road">Iathuh ka shnong…</string>
+    <string name="hazard_matching_road">Iathuh sngap…</string>
     <string name="hazard_road_unknown">Ka shnong kam iathuh</string>
     <string name="hazard_road_offline">Um signal - ka shnong kin iathuh haba thuh</string>
     <string name="home_report_hazard">Thuh jingeh ha ka shnong</string>
@@ -236,6 +236,19 @@ Phi pynïaid ki parcel ha ka jingthoh ba phi la leit. Hynrei phi jied, telefon j
     <string name="home_speak_sub">Photo bad katai shimet ha ka kyrteng phi</string>
     <string name="home_report_form">Ne iathuh ha form</string>
     <string name="speak_waiting_location">Iathuh GPS</string>
+    <string name="settings_language">Kyrkym</string>
+    <string name="hazard_chip_landslide">Landslide</string>
+    <string name="hazard_chip_flood">Flood</string>
+    <string name="hazard_chip_tree">Tyngka ieng</string>
+    <string name="hazard_chip_damage">Shong ka long</string>
+    <string name="hazard_chip_snow">Snow ne ice</string>
+    <string name="hazard_chip_accident">Accident</string>
+    <string name="trip_stat_earned">LA IATHU</string>
+    <string name="trip_stat_stops_left">Jingeh shong</string>
+    <string name="trip_stat_delivered">LA IATHUH</string>
+    <string name="trip_pickup_fallback">Jingthmu</string>
+    <string name="trip_drop_fallback">Jingthuh</string>
+    <string name="route_slow_going">Shong shimet ha %1$s</string>
     <plurals name="home_stops_left">
         <item quantity="one">%1$d stop iathuh</item>
         <item quantity="other">%1$d stop iathuh</item>

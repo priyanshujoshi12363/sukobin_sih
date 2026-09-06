@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  160 of 160 strings translated; the rest fall
+  161 of 161 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app mart, language kha.
@@ -63,7 +63,7 @@
     <string name="home_my_products">Products jong nga</string>
     <string name="home_no_products">Product kam iathuh</string>
     <string name="home_stock">Stock %1$d</string>
-    <string name="home_qty_sold">%1$d iathuh</string>
+    <string name="home_qty_sold">%1$d la iasoh</string>
     <string name="common_retry">Jait sha</string>
     <string name="common_error">U shong</string>
     <string name="common_signout">Logout</string>
@@ -77,9 +77,9 @@
     <string name="home_new_orders">khmih ban iakren</string>
     <string name="home_see_orders">Kiew</string>
     <string name="home_recent_orders">Orders ba shimet</string>
-    <string name="home_no_orders">Orders kam iakren.</string>
+    <string name="home_no_orders">Ym don kum yet.</string>
     <string name="home_add_product">Pynïaid product</string>
-    <string name="home_manage_shop">Shop jong phi</string>
+    <string name="home_manage_shop">Ka seng jong phi</string>
     <string name="orders_empty">Ym don jingeh.</string>
     <string name="products_search">Pynïaid product jong phi</string>
     <string name="products_out_of_stock">Kum stock shisien</string>
@@ -167,6 +167,7 @@
     <string name="common_cancel">Tham</string>
     <string name="common_save">Pynïoh</string>
     <string name="common_back">Kynduh</string>
+    <string name="settings_language">Kyrkym</string>
     <plurals name="orders_count">
         <item quantity="one">%1$d order</item>
         <item quantity="other">%1$d orders</item>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "../i18n";
 import {
   STATUS_COLOR,
   RISK_COLOR,
@@ -9,21 +10,22 @@ import {
 } from "../api";
 
 export function StatCards({ overview }) {
-  if (!overview) return <div className="empty">Loading network...</div>;
+  const t = useT();
+  if (!overview) return <div className="empty">{t("loading_network")}</div>;
 
   const { network, logistics, accessibility, incidents } = overview;
   const cutOff = accessibility.blocked;
 
   return (
     <div className="stat-grid">
-      <Stat v={network.segments} k="road segments" />
-      <Stat v={`${network.lengthKm.toLocaleString()}`} k="km monitored" />
-      <Stat v={network.districts} k="districts" />
-      <Stat v={network.chokepoints} k="chokepoints" />
-      <Stat v={cutOff} k="blocked now" tone={cutOff > 0 ? "#ef4444" : undefined} />
-      <Stat v={incidents.open} k="open incidents" tone={incidents.open > 0 ? "#f97316" : undefined} />
-      <Stat v={logistics.vehiclesOnline} k="vehicles online" />
-      <Stat v={logistics.inTransit} k="consignments moving" />
+      <Stat v={network.segments} k={t("stat_segments")} />
+      <Stat v={`${network.lengthKm.toLocaleString()}`} k={t("stat_km")} />
+      <Stat v={network.districts} k={t("stat_districts")} />
+      <Stat v={network.chokepoints} k={t("stat_chokepoints")} />
+      <Stat v={cutOff} k={t("stat_blocked_now")} tone={cutOff > 0 ? "#ef4444" : undefined} />
+      <Stat v={incidents.open} k={t("stat_open_incidents")} tone={incidents.open > 0 ? "#f97316" : undefined} />
+      <Stat v={logistics.vehiclesOnline} k={t("stat_vehicles_online")} />
+      <Stat v={logistics.inTransit} k={t("stat_consignments")} />
     </div>
   );
 }
@@ -40,14 +42,17 @@ function Stat({ v, k, tone }) {
 }
 
 export function Distribution({ title, data, colors }) {
+  const t = useT();
   const total = Object.values(data).reduce((a, b) => a + b, 0) || 1;
+  // "open", "severe" and friends are bucket names from the API, not prose.
+  const label = (k) => t(`${["low", "moderate", "high", "severe"].includes(k) ? "risk" : "status"}_${k}`);
   return (
     <div className="section">
       <h2>{title}</h2>
       <div className="bars">
         {Object.entries(data).map(([k, n]) => (
           <div className="bar-row" key={k}>
-            <span style={{ color: colors[k.toUpperCase()] || "#93a89b" }}>{k}</span>
+            <span style={{ color: colors[k.toUpperCase()] || "#93a89b" }}>{label(k)}</span>
             <div className="bar-track">
               <div
                 className="bar-fill"
@@ -66,7 +71,8 @@ export function Distribution({ title, data, colors }) {
 }
 
 export function AlertsPanel({ alerts, onSelect }) {
-  if (!alerts?.length) return <div className="empty">No active alerts.</div>;
+  const t = useT();
+  if (!alerts?.length) return <div className="empty">{t("alerts_empty")}</div>;
 
   return (
     <div>
@@ -80,10 +86,10 @@ export function AlertsPanel({ alerts, onSelect }) {
           <div className="t">{a.title}</div>
           {a.detail && <div className="d">{a.detail}</div>}
           <div className="m">
-            <span className="tag">{a.kind.replace(/_/g, " ")}</span>
+            <span className="tag">{t(`kind_${String(a.kind).toLowerCase()}`)}</span>
             <span>{a.source}</span>
             {a.districts?.length > 0 && <span>{a.districts.join(", ")}</span>}
-            <span>{timeAgo(a.at)}</span>
+            <span>{timeAgo(a.at, t)}</span>
           </div>
         </div>
       ))}
@@ -92,9 +98,10 @@ export function AlertsPanel({ alerts, onSelect }) {
 }
 
 export function DistrictTable({ districts, onSelect }) {
+  const t = useT();
   const [sort, setSort] = useState("risk");
 
-  if (!districts?.length) return <div className="empty">No district data.</div>;
+  if (!districts?.length) return <div className="empty">{t("districts_empty")}</div>;
 
   const sorted = [...districts].sort((a, b) =>
     sort === "risk" ? b.maxRisk - a.maxRisk : a.district.localeCompare(b.district)
@@ -107,23 +114,23 @@ export function DistrictTable({ districts, onSelect }) {
           className={`toggle ${sort === "risk" ? "on" : ""}`}
           onClick={() => setSort("risk")}
         >
-          by risk
+          {t("districts_sort_risk")}
         </button>
         <button
           className={`toggle ${sort === "name" ? "on" : ""}`}
           onClick={() => setSort("name")}
         >
-          A-Z
+          {t("districts_sort_az")}
         </button>
       </div>
       <div className="scroll-body">
         <table>
           <thead>
             <tr>
-              <th>District</th>
-              <th>Connectivity</th>
-              <th className="num">Risk</th>
-              <th className="num">km</th>
+              <th>{t("col_district")}</th>
+              <th>{t("col_connectivity")}</th>
+              <th className="num">{t("col_risk")}</th>
+              <th className="num">{t("col_km")}</th>
             </tr>
           </thead>
           <tbody>
@@ -165,7 +172,8 @@ function riskTone(score) {
 }
 
 export function CorridorList({ corridors, onSelect }) {
-  if (!corridors?.length) return <div className="empty">No corridors.</div>;
+  const t = useT();
+  if (!corridors?.length) return <div className="empty">{t("corridors_empty")}</div>;
 
   return (
     <div className="scroll-body">
@@ -179,18 +187,20 @@ export function CorridorList({ corridors, onSelect }) {
           <div className="t">{c.highway} · {c.name.replace(/^NH-\d+\s/, "")}</div>
           <div className="m" style={{ marginTop: 5 }}>
             <span className="tag">{c.terrain}</span>
-            <span>{c.lengthKm} km</span>
-            <span>{c.segments} segments</span>
-            <span style={{ color: riskTone(c.maxRisk) }}>risk {c.maxRisk.toFixed(2)}</span>
+            <span>{t("unit_km", { n: c.lengthKm })}</span>
+            <span>{t("corridor_segments", { n: c.segments })}</span>
+            <span style={{ color: riskTone(c.maxRisk) }}>
+              {t("corridor_risk", { score: c.maxRisk.toFixed(2) })}
+            </span>
           </div>
           {c.lifelineFor?.length > 0 && (
             <div className="d" style={{ marginTop: 5 }}>
-              Lifeline for {c.lifelineFor.join(", ")}
+              {t("corridor_lifeline_for", { regions: c.lifelineFor.join(", ") })}
             </div>
           )}
           {!c.passable && (
             <div className="d" style={{ color: "#ef4444", fontWeight: 600 }}>
-              {c.blocked} segment{c.blocked > 1 ? "s" : ""} blocked
+              {t(c.blocked === 1 ? "corridor_blocked_one" : "corridor_blocked_many", { n: c.blocked })}
             </div>
           )}
         </div>
@@ -200,17 +210,18 @@ export function CorridorList({ corridors, onSelect }) {
 }
 
 export function ConsignmentTable({ consignments }) {
-  if (!consignments?.length) return <div className="empty">Nothing in transit.</div>;
+  const t = useT();
+  if (!consignments?.length) return <div className="empty">{t("supplies_empty")}</div>;
 
   return (
     <div className="scroll-body">
       <table>
         <thead>
           <tr>
-            <th>Ref</th>
-            <th>Commodity</th>
-            <th>Route</th>
-            <th>Status</th>
+            <th>{t("col_ref")}</th>
+            <th>{t("col_commodity")}</th>
+            <th>{t("col_route")}</th>
+            <th>{t("col_status")}</th>
           </tr>
         </thead>
         <tbody>
@@ -221,7 +232,7 @@ export function ConsignmentTable({ consignments }) {
                 {c.commodity}
                 {c.essential && (
                   <span className="tag" style={{ marginLeft: 5, color: "#4ade80" }}>
-                    essential
+                    {t("supplies_essential")}
                   </span>
                 )}
               </td>
@@ -240,6 +251,7 @@ export function ConsignmentTable({ consignments }) {
 }
 
 export function RoutePlanner({ onPlan, plan, planning }) {
+  const t = useT();
   const [from, setFrom] = useState("Dimapur");
   const [to, setTo] = useState("Imphal");
 
@@ -249,13 +261,13 @@ export function RoutePlanner({ onPlan, plan, planning }) {
         className="field"
         value={from}
         onChange={(e) => setFrom(e.target.value)}
-        placeholder="From (e.g. Guwahati)"
+        placeholder={t("route_from_placeholder")}
       />
       <input
         className="field"
         value={to}
         onChange={(e) => setTo(e.target.value)}
-        placeholder="To (e.g. Imphal)"
+        placeholder={t("route_to_placeholder")}
       />
       <button
         className="btn primary"
@@ -263,7 +275,7 @@ export function RoutePlanner({ onPlan, plan, planning }) {
         disabled={planning}
         onClick={() => onPlan(from, to)}
       >
-        {planning ? "Planning..." : "Plan route"}
+        {planning ? t("route_planning") : t("route_plan")}
       </button>
 
       {plan && (
@@ -271,7 +283,7 @@ export function RoutePlanner({ onPlan, plan, planning }) {
           {!plan.found ? (
             <>
               <div style={{ color: "#ef4444", fontWeight: 700, marginBottom: 6 }}>
-                No passable route
+                {t("route_none")}
               </div>
               {plan.rejected?.map((r, i) => (
                 <div key={i} style={{ color: "#93a89b", lineHeight: 1.45 }}>
@@ -282,15 +294,15 @@ export function RoutePlanner({ onPlan, plan, planning }) {
           ) : (
             <>
               <div className="kv">
-                <span className="k">Distance</span>
+                <span className="k">{t("route_distance")}</span>
                 <span className="v">{plan.chosen.distanceKm} km</span>
               </div>
               <div className="kv">
-                <span className="k">Normal time</span>
+                <span className="k">{t("route_normal_time")}</span>
                 <span className="v">{fmtMin(plan.chosen.normalMinutes)}</span>
               </div>
               <div className="kv">
-                <span className="k">With conditions</span>
+                <span className="k">{t("route_with_conditions")}</span>
                 <span
                   className="v"
                   style={{ color: plan.chosen.delayMinutes > 0 ? "#f97316" : "#22c55e" }}
@@ -299,18 +311,18 @@ export function RoutePlanner({ onPlan, plan, planning }) {
                 </span>
               </div>
               <div className="kv">
-                <span className="k">Delay</span>
+                <span className="k">{t("route_delay")}</span>
                 <span
                   className="v"
                   style={{ color: plan.chosen.delayMinutes > 0 ? "#f97316" : "#22c55e" }}
                 >
-                  {plan.chosen.delayMinutes > 0 ? `+${fmtMin(plan.chosen.delayMinutes)}` : "none"}
+                  {plan.chosen.delayMinutes > 0 ? `+${fmtMin(plan.chosen.delayMinutes)}` : t("route_no_delay")}
                 </span>
               </div>
               <div className="kv">
-                <span className="k">Worst status</span>
+                <span className="k">{t("route_worst_status")}</span>
                 <span className="v" style={{ color: STATUS_COLOR[plan.chosen.worstStatus] }}>
-                  {plan.chosen.worstStatus}
+                  {t(`status_${String(plan.chosen.worstStatus).toLowerCase()}`)}
                 </span>
               </div>
 
@@ -329,7 +341,7 @@ export function RoutePlanner({ onPlan, plan, planning }) {
                       }}
                     >
                       <span style={{ flex: 1 }}>{s.name}</span>
-                      <span style={{ color: STATUS_COLOR[s.status] }}>{s.speedKmph} km/h</span>
+                      <span style={{ color: STATUS_COLOR[s.status] }}>{t("unit_kmh", { n: s.speedKmph })}</span>
                       <span>{fmtMin(s.minutes)}</span>
                     </div>
                   ))}
@@ -351,7 +363,8 @@ function fmtMin(m) {
 }
 
 export function EmergencyPanel({ emergency }) {
-  if (!emergency) return <div className="empty">Loading...</div>;
+  const t = useT();
+  if (!emergency) return <div className="empty">{t("emergency_loading")}</div>;
 
   return (
     <div>
@@ -361,18 +374,18 @@ export function EmergencyPanel({ emergency }) {
           style={{ borderLeftColor: "#ef4444", background: "#2a1618" }}
         >
           <div className="t" style={{ color: "#fca5a5" }}>
-            Regions at risk of isolation
+            {t("emergency_isolated_title")}
           </div>
           <div className="d">{emergency.isolatedRegions.join(", ")}</div>
         </div>
       ) : (
-        <div className="empty">No region is currently cut off.</div>
+        <div className="empty">{t("emergency_none")}</div>
       )}
 
       {emergency.lifelineStatus?.length > 0 && (
         <div style={{ marginTop: 10 }}>
           <h2 style={{ fontSize: 10, color: "#5f7268", letterSpacing: 0.8, margin: "0 0 8px" }}>
-            LIFELINE CORRIDOR STATUS
+            {t("emergency_lifeline_title").toUpperCase()}
           </h2>
           <div className="scroll-body">
             {emergency.lifelineStatus.map((s) => (
@@ -388,7 +401,9 @@ export function EmergencyPanel({ emergency }) {
                 }}
               >
                 <span style={{ flex: 1 }}>{s.name}</span>
-                <span style={{ color: STATUS_COLOR[s.status], fontWeight: 600 }}>{s.status}</span>
+                <span style={{ color: STATUS_COLOR[s.status], fontWeight: 600 }}>
+                  {t(`status_${String(s.status).toLowerCase()}`)}
+                </span>
               </div>
             ))}
           </div>
@@ -404,14 +419,15 @@ export function EmergencyPanel({ emergency }) {
  * scored, so an officer can argue with it.
  */
 export function BottleneckPanel({ data, onSelect }) {
-  if (!data) return <div className="empty">Loading weak points...</div>;
-  if (!data.bottlenecks?.length) return <div className="empty">No weak points scored.</div>;
+  const t = useT();
+  if (!data) return <div className="empty">{t("weak_loading")}</div>;
+  if (!data.bottlenecks?.length) return <div className="empty">{t("weak_empty")}</div>;
 
   return (
     <div className="scroll-body">
       <div className="kv" style={{ marginBottom: 10 }}>
-        <span>{data.criticalNow} blocked now</span>
-        <span>{data.atRiskSoon} likely within 3 days</span>
+        <span>{t("weak_blocked_now", { n: data.criticalNow })}</span>
+        <span>{t("weak_at_risk_soon", { n: data.atRiskSoon })}</span>
       </div>
 
       {data.bottlenecks.map((b) => (
@@ -429,22 +445,22 @@ export function BottleneckPanel({ data, onSelect }) {
             </span>
             <span style={{ flex: 1 }}>{b.name}</span>
             <span className="status-chip" style={{ color: STATUS_COLOR[b.status] }}>
-              {b.status.toLowerCase()}
+              {t(`status_${String(b.status).toLowerCase()}`)}
             </span>
           </div>
 
           <div className="d">{b.reasons.join(" · ")}</div>
 
           <div className="kv" style={{ marginTop: 6 }}>
-            <span>{Math.round(b.lengthKm)} km</span>
+            <span>{t("unit_km", { n: Math.round(b.lengthKm) })}</span>
             <span>
-              3-day risk {pct(b.forecast.h24)} / {pct(b.forecast.h48)} / {pct(b.forecast.h72)}
+              {t("weak_three_day")} {pct(b.forecast.h24)} / {pct(b.forecast.h48)} / {pct(b.forecast.h72)}
             </span>
           </div>
 
           {b.lifelineFor?.length > 0 && (
             <div style={{ marginTop: 6 }}>
-              <span className="tag">lifeline: {b.lifelineFor.join(", ")}</span>
+              <span className="tag">{t("tag_lifeline", { regions: b.lifelineFor.join(", ") })}</span>
             </div>
           )}
         </div>
@@ -469,14 +485,15 @@ function exposureColor(n) {
  * numbers can be judged rather than just believed.
  */
 export function ForecastPanel({ data, onSelect }) {
-  if (!data) return <div className="empty">Loading forecast...</div>;
+  const t = useT();
+  if (!data) return <div className="empty">{t("forecast_loading")}</div>;
 
   const { upcoming = [], model, importance = [] } = data;
 
   return (
     <div className="scroll-body">
       {upcoming.length === 0 ? (
-        <div className="empty">Nothing is expected to close in the next three days.</div>
+        <div className="empty">{t("forecast_empty")}</div>
       ) : (
         upcoming.map((u) => (
           <div className="alert" key={u.segmentId} onClick={() => onSelect?.(u.segmentId)}>
@@ -517,9 +534,9 @@ export function ForecastPanel({ data, onSelect }) {
 
             {(u.isChokepoint || u.lifelineFor?.length > 0) && (
               <div style={{ marginTop: 6 }}>
-                {u.isChokepoint && <span className="tag">weak point</span>}
+                {u.isChokepoint && <span className="tag">{t("tag_weak_point")}</span>}
                 {u.lifelineFor?.length > 0 && (
-                  <span className="tag">lifeline: {u.lifelineFor.join(", ")}</span>
+                  <span className="tag">{t("tag_lifeline", { regions: u.lifelineFor.join(", ") })}</span>
                 )}
               </div>
             )}
@@ -529,36 +546,39 @@ export function ForecastPanel({ data, onSelect }) {
 
       {model?.available && (
         <div className="section" style={{ borderTop: "1px solid var(--line)", marginTop: 12 }}>
-          <h2>How this is predicted</h2>
+          <h2>{t("forecast_how_title")}</h2>
 
           <div className="kv">
-            <span>model</span>
-            <span>{model.chosen === "gbt" ? "boosted trees" : "logistic regression"}</span>
+            <span>{t("forecast_model")}</span>
+            <span>{t(model.chosen === "gbt" ? "forecast_model_gbt" : "forecast_model_logreg")}</span>
           </div>
           <div className="kv">
-            <span>trained on</span>
-            <span>{(model.dataset?.rows || 0).toLocaleString()} road-days</span>
+            <span>{t("forecast_trained_on")}</span>
+            <span>{t("forecast_road_days", { n: (model.dataset?.rows || 0).toLocaleString() })}</span>
           </div>
           <div className="kv">
-            <span>observed weather</span>
+            <span>{t("forecast_observed_weather")}</span>
             <span>
-              {model.dataset?.segments} stretches x {model.dataset?.daysPerSegment} days
+              {t("forecast_stretches_days", {
+                segments: model.dataset?.segments,
+                days: model.dataset?.daysPerSegment,
+              })}
             </span>
           </div>
           <div className="kv">
-            <span>ranking accuracy (AUC)</span>
+            <span>{t("forecast_auc")}</span>
             <span>{model.metrics?.auc}</span>
           </div>
           <div className="kv">
-            <span>average error (Brier)</span>
+            <span>{t("forecast_brier")}</span>
             <span>{model.metrics?.brier}</span>
           </div>
           <div className="kv">
-            <span>held out</span>
-            <span>everything after {model.dataset?.splitDate}</span>
+            <span>{t("forecast_held_out")}</span>
+            <span>{t("forecast_held_out_value", { date: model.dataset?.splitDate })}</span>
           </div>
 
-          <h2 style={{ marginTop: 12 }}>What it weighs</h2>
+          <h2 style={{ marginTop: 12 }}>{t("forecast_weighs_title")}</h2>
           <div className="bars">
             {importance.map((f) => (
               <div className="bar-row" key={f.feature}>
@@ -587,17 +607,18 @@ export function ForecastPanel({ data, onSelect }) {
  * A map that is mostly grey should say why rather than look broken.
  */
 export function CoverageBar({ coverage }) {
+  const t = useT();
   if (!coverage) return null;
 
   const rows = [
-    ["status known", coverage.percentStatusKnown, "#22c55e"],
-    ["live vehicle data", coverage.percentWithVehicles, "#38bdf8"],
-    ["3-day forecast", coverage.percentWithForecast, "#a78bfa"],
+    [t("coverage_status_known"), coverage.percentStatusKnown, "#22c55e"],
+    [t("coverage_vehicle_data"), coverage.percentWithVehicles, "#38bdf8"],
+    [t("coverage_forecast"), coverage.percentWithForecast, "#a78bfa"],
   ];
 
   return (
     <div className="section">
-      <h2>What we can see</h2>
+      <h2>{t("section_coverage")}</h2>
       <div className="bars">
         {rows.map(([label, value, colour]) => (
           <div className="bar-row" key={label}>
@@ -610,7 +631,7 @@ export function CoverageBar({ coverage }) {
         ))}
       </div>
       <div className="empty" style={{ marginTop: 8, fontSize: 11, textAlign: "left" }}>
-        {coverage.note}
+        {t("coverage_note")}
       </div>
     </div>
   );

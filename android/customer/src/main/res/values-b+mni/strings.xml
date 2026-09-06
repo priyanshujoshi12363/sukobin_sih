@@ -4,7 +4,7 @@
   specifiers and valid XML. Needs a native speaker's review before this
   ships to real officers and drivers.
 
-  175 of 175 strings translated; the rest fall
+  176 of 176 strings translated; the rest fall
   back to English rather than showing a bad guess.
 
   Regenerate with tools/translateStrings.js, app customer, language mni.
@@ -21,7 +21,7 @@
     <string name="welcome_feature_parcel">পার্সেল পাঠাবা</string>
     <string name="welcome_feature_track">লাইভ ট্র্যাকিং</string>
     <string name="welcome_feature_eco">ইকো-ফ্রেন্ডলি</string>
-    <string name="welcome_create_account">অ্যাকাউন্ট তৌরিব</string>
+    <string name="welcome_create_account">অ্যাকাউন্ট তৌবা</string>
     <string name="welcome_login">লগইন</string>
     <string name="welcome_terms_prefix">চালাই তৌরিবগী, আপুনি মখা</string>
     <string name="welcome_terms_link">সার্ভিসের শর্ত আর প্রাইভেসি পলিসি</string>
@@ -72,7 +72,7 @@
     <string name="home_search_hint">প্রোডাক্টস সর্চ তৌরো</string>
     <string name="home_categories">ক্যাটেগরি</string>
     <string name="home_all_products">সকলো প্রোডাক্ট</string>
-    <string name="home_deliver_to">ডেলিভার তৌরো</string>
+    <string name="home_deliver_to">ডেলিভারী হৌবগী</string>
     <string name="home_set_location">নঙা অমা লোকে সেত তৌরো</string>
     <string name="cart_title">নঙা কার্ট</string>
     <string name="cart_empty">নঙা কার্ট ফাঁই</string>
@@ -90,7 +90,7 @@
     <string name="profile_verified">যাচাই একাউন্ট</string>
     <string name="profile_saved_address">সংরক্ষিত ঠিকানা</string>
     <string name="profile_my_orders">মোর অর্ডার</string>
-    <string name="profile_my_parcels">মোর পার্সেল</string>
+    <string name="profile_my_parcels">মোর প্যাকেজ</string>
     <string name="profile_sign_out">বাহির হৌ</string>
     <string name="profile_sign_out_confirm">Sukobin তৌদা বাহির হৌ?</string>
     <string name="profile_no_address">ডেলিভারি ঠিকানা যোগ তৌ</string>
@@ -115,11 +115,11 @@
     <string name="cart_clear_confirm">কার্টদা হৌদা আইটেমস থমলগি?</string>
     <string name="checkout_title">চেকআউট</string>
     <string name="checkout_deliver_to">ডেলিভারী হৌবগী</string>
-    <string name="checkout_change">বদল</string>
+    <string name="checkout_change">পরিবর্তন</string>
     <string name="checkout_items">অর্ডার আইটেমস</string>
     <string name="checkout_platform_fee">প্ল্যাটফর্ম ফি</string>
     <string name="checkout_payable">মোট পরিশোধ</string>
-    <string name="checkout_pay">UPI দা পেমেন্ট</string>
+    <string name="checkout_pay">UPI দে পেমেন্ট</string>
     <string name="checkout_upi">UPI, কার্ডস অমসু ওয়ালেটস</string>
     <string name="checkout_upi_sub">GPay, PhonePe, Paytm অমসু যেকোন UPI অ্যাপ</string>
     <string name="pay_cancelled">পেমেন্ট বাতিল হৌরে। নৌদা হৌরিবা হৌই।</string>
@@ -171,9 +171,9 @@
     <string name="parcel_need_receiver">প্রাপক নাম আর ফোন যোগ করুন।</string>
     <string name="parcel_created">প্যাকেজ অনুরোধ করা হল</string>
     <string name="parcel_created_body">%1$s
-মোট %2$s, পিকআপে পরিশোধ।
+মোট %2$s, পিকআপে পরিশোধ করিবে।
 
-আপনার রুটে পার্টনার মেলামেশা করিব।</string>
+আপনগী রুটে যাইবা পার্টনার মেলাম।</string>
     <string name="parcel_done">সম্পন্ন</string>
     <string name="pick_title">লোকেশন বাছাই</string>
     <string name="pick_my_location">মোর লোকেশন</string>
@@ -188,4 +188,5 @@
     <string name="demo_pay_confirm">পেমেন্ট নিশ্চিত</string>
     <string name="demo_pay_notice">ডেমো মোড - টাকা ট্রান্সফার না</string>
     <string name="demo_pay_select_method">পেমেন্ট পদ্ধতি বাছাই</string>
+    <string name="settings_language">ইলং</string>
 </resources>
