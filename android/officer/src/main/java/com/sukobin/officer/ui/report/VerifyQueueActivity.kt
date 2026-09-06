@@ -93,7 +93,8 @@ class VerifyQueueActivity : AppCompatActivity() {
                             type = o.get("type")?.asString ?: "OTHER",
                             severity = o.get("severity")?.asString ?: "MEDIUM",
                             description = o.get("description")?.takeIf { !it.isJsonNull }?.asString.orEmpty(),
-                            reporterName = o.get("reporterName")?.takeIf { !it.isJsonNull }?.asString ?: "Field officer",
+                            reporterName = o.get("reporterName")?.takeIf { !it.isJsonNull }?.asString
+                                ?: getString(R.string.profile_field_officer),
                             district = o.get("district")?.takeIf { !it.isJsonNull }?.asString,
                             segmentId = o.get("segmentId")?.takeIf { !it.isJsonNull }?.asString,
                             capturedAt = o.get("capturedAt")?.asString.orEmpty(),
@@ -105,7 +106,7 @@ class VerifyQueueActivity : AppCompatActivity() {
 
                     adapter.submitList(rows)
                     b.emptyState.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-                    b.countLine.text = "${rows.size} waiting"
+                    b.countLine.text = getString(R.string.verify_waiting_count, rows.size)
                 }
 
                 is ApiResult.Err -> {
@@ -119,15 +120,11 @@ class VerifyQueueActivity : AppCompatActivity() {
 
     private fun decide(row: VerifyRow, status: String) {
         val confirming = status == "VERIFIED"
-        val title = if (confirming) "Confirm this report?" else "Reject this report?"
-        val message = if (confirming) {
-            "The road status will change and drivers heading this way will be sent another route."
-        } else {
-            "The report will be marked as not accepted and will not change the road status."
-        }
+        val title = if (confirming) R.string.verify_confirm_title else R.string.verify_reject_title
+        val message = if (confirming) R.string.verify_confirm_body else R.string.verify_reject_body
 
         val input = android.widget.EditText(this).apply {
-            hint = "Note (optional)"
+            hint = getString(R.string.verify_note_hint)
             setPadding(48, 32, 48, 32)
         }
 
@@ -135,8 +132,8 @@ class VerifyQueueActivity : AppCompatActivity() {
             .setTitle(title)
             .setMessage(message)
             .setView(input)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton(if (confirming) "Confirm" else "Reject") { _, _ ->
+            .setNegativeButton(R.string.common_cancel, null)
+            .setPositiveButton(if (confirming) R.string.verify_confirm else R.string.verify_reject) { _, _ ->
                 submit(row, status, input.text.toString().trim())
             }
             .show()
@@ -152,9 +149,12 @@ class VerifyQueueActivity : AppCompatActivity() {
                 is ApiResult.Ok -> {
                     val newStatus = r.value.obj("segment")?.str("status")
                     val text = if (newStatus != null) {
-                        "Done. Road is now ${Status.label(newStatus).lowercase()}."
+                        getString(
+                            R.string.verify_done_status,
+                            Status.label(this@VerifyQueueActivity, newStatus)
+                        )
                     } else {
-                        "Done."
+                        getString(R.string.verify_done)
                     }
                     Toast.makeText(this@VerifyQueueActivity, text, Toast.LENGTH_LONG).show()
                     load()
@@ -195,8 +195,8 @@ class VerifyAdapter(
         val b = holder.b
         val ctx = b.root.context
 
-        b.reportType.text = Status.typeLabel(row.type)
-        b.reportSeverity.text = row.severity.lowercase().replaceFirstChar { it.uppercase() }
+        b.reportType.text = Status.typeLabel(ctx, row.type)
+        b.reportSeverity.text = Status.severityLabel(ctx, row.severity)
         b.reportSeverity.setTextColor(ContextCompat.getColor(ctx, Status.severityColor(row.severity)))
 
         b.reportDesc.text = row.description
@@ -205,13 +205,15 @@ class VerifyAdapter(
         b.reportMeta.text = buildString {
             append(row.reporterName)
             row.district?.let { append("  ·  $it") }
-            if (row.wasOffline) append("  ·  sent late from offline")
+            if (row.wasOffline) append("  ·  " + ctx.getString(R.string.verify_offline_late))
         }
 
-        b.reportRoad.text = row.segmentId ?: "No road matched"
+        b.reportRoad.text = row.segmentId ?: ctx.getString(R.string.verify_no_road)
         b.blocksTag.visibility = if (row.blocksTraffic) View.VISIBLE else View.GONE
         b.photoTag.visibility = if (row.photos.isEmpty()) View.GONE else View.VISIBLE
-        b.photoTag.text = "${row.photos.size} photo${if (row.photos.size == 1) "" else "s"}"
+        b.photoTag.text = ctx.resources.getQuantityString(
+            R.plurals.photo_count, row.photos.size, row.photos.size
+        )
 
         // The photo is the evidence. Show it here rather than making the officer
         // take the reporter's word and go and look.

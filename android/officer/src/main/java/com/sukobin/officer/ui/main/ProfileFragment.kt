@@ -1,5 +1,6 @@
 package com.sukobin.officer.ui.main
 
+import com.sukobin.officer.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -135,37 +136,36 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
     }
 
     private fun statusNote(status: String?): String? = when (status) {
-        "VERIFIED" -> "Confirmed"
-        "REJECTED" -> "Not accepted"
-        "RESOLVED" -> "Cleared"
+        "VERIFIED" -> getString(R.string.report_confirmed)
+        "REJECTED" -> getString(R.string.report_not_accepted)
+        "RESOLVED" -> getString(R.string.report_cleared)
         else -> null
     }
 
     private fun renderLocal() {
         if (_b == null) return
 
-        b.officerName.text = Session.name ?: "Officer"
+        b.officerName.text = Session.name ?: getString(R.string.profile_officer)
         b.officerPhone.text = Session.phone?.let { "+91 $it" }.orEmpty()
         b.officerRole.text = listOfNotNull(
             OfficerSession.designation,
             OfficerSession.department?.replace("_", " ")?.lowercase()
                 ?.replaceFirstChar { it.uppercase() }
-        ).joinToString(" · ").ifBlank { "Field officer" }
+        ).joinToString(" · ").ifBlank { getString(R.string.profile_field_officer) }
 
-        b.scopeValue.text = OfficerSession.scopeLabel
-        b.levelValue.text = OfficerSession.level.lowercase().replaceFirstChar { it.uppercase() }
+        b.scopeValue.text = OfficerSession.scopeLabel(requireContext())
+        b.levelValue.text = OfficerSession.levelLabel(requireContext())
         b.languageValue.text = LanguagePicker.nameOf(OfficerSession.language)
 
         b.rowVerifyQueue.visibility = if (OfficerSession.canVerify) View.VISIBLE else View.GONE
-        b.permissionValue.text = if (OfficerSession.canVerify) {
-            "Can confirm reports and set road status"
-        } else {
-            "Can send reports"
-        }
+        b.permissionValue.setText(
+            if (OfficerSession.canVerify) R.string.profile_can_confirm
+            else R.string.profile_can_report
+        )
 
         val queued = ReportQueue.pendingCount()
         b.queueRow.visibility = if (queued > 0) View.VISIBLE else View.GONE
-        b.queueValue.text = "$queued waiting to send"
+        b.queueValue.text = getString(R.string.queue_count_waiting, queued)
     }
 
     private fun renderStats(officer: JsonObject?) {
@@ -195,9 +195,9 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
             renderLocal()
             refresh()
             val message = when {
-                r.attempted == 0 -> "Nothing waiting to send"
+                r.attempted == 0 -> getString(R.string.queue_nothing_waiting)
                 r.message != null -> r.message
-                else -> "Sent ${r.accepted}, already had ${r.duplicates}"
+                else -> getString(R.string.queue_sent_summary, r.accepted, r.duplicates)
             }
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
@@ -205,15 +205,17 @@ class ProfileFragment : Fragment(), MainActivity.Refreshable {
 
     private fun confirmSignOut() {
         val queued = ReportQueue.pendingCount()
-        val warning = if (queued > 0) {
-            "\n\n$queued report${if (queued == 1) "" else "s"} on this phone have not been sent yet. They will be lost."
-        } else ""
+        val warning = when {
+            queued == 0 -> ""
+            queued == 1 -> "\n\n" + getString(R.string.profile_sign_out_unsent_one, queued)
+            else -> "\n\n" + getString(R.string.profile_sign_out_unsent, queued)
+        }
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Sign out?")
-            .setMessage("You will need your phone number and an OTP to sign back in.$warning")
-            .setNegativeButton("Stay signed in", null)
-            .setPositiveButton("Sign out") { _, _ ->
+            .setTitle(R.string.profile_sign_out_title)
+            .setMessage(getString(R.string.profile_sign_out_body) + warning)
+            .setNegativeButton(R.string.profile_stay, null)
+            .setPositiveButton(R.string.profile_sign_out) { _, _ ->
                 Session.clear()
                 OfficerSession.clear()
                 startActivity(

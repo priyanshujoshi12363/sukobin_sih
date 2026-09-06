@@ -16,6 +16,7 @@ import com.sukobin.core.net.int
 import com.sukobin.core.net.num
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
+import com.sukobin.officer.R
 import com.sukobin.officer.databinding.FragmentForecastBinding
 import kotlinx.coroutines.launch
 
@@ -94,10 +95,10 @@ class ForecastFragment : Fragment(), MainActivity.Refreshable {
 
         adapter.submitList(rows)
         b.emptyState.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-        b.headline.text = if (rows.isEmpty()) {
-            "Nothing looks likely to close in the next three days"
-        } else {
-            "${rows.size} ${if (rows.size == 1) "road needs" else "roads need"} watching over the next three days"
+        b.headline.text = when {
+            rows.isEmpty() -> getString(R.string.forecast_nothing_likely)
+            rows.size == 1 -> getString(R.string.forecast_count_line_one, rows.size)
+            else -> getString(R.string.forecast_count_line, rows.size)
         }
 
         val model = data.obj("model")
@@ -105,13 +106,20 @@ class ForecastFragment : Fragment(), MainActivity.Refreshable {
             val dataset = model.obj("dataset")
             val metrics = model.obj("metrics")
             b.modelCard.visibility = View.VISIBLE
-            b.modelName.text = if (model.str("chosen") == "gbt") {
-                "Boosted decision trees"
-            } else {
-                "Logistic regression"
-            }
-            b.modelTrained.text = "Trained on ${fmt(dataset?.int("rows") ?: 0)} road-days of real past weather across ${dataset?.int("segments") ?: 0} stretches"
-            b.modelScore.text = "Ranking accuracy ${String.format("%.3f", metrics?.num("auc") ?: 0.0)}  ·  average error ${String.format("%.3f", metrics?.num("brier") ?: 0.0)}"
+            b.modelName.setText(
+                if (model.str("chosen") == "gbt") R.string.model_boosted_trees
+                else R.string.model_logistic
+            )
+            b.modelTrained.text = getString(
+                R.string.model_trained_on,
+                fmt(dataset?.int("rows") ?: 0),
+                dataset?.int("segments") ?: 0
+            )
+            b.modelScore.text = getString(
+                R.string.model_scores,
+                String.format("%.3f", metrics?.num("auc") ?: 0.0),
+                String.format("%.3f", metrics?.num("brier") ?: 0.0)
+            )
 
             val importance = data.arr("importance")?.mapNotNull {
                 val o = it as? JsonObject ?: return@mapNotNull null

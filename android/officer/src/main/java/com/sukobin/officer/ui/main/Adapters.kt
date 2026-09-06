@@ -11,6 +11,7 @@ import com.sukobin.officer.databinding.ItemAlertBinding
 import com.sukobin.officer.databinding.ItemForecastBinding
 import com.sukobin.officer.databinding.ItemPendingBinding
 import com.sukobin.officer.databinding.ItemRoadBinding
+import com.sukobin.officer.R
 import com.sukobin.officer.ui.Status
 
 data class AlertRow(
@@ -82,7 +83,7 @@ class AlertAdapter(private val onClick: (AlertRow) -> Unit) :
         b.alertTitle.text = a.title
         b.alertBody.text = a.body
         b.alertStripe.setBackgroundColor(ContextCompat.getColor(ctx, Status.alertColor(a.severity)))
-        b.alertSeverity.text = a.severity.lowercase().replaceFirstChar { it.uppercase() }
+        b.alertSeverity.text = Status.alertSeverityLabel(ctx, a.severity)
         b.alertSeverity.setTextColor(ContextCompat.getColor(ctx, Status.alertColor(a.severity)))
         b.root.setOnClickListener { onClick(a) }
     }
@@ -102,21 +103,26 @@ class RoadAdapter(private val onClick: (RoadRow) -> Unit) :
         val ctx = b.root.context
 
         b.roadName.text = r.name
-        b.roadMeta.text = buildString {
-            append("${r.lengthKm.toInt()} km")
-            if (r.isChokepoint) append("  ·  Weak point")
-            if (r.lifelineFor.isNotEmpty()) append("  ·  Lifeline for ${r.lifelineFor.joinToString(", ")}")
-        }
+        b.roadMeta.text = listOfNotNull(
+            ctx.getString(R.string.road_km, r.lengthKm.toInt()),
+            if (r.isChokepoint) ctx.getString(R.string.road_weak_point) else null,
+            if (r.lifelineFor.isNotEmpty())
+                ctx.getString(R.string.road_lifeline_for, r.lifelineFor.joinToString(", "))
+            else null
+        ).joinToString("  ·  ")
 
-        b.statusPill.text = Status.label(r.status)
+        b.statusPill.text = Status.label(ctx, r.status)
         b.statusPill.setBackgroundResource(Status.pillBackground(r.status))
 
         val peak = listOfNotNull(r.h24, r.h48, r.h72).maxOrNull()
         if (peak == null) {
-            b.forecastLine.text = "No forecast yet"
+            b.forecastLine.setText(R.string.forecast_none_yet)
             b.forecastBar.progress = 0
         } else {
-            b.forecastLine.text = "Next 3 days: ${Status.percent(r.h24)} / ${Status.percent(r.h48)} / ${Status.percent(r.h72)}"
+            b.forecastLine.text = ctx.getString(
+                R.string.forecast_next_three,
+                Status.percent(r.h24), Status.percent(r.h48), Status.percent(r.h72)
+            )
             b.forecastBar.progress = Math.round(peak * 100).toInt()
         }
         b.forecastBar.progressTintList = android.content.res.ColorStateList.valueOf(
@@ -127,7 +133,7 @@ class RoadAdapter(private val onClick: (RoadRow) -> Unit) :
         val base = r.baselineSpeedKmph
         if (speed != null && base != null && base > 0) {
             b.speedLine.visibility = View.VISIBLE
-            b.speedLine.text = "Vehicles moving at ${speed.toInt()} km/h, normally ${base.toInt()}"
+            b.speedLine.text = ctx.getString(R.string.road_speed_now, speed.toInt(), base.toInt())
         } else {
             b.speedLine.visibility = View.GONE
         }
@@ -153,7 +159,7 @@ class ForecastAdapter(private val onClick: (ForecastRow) -> Unit) :
         b.roadName.text = f.name
         b.peakValue.text = Status.percent(f.peak)
         b.peakValue.setTextColor(tint)
-        b.peakLabel.text = "within ${f.firstBreachH}h"
+        b.peakLabel.text = ctx.getString(R.string.forecast_within, f.firstBreachH)
 
         b.h24Value.text = Status.percent(f.h24)
         b.h48Value.text = Status.percent(f.h48)
@@ -166,13 +172,15 @@ class ForecastAdapter(private val onClick: (ForecastRow) -> Unit) :
             it.progressTintList = android.content.res.ColorStateList.valueOf(tint)
         }
 
-        b.whyLine.text = if (f.drivers.isEmpty()) "" else "Why: ${f.drivers.joinToString(", ")}"
+        b.whyLine.text = if (f.drivers.isEmpty()) ""
+            else ctx.getString(R.string.forecast_why, f.drivers.joinToString(", "))
         b.whyLine.visibility = if (f.drivers.isEmpty()) View.GONE else View.VISIBLE
 
         val tags = buildList {
-            if (f.isChokepoint) add("Weak point")
-            if (f.status == "BLOCKED") add("Already blocked")
-            if (f.lifelineFor.isNotEmpty()) add("Lifeline for ${f.lifelineFor.joinToString(", ")}")
+            if (f.isChokepoint) add(ctx.getString(R.string.road_weak_point))
+            if (f.status == "BLOCKED") add(ctx.getString(R.string.road_already_blocked))
+            if (f.lifelineFor.isNotEmpty())
+                add(ctx.getString(R.string.road_lifeline_for, f.lifelineFor.joinToString(", ")))
         }
         b.tagLine.text = tags.joinToString("  ·  ")
         b.tagLine.visibility = if (tags.isEmpty()) View.GONE else View.VISIBLE
@@ -195,8 +203,8 @@ class PendingAdapter : ListAdapter<PendingRow, PendingAdapter.VH>(diff({ it.clie
         val b = holder.b
         val ctx = b.root.context
 
-        b.reportType.text = Status.typeLabel(p.type)
-        b.reportRoad.text = p.segmentName ?: "Road not identified"
+        b.reportType.text = Status.typeLabel(ctx, p.type)
+        b.reportRoad.text = p.segmentName ?: ctx.getString(R.string.road_not_identified)
         b.reportDesc.text = p.description
         b.reportDesc.visibility = if (p.description.isBlank()) View.GONE else View.VISIBLE
 
@@ -205,10 +213,11 @@ class PendingAdapter : ListAdapter<PendingRow, PendingAdapter.VH>(diff({ it.clie
         )
 
         if (p.sent) {
-            b.syncState.text = "Sent"
+            b.syncState.setText(R.string.queue_sent)
             b.syncState.setTextColor(ContextCompat.getColor(ctx, com.sukobin.core.R.color.status_open))
         } else {
-            b.syncState.text = if (p.attempts == 0) "Waiting to send" else "Waiting - ${p.attempts} tries"
+            b.syncState.text = if (p.attempts == 0) ctx.getString(R.string.queue_waiting)
+                else ctx.getString(R.string.queue_waiting_tries, p.attempts)
             b.syncState.setTextColor(ContextCompat.getColor(ctx, com.sukobin.core.R.color.status_slow))
         }
 

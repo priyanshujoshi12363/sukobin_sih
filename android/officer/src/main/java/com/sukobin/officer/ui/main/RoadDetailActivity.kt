@@ -14,6 +14,7 @@ import com.sukobin.core.net.arr
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.ui.Motion
 import com.sukobin.officer.data.OfficerSession
+import com.sukobin.officer.R
 import com.sukobin.officer.databinding.ActivityRoadDetailBinding
 import com.sukobin.officer.ui.Status
 import kotlinx.coroutines.launch
@@ -76,7 +77,7 @@ class RoadDetailActivity : AppCompatActivity() {
 
                     if (found == null) {
                         b.errorText.visibility = View.VISIBLE
-                        b.errorText.text = "This road is outside your area"
+                        b.errorText.setText(R.string.detail_outside_area)
                     } else {
                         road = found
                         render(found)
@@ -96,13 +97,13 @@ class RoadDetailActivity : AppCompatActivity() {
         b.content.visibility = View.VISIBLE
         b.roadName.text = r.name
 
-        b.statusPill.text = Status.label(r.status)
+        b.statusPill.text = Status.label(this, r.status)
         b.statusPill.setBackgroundResource(Status.pillBackground(r.status))
         b.statusNote.text = r.statusNote.orEmpty()
         b.statusNote.visibility = if (r.statusNote.isNullOrBlank()) View.GONE else View.VISIBLE
 
-        b.lengthValue.text = "${r.lengthKm.toInt()} km"
-        b.riskValue.text = r.riskLevel.lowercase().replaceFirstChar { it.uppercase() }
+        b.lengthValue.text = getString(R.string.road_km, r.lengthKm.toInt())
+        b.riskValue.text = Status.riskLabel(this, r.riskLevel)
         b.riskValue.setTextColor(ContextCompat.getColor(this, Status.riskColor(r.riskLevel)))
 
         b.h24Value.text = Status.percent(r.h24)
@@ -110,7 +111,7 @@ class RoadDetailActivity : AppCompatActivity() {
         b.h72Value.text = Status.percent(r.h72)
 
         val peak = listOfNotNull(r.h24, r.h48, r.h72).maxOrNull()
-        b.forecastSummary.text = Status.forecastPhrase(peak, 72)
+        b.forecastSummary.text = Status.forecastPhrase(this, peak, 72)
 
         b.whyBlock.visibility = if (r.drivers.isEmpty()) View.GONE else View.VISIBLE
         b.whyText.text = r.drivers.joinToString("\n") { "  ·  $it" }
@@ -119,35 +120,36 @@ class RoadDetailActivity : AppCompatActivity() {
         val base = r.baselineSpeedKmph
         if (speed != null && base != null && base > 0) {
             b.speedBlock.visibility = View.VISIBLE
-            b.speedText.text = "Vehicles are moving at ${speed.toInt()} km/h. Normal for this road is ${base.toInt()} km/h."
+            b.speedText.text = getString(R.string.detail_speed_text, speed.toInt(), base.toInt())
         } else {
             b.speedBlock.visibility = View.GONE
         }
 
         val tags = buildList {
-            if (r.isChokepoint) add("Weak point - few other ways round")
-            if (r.lifelineFor.isNotEmpty()) add("Lifeline for ${r.lifelineFor.joinToString(", ")}")
+            if (r.isChokepoint) add(getString(R.string.detail_weak_point_note))
+            if (r.lifelineFor.isNotEmpty())
+                add(getString(R.string.road_lifeline_for, r.lifelineFor.joinToString(", ")))
         }
         b.tagText.text = tags.joinToString("\n") { "  ·  $it" }
         b.tagBlock.visibility = if (tags.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun pickStatus() {
-        val options = arrayOf("Open", "Slow", "Restricted", "Blocked")
         val codes = arrayOf("OPEN", "SLOW", "RESTRICTED", "BLOCKED")
+        val options = codes.map { Status.label(this, it) }.toTypedArray()
 
         val input = android.widget.EditText(this).apply {
-            hint = "Why? (shown to drivers)"
+            hint = getString(R.string.detail_why_hint)
             setPadding(48, 32, 48, 32)
         }
 
         var selected = 0
         AlertDialog.Builder(this)
-            .setTitle("Set road status")
+            .setTitle(R.string.detail_set_status)
             .setSingleChoiceItems(options, 0) { _, which -> selected = which }
             .setView(input)
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Apply") { _, _ ->
+            .setNegativeButton(R.string.common_cancel, null)
+            .setPositiveButton(R.string.detail_apply) { _, _ ->
                 applyStatus(codes[selected], input.text.toString().trim())
             }
             .show()
@@ -161,7 +163,11 @@ class RoadDetailActivity : AppCompatActivity() {
 
             when (r) {
                 is ApiResult.Ok -> {
-                    Toast.makeText(this@RoadDetailActivity, "Road set to ${Status.label(status).lowercase()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@RoadDetailActivity,
+                        getString(R.string.detail_road_set_to, Status.label(this@RoadDetailActivity, status)),
+                        Toast.LENGTH_LONG
+                    ).show()
                     load()
                 }
                 is ApiResult.Err ->

@@ -107,18 +107,29 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         OfficerSession.store(officer)
         officer?.str("name")?.let { Session.name = it }
 
-        b.greeting.text = "Hello, ${officer?.str("name") ?: "Officer"}"
-        b.scopeLine.text = OfficerSession.scopeLabel
+        b.greeting.text = getString(
+            R.string.home_hello,
+            officer?.str("name") ?: getString(R.string.profile_officer)
+        )
+        b.scopeLine.text = OfficerSession.scopeLabel(requireContext())
 
         val coverage = data.obj("coverage")
-        b.coverageLine.text =
-            "${coverage?.int("segments") ?: 0} roads  ·  ${coverage?.int("lengthKm") ?: 0} km under you"
+        b.coverageLine.text = getString(
+            R.string.home_coverage,
+            coverage?.int("segments") ?: 0,
+            coverage?.int("lengthKm") ?: 0
+        )
 
         val byStatus = data.obj("byStatus")
-        setTile(b.tileOpenValue, b.tileOpenLabel, byStatus?.int("OPEN") ?: 0, "Open", com.sukobin.core.R.color.status_open)
-        setTile(b.tileSlowValue, b.tileSlowLabel, (byStatus?.int("SLOW") ?: 0) + (byStatus?.int("RESTRICTED") ?: 0), "Difficult", com.sukobin.core.R.color.status_restricted)
-        setTile(b.tileBlockedValue, b.tileBlockedLabel, byStatus?.int("BLOCKED") ?: 0, "Blocked", com.sukobin.core.R.color.status_blocked)
-        setTile(b.tileUnknownValue, b.tileUnknownLabel, byStatus?.int("UNKNOWN") ?: 0, "No data", com.sukobin.core.R.color.status_unknown)
+        setTile(b.tileOpenValue, b.tileOpenLabel, byStatus?.int("OPEN") ?: 0,
+            getString(R.string.status_open), com.sukobin.core.R.color.status_open)
+        setTile(b.tileSlowValue, b.tileSlowLabel,
+            (byStatus?.int("SLOW") ?: 0) + (byStatus?.int("RESTRICTED") ?: 0),
+            getString(R.string.status_difficult), com.sukobin.core.R.color.status_restricted)
+        setTile(b.tileBlockedValue, b.tileBlockedLabel, byStatus?.int("BLOCKED") ?: 0,
+            getString(R.string.status_blocked), com.sukobin.core.R.color.status_blocked)
+        setTile(b.tileUnknownValue, b.tileUnknownLabel, byStatus?.int("UNKNOWN") ?: 0,
+            getString(R.string.status_no_data), com.sukobin.core.R.color.status_unknown)
 
         val cutOff = data.stringList("cutOff")
         if (cutOff.isEmpty()) {
@@ -129,17 +140,19 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         }
 
         val chokepoints = data.int("chokepointsAtRisk")
-        b.chokepointLine.text = if (chokepoints == 0) {
-            "No weak points under threat right now"
-        } else {
-            "$chokepoints weak ${if (chokepoints == 1) "point is" else "points are"} blocked or likely to close"
+        b.chokepointLine.text = when {
+            chokepoints == 0 -> getString(R.string.home_no_weak_points)
+            chokepoints == 1 -> getString(R.string.home_weak_point_at_risk, chokepoints)
+            else -> getString(R.string.home_weak_points_at_risk, chokepoints)
         }
 
         setBadge(data.int("unreadNotifications"))
 
         val toVerify = data.int("awaitingMyVerification")
         b.verifyCard.visibility = if (OfficerSession.canVerify && toVerify > 0) View.VISIBLE else View.GONE
-        b.verifyText.text = "$toVerify ${if (toVerify == 1) "report is" else "reports are"} waiting for you to confirm"
+        b.verifyText.text = if (toVerify == 1)
+            getString(R.string.home_awaiting_verify_one, toVerify)
+        else getString(R.string.home_awaiting_verify, toVerify)
         b.verifyCard.setOnClickListener {
             startActivity(
                 android.content.Intent(requireContext(), com.sukobin.officer.ui.report.VerifyQueueActivity::class.java)
@@ -165,7 +178,11 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         if (model?.get("available")?.asBoolean == true) {
             b.modelLine.visibility = View.VISIBLE
             val auc = model.obj("metrics")?.num("auc") ?: 0.0
-            b.modelLine.text = "Forecasts from a model trained on ${model.obj("dataset")?.int("rows") ?: 0} days of past weather (accuracy score ${String.format("%.2f", auc)})"
+            b.modelLine.text = getString(
+                R.string.model_home_line,
+                String.format("%,d", model.obj("dataset")?.int("rows") ?: 0),
+                String.format("%.2f", auc)
+            )
         } else {
             b.modelLine.visibility = View.GONE
         }
@@ -181,7 +198,9 @@ class HomeFragment : Fragment(), MainActivity.Refreshable {
         if (_b == null) return
         val pending = ReportQueue.pendingCount()
         b.queueBanner.visibility = if (pending > 0) View.VISIBLE else View.GONE
-        b.queueText.text = "$pending ${if (pending == 1) "report is" else "reports are"} saved on this phone, waiting for signal"
+        b.queueText.text = if (pending == 1)
+            getString(R.string.home_queue_banner_one, pending)
+        else getString(R.string.home_queue_banner, pending)
         b.btnSyncNow.setOnClickListener {
             lifecycleScope.launch {
                 val r = ReportQueue.sync(requireContext())

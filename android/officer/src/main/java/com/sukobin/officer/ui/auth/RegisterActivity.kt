@@ -1,5 +1,6 @@
 package com.sukobin.officer.ui.auth
 
+import com.sukobin.officer.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -141,7 +142,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val name = b.nameInput.text.toString().trim()
         if (name.isEmpty()) {
-            b.errorLine.text = "Enter your name"
+            b.errorLine.setText(R.string.register_need_name)
             b.errorLine.visibility = View.VISIBLE
             return
         }
@@ -151,7 +152,7 @@ class RegisterActivity : AppCompatActivity() {
         val state = rawState()
 
         if (level != "REGION" && district == null && state == null) {
-            b.errorLine.text = "Pick the district or state you cover"
+            b.errorLine.setText(R.string.register_need_area)
             b.errorLine.visibility = View.VISIBLE
             return
         }
@@ -166,7 +167,7 @@ class RegisterActivity : AppCompatActivity() {
 
             if (code == null) {
                 setBusy(false)
-                b.errorLine.text = "Could not verify this number. Go back and sign in again."
+                b.errorLine.setText(R.string.register_cannot_verify)
                 b.errorLine.visibility = View.VISIBLE
                 return@launch
             }

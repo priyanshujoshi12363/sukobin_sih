@@ -1,5 +1,6 @@
 package com.sukobin.officer.ui.main
 
+import com.sukobin.officer.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,11 +52,14 @@ class RoadsFragment : Fragment(), MainActivity.Refreshable {
 
         b.filterGroup.setOnCheckedStateChangeListener { group, ids ->
             val chip = ids.firstOrNull()?.let { group.findViewById<Chip>(it) }
-            filter = when (chip?.text?.toString()) {
-                "Blocked" -> "BLOCKED"
-                "Difficult" -> "DIFFICULT"
-                "Weak points" -> "CHOKEPOINT"
-                "At risk" -> "RISK"
+            // Match on the id, never on the label: the label is translated and
+            // the code is not, so comparing text quietly disables every filter
+            // as soon as the officer switches language.
+            filter = when (chip?.id) {
+                R.id.chipBlocked -> "BLOCKED"
+                R.id.chipDifficult -> "DIFFICULT"
+                R.id.chipChoke -> "CHOKEPOINT"
+                R.id.chipRisk -> "RISK"
                 else -> null
             }
             apply()
@@ -141,7 +145,7 @@ class RoadsFragment : Fragment(), MainActivity.Refreshable {
 
         adapter.submitList(rows)
         b.emptyState.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
-        b.countLine.text = "${rows.size} of ${all.size} roads"
+        b.countLine.text = getString(R.string.road_count_line, rows.size, all.size)
     }
 
     private fun statusRank(s: String) = when (s) {

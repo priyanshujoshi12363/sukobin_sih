@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.sukobin.core.net.bool
 import com.sukobin.core.net.obj
 import com.sukobin.core.net.str
+import com.sukobin.officer.R
 
 /**
  * The officer's rank and patch decide what the app is allowed to show and do,
@@ -51,12 +52,24 @@ object OfficerSession {
         get() = prefs.getString("lang", "en") ?: "en"
         set(v) = prefs.edit().putString("lang", v).apply()
 
-    val scopeLabel: String
-        get() = when (level) {
-            "REGION" -> "All of North East India"
-            "STATE" -> state ?: "State"
-            else -> district ?: "District"
+    /**
+     * Takes a Context because the fallbacks are words the officer reads, and an
+     * officer running the app in Assamese should not see them in English.
+     */
+    fun scopeLabel(context: Context): String = when (level) {
+        "REGION" -> context.getString(R.string.profile_scope_region)
+        "STATE" -> state ?: context.getString(R.string.scope_state_fallback)
+        else -> district ?: context.getString(R.string.scope_district_fallback)
+    }
+
+    fun levelLabel(context: Context): String = context.getString(
+        when (level) {
+            "BLOCK" -> R.string.level_block
+            "STATE" -> R.string.level_state
+            "REGION" -> R.string.level_region
+            else -> R.string.level_district
         }
+    )
 
     fun store(officer: JsonObject?) {
         if (officer == null) return

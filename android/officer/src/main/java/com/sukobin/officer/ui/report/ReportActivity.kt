@@ -42,7 +42,7 @@ class ReportActivity : AppCompatActivity() {
     private val locationPermission = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants ->
-        if (grants.values.any { it }) readLocation() else onLocationUnavailable("Location permission refused")
+        if (grants.values.any { it }) readLocation() else onLocationUnavailable(R.string.report_location_refused)
     }
 
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
@@ -242,7 +242,7 @@ class ReportActivity : AppCompatActivity() {
                 .addOnSuccessListener { loc -> if (loc != null) onLocation(loc) else fallbackToLastKnown() }
                 .addOnFailureListener { fallbackToLastKnown() }
         } catch (e: SecurityException) {
-            onLocationUnavailable("Location permission refused")
+            onLocationUnavailable(R.string.report_location_refused)
         }
     }
 
@@ -251,11 +251,11 @@ class ReportActivity : AppCompatActivity() {
             fused.lastLocation
                 .addOnSuccessListener { loc ->
                     if (loc != null) onLocation(loc)
-                    else onLocationUnavailable("Could not get a GPS fix")
+                    else onLocationUnavailable(R.string.report_no_gps_fix)
                 }
-                .addOnFailureListener { onLocationUnavailable("Could not get a GPS fix") }
+                .addOnFailureListener { onLocationUnavailable(R.string.report_no_gps_fix) }
         } catch (e: SecurityException) {
-            onLocationUnavailable("Location permission refused")
+            onLocationUnavailable(R.string.report_location_refused)
         }
     }
 
@@ -273,9 +273,9 @@ class ReportActivity : AppCompatActivity() {
         updateSaveState()
     }
 
-    private fun onLocationUnavailable(reason: String) {
+    private fun onLocationUnavailable(reason: Int) {
         b.locationSpinner.visibility = View.GONE
-        b.locationState.text = reason
+        b.locationState.setText(reason)
         b.btnRetryLocation.visibility = View.VISIBLE
         b.btnRetryLocation.text = getString(R.string.report_try_again)
         updateSaveState()
@@ -343,13 +343,12 @@ class ReportActivity : AppCompatActivity() {
     // ── form ─────────────────────────────────────────────────────────────────
 
     private fun setupTypeDropdown() {
-        b.typeInput.setAdapter(
-            ArrayAdapter(this, android.R.layout.simple_list_item_1, Status.INCIDENT_TYPES.map { it.second })
-        )
-        b.typeInput.setText(Status.INCIDENT_TYPES.first().second, false)
+        val labels = Status.incidentTypeLabels(this)
+        b.typeInput.setAdapter(ArrayAdapter(this, android.R.layout.simple_list_item_1, labels))
+        b.typeInput.setText(labels.first(), false)
         b.typeInput.setOnItemClickListener { _, _, position, _ ->
-            type = Status.INCIDENT_TYPES[position].first
-            b.typeInput.setText(Status.INCIDENT_TYPES[position].second, false)
+            type = Status.INCIDENT_TYPE_CODES[position]
+            b.typeInput.setText(labels[position], false)
         }
     }
 

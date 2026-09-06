@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="OfficerNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#DCE8F2</item>
+    </style>
+
+    <!--
+        11sp, one line, no ellipsis. Nine languages share these four tabs and
+        several of them need more room than "Overview" does.
+    -->
+    <style name="OfficerNavLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">11sp</item>
+    </style>
+</resources>

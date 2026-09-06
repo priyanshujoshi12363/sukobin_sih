@@ -1,5 +1,6 @@
 package com.sukobin.officer.ui.auth
 
+import com.sukobin.officer.R
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -44,7 +45,7 @@ class OtpActivity : AppCompatActivity() {
         Motion.applyEnter(this)
 
         phone = intent.getStringExtra(EXTRA_PHONE).orEmpty()
-        b.subtitle.text = "Sent to +91 $phone"
+        b.subtitle.text = getString(R.string.otp_sent_to, phone)
         b.btnBack.setOnClickListener { finish() }
 
         boxes = listOf(b.otp1, b.otp2, b.otp3, b.otp4, b.otp5, b.otp6)
@@ -52,7 +53,7 @@ class OtpActivity : AppCompatActivity() {
 
         intent.getStringExtra(EXTRA_DEV_OTP)?.takeIf { it.length == 6 }?.let { code ->
             b.devHint.visibility = View.VISIBLE
-            b.devHint.text = "Demo mode - your code is $code"
+            b.devHint.text = getString(R.string.otp_demo_code, code)
             code.forEachIndexed { i, c -> boxes[i].setText(c.toString()) }
         }
 
@@ -154,7 +155,7 @@ class OtpActivity : AppCompatActivity() {
                 is ApiResult.Ok -> {
                     r.value.str("devOtp")?.takeIf { it.length == 6 }?.let { code ->
                         b.devHint.visibility = View.VISIBLE
-                        b.devHint.text = "Demo mode - your code is $code"
+                        b.devHint.text = getString(R.string.otp_demo_code, code)
                     }
                     startTimer()
                 }
@@ -172,12 +173,12 @@ class OtpActivity : AppCompatActivity() {
         b.btnResend.isEnabled = false
         timer = object : CountDownTimer(30_000, 1000) {
             override fun onTick(ms: Long) {
-                b.btnResend.text = "Resend in ${ms / 1000}s"
+                b.btnResend.text = getString(R.string.otp_resend_in, (ms / 1000).toInt())
             }
 
             override fun onFinish() {
                 b.btnResend.isEnabled = true
-                b.btnResend.text = "Resend code"
+                b.btnResend.setText(R.string.otp_resend)
             }
         }.start()
     }
