@@ -91,32 +91,317 @@
                         style="@style/ProfileRowLabel"
                         android:text="@string/profile_vehicle" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/vehicleNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray_800"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/vehicleLine"
-                        style="@style/ProfileRowSub" />
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:textColor="@color/gray_500"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/verifiedPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_mint"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/profile_verified"
+                    android:textColor="@color/brand_forest"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
             <View style="@style/ProfileDivider" />
 
-            <LinearLayout
-                android:id="@+id/rowHistory"
-                style="@style/ProfileRow">
-
-                <ImageView
-                    style="@style/ProfileRowIcon"
-                    android:contentDescription="@string/profile_history"
-                    android:src="@drawable/ic_history" />
-
-                <TextView
-                    style="@style/ProfileRowLabel"
-                    android:layout_width="0dp"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:text="@string/profile_history" />
-            </LinearLayout>
         </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="6dp"
+                android:letterSpacing="0.08"
+                android:text="@string/profile_account"
+                android:textAllCaps="true"
+                android:textColor="@color/gray_400"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/rowHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_history"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/historyValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_history"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
+            <LinearLayout
+                android:id="@+id/rowEarnings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_earnings"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/earningsValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_earnings"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
+            <LinearLayout
+                android:id="@+id/rowVehicle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_vehicle"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/vehicleValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_vehicle"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="6dp"
+                android:letterSpacing="0.08"
+                android:text="@string/profile_more"
+                android:textAllCaps="true"
+                android:textColor="@color/gray_400"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/rowSafety"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_safety"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_safety"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
+            <LinearLayout
+                android:id="@+id/rowHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_help"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_help"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
+            <LinearLayout
+                android:id="@+id/rowAbout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="15dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/profile_about"
+                    android:textColor="@color/gray_800"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/aboutValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="@string/profile_about"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="@color/gray_300" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_100" />
         <LinearLayout
             android:id="@+id/rowSignOut"
             android:layout_width="match_parent"
@@ -148,5 +433,15 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
-    </LinearLayout>
+    
+            <TextView
+                android:id="@+id/versionLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:textColor="@color/gray_400"
+                android:textSize="11sp" />
+</LinearLayout>
 </androidx.core.widget.NestedScrollView>

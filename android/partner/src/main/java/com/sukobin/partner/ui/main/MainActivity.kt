@@ -27,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun openTab(itemId: Int) {
+        b.bottomNav.selectedItemId = itemId
+    }
+
     fun openHistory() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)

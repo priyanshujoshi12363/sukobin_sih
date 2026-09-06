@@ -103,9 +103,7 @@
     <string name="stats_rating">Rating</string>
     <string name="stats_wallet">Wallet balance</string>
     <string name="stats_week">This week</string>
-    <string name="profile_vehicle">Vehicle</string>
     <string name="profile_capacity">Capacity</string>
-    <string name="profile_history">Delivery history</string>
     <string name="profile_sign_out">Sign out</string>
     <string name="profile_sign_out_confirm">Sign out of Sukobin Partner?</string>
     <string name="history_title">Delivery history</string>
@@ -176,5 +174,51 @@
     <plurals name="home_stops_left">
         <item quantity="one">%1$d stop left</item>
         <item quantity="other">%1$d stops left</item>
+    </plurals>
+
+    <string name="profile_verified">VERIFIED</string>
+    <string name="profile_carries">carries up to %1$d</string>
+    <string name="profile_account">Account</string>
+    <string name="profile_more">More</string>
+    <string name="profile_history">Delivery history</string>
+    <string name="profile_history_value">Your past deliveries</string>
+    <string name="profile_earnings">Earnings and payouts</string>
+    <string name="profile_deliveries">%1$d delivered</string>
+    <string name="profile_vehicle">Vehicle details</string>
+    <string name="profile_safety">Safety</string>
+    <string name="profile_help">Help and support</string>
+    <string name="profile_about">About Sukobin Partner</string>
+    <string name="profile_tagline">Sukobin Partner · Drive the hills</string>
+
+    <string name="profile_v_number">Number plate: %1$s</string>
+    <string name="profile_v_type">Vehicle: %1$s</string>
+    <string name="profile_v_capacity">Carries up to %1$d at a time</string>
+    <string name="profile_v_trips">Trips completed: %1$d</string>
+    <string name="profile_v_deliveries">Deliveries made: %1$d</string>
+    <string name="profile_v_rating">Rating: %1$.1f</string>
+
+    <string name="profile_safety_body">If a stretch of road is dangerous, the two things that help most are warning the drivers behind you and calling for help.
+
+Reporting a hazard takes about four seconds and warns everyone heading that way.</string>
+    <string name="profile_report_hazard">Report a hazard</string>
+    <string name="profile_call_112">Call 112</string>
+    <string name="profile_help_body">Trouble with a delivery, a payment or your account?
+
+Our support line is open 7am to 9pm, seven days a week.</string>
+    <string name="profile_call_support">Call support</string>
+    <string name="profile_about_body">Sukobin Partner, version %1$s.
+
+You carry parcels along the road you were already travelling. While you drive, your phone tells the platform which roads are open, so other drivers and district officers know before they set out.</string>
+    <string name="profile_no_dialer">No phone app found</string>
+    <string name="common_close">Close</string>
+
+    <plurals name="home_vehicle_full">
+        <item quantity="one">Your vehicle can carry %1$d delivery at a time</item>
+        <item quantity="other">Your vehicle can carry %1$d deliveries at a time</item>
+    </plurals>
+
+    <plurals name="home_jobs_taken">
+        <item quantity="one">%1$d delivery was just taken by another driver. Starting with the rest.</item>
+        <item quantity="other">%1$d deliveries were just taken by another driver. Starting with the rest.</item>
     </plurals>
 </resources>

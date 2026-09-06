@@ -1,6 +1,7 @@
 package com.sukobin.partner.ui.main
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,10 @@ import com.sukobin.core.net.apiCall
 import com.sukobin.core.net.decode
 import com.sukobin.core.net.jsonOf
 import com.sukobin.core.push.Push
+import com.sukobin.partner.BuildConfig
 import com.sukobin.partner.R
+import com.sukobin.partner.data.LocationReporter
+import com.sukobin.partner.ui.report.ReportHazardActivity
 import com.sukobin.partner.databinding.FragmentProfileBinding
 import com.sukobin.partner.ui.auth.WelcomeActivity
 import kotlinx.coroutines.launch
@@ -25,6 +29,8 @@ class ProfileFragment : Fragment() {
 
     private var _b: FragmentProfileBinding? = null
     private val b get() = _b!!
+
+    private var partner: Partner? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,8 +51,18 @@ class ProfileFragment : Fragment() {
         b.rowHistory.setOnClickListener {
             (activity as? MainActivity)?.openHistory()
         }
-
+        b.rowEarnings.setOnClickListener {
+            (activity as? MainActivity)?.openTab(R.id.tab_stats)
+        }
+        b.rowVehicle.setOnClickListener { showVehicle() }
+        b.rowSafety.setOnClickListener { showSafety() }
+        b.rowHelp.setOnClickListener { showHelp() }
+        b.rowAbout.setOnClickListener { showAbout() }
         b.rowSignOut.setOnClickListener { confirmSignOut() }
+
+        b.historyValue.setText(R.string.profile_history_value)
+        b.aboutValue.text = BuildConfig.VERSION_NAME
+        b.versionLine.setText(R.string.profile_tagline)
 
         load()
     }
@@ -69,17 +85,23 @@ class ProfileFragment : Fragment() {
                 is ApiResult.Ok -> {
                     if (_b == null) return@launch
                     val p = r.value.decode<Partner>("partner") ?: return@launch
+                    partner = p
 
                     p.name?.takeIf { it.isNotBlank() }?.let { Session.name = it }
                     p.phone?.takeIf { it.isNotBlank() }?.let { Session.phone = it }
                     renderFromSession()
 
+                    b.vehicleNumber.text = p.vehicleNumber ?: "-"
                     b.vehicleLine.text = listOfNotNull(
-                        p.vehicleNumber,
                         p.vehicleType?.replaceFirstChar { c -> c.uppercase() },
-                        getString(R.string.profile_capacity) + " " + p.capacity
-                    ).joinToString("   ")
+                        getString(R.string.profile_carries, p.capacity)
+                    ).joinToString(" · ")
 
+                    // The badge follows the server's flag, never a local guess.
+                    b.verifiedPill.visibility = if (p.isVerified) View.VISIBLE else View.GONE
+
+                    b.vehicleValue.text = p.vehicleNumber.orEmpty()
+                    b.earningsValue.text = getString(R.string.profile_deliveries, p.totalDeliveries)
                     b.onlineSwitch.isChecked = p.isOnline
                 }
 
@@ -100,6 +122,66 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun showVehicle() {
+        val p = partner ?: return
+        val details = buildString {
+            appendLine(getString(R.string.profile_v_number, p.vehicleNumber ?: "-"))
+            appendLine(getString(R.string.profile_v_type, p.vehicleType ?: "-"))
+            appendLine(getString(R.string.profile_v_capacity, p.capacity))
+            appendLine(getString(R.string.profile_v_trips, p.totalTrips))
+            appendLine(getString(R.string.profile_v_deliveries, p.totalDeliveries))
+            append(getString(R.string.profile_v_rating, p.rating))
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.profile_vehicle)
+            .setMessage(details)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    /**
+     * Safety is not a placeholder in a road-access app. The two useful things a
+     * driver can do from a bad stretch are warn everyone behind them and call
+     * for help, so this screen is those two buttons.
+     */
+    private fun showSafety() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.profile_safety)
+            .setMessage(R.string.profile_safety_body)
+            .setNeutralButton(R.string.profile_call_112) { _, _ -> dial("112") }
+            .setNegativeButton(R.string.common_close, null)
+            .setPositiveButton(R.string.profile_report_hazard) { _, _ ->
+                startActivity(Intent(requireContext(), ReportHazardActivity::class.java))
+            }
+            .show()
+    }
+
+    private fun showHelp() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.profile_help)
+            .setMessage(R.string.profile_help_body)
+            .setNegativeButton(R.string.common_close, null)
+            .setPositiveButton(R.string.profile_call_support) { _, _ -> dial("18001800150") }
+            .show()
+    }
+
+    private fun showAbout() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.profile_about)
+            .setMessage(getString(R.string.profile_about_body, BuildConfig.VERSION_NAME))
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun dial(number: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), getString(R.string.profile_no_dialer), Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun confirmSignOut() {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.profile_sign_out_confirm)
@@ -109,6 +191,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun signOut() {
+        // Stop streaming first: pings sent after the token is cleared fail
+        // against an account that is no longer signed in.
+        LocationReporter.stop()
         Push.forget(requireContext())
         Session.clear()
         startActivity(

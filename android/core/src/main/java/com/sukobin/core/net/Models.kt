@@ -150,6 +150,11 @@ data class Partner(
     val vehicleType: String? = null,
     val capacity: Int = 0,
     val isOnline: Boolean = false,
+    val isVerified: Boolean = false,
+    val rating: Double = 5.0,
+    val totalTrips: Int = 0,
+    val totalDeliveries: Int = 0,
+    val preferredLanguage: String = "en",
     val currentLocation: GeoPoint? = null
 )
 

@@ -400,8 +400,15 @@ class HomeFragment : Fragment() {
 
     private fun toggle(job: DeliveryJob) {
         val k = key(job)
-        if (selected.contains(k)) selected.remove(k)
-        else if (selected.size < capacity) selected.add(k)
+        if (selected.contains(k)) {
+            selected.remove(k)
+        } else if (selected.size < capacity) {
+            selected.add(k)
+        } else {
+            // Silently ignoring the tap made the app look broken. Say why.
+            toast(resources.getQuantityString(R.plurals.home_vehicle_full, capacity, capacity))
+            return
+        }
         adapter.notifyDataSetChanged()
         updateBottomBar()
     }
@@ -435,7 +442,15 @@ class HomeFragment : Fragment() {
             when (result) {
                 is ApiResult.Ok -> {
                     val claimed = result.value.arr("claimed")?.size() ?: picked.size
-                    toast(getString(R.string.home_trip_started, claimed))
+                    val skipped = result.value.int("skipped")
+
+                    if (skipped > 0) {
+                        // Another driver claimed these first. Starting a smaller
+                        // trip without saying so looks like the app lost them.
+                        toast(resources.getQuantityString(R.plurals.home_jobs_taken, skipped, skipped))
+                    } else {
+                        toast(getString(R.string.home_trip_started, claimed))
+                    }
                     selected.clear()
                     // Claiming used to leave the driver on the search screen
                     // with no way to work the trip. Take them to it.
