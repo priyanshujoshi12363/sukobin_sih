@@ -1,0 +1,7 @@
+# Netlify reads this from the deployed folder, including a drag-and-drop deploy.
+# The 200 makes it a proxy rather than a redirect: the browser only ever talks
+# to the Netlify domain, so there is no CORS to configure on the backend.
+/api/*  https://sukobin-sih.onrender.com/api/:splat  200
+
+# Single page app - every other path is the dashboard.
+/*      /index.html  200
